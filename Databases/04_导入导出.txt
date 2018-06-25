@@ -1,0 +1,53 @@
+导出
+    语句 SELECTION ... INTO OUTFILE
+        mysql>SELECT * FROM tb_name INTO OUTFILE /path/to/file.txt;
+        指定格式
+        mysql>SELECT * FROM tb_name INTO OUTFILE /path/to/file.txt FIELDS TERMINATED
+            BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+        mysql>SELECT * FROM tb_name INTO OUTFILE /path/to/file FIELDS TERMINATED
+            BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+    工具 mysqldump
+        是mysql用于转存储数据库的实用程序。它主要产生一个SQL脚本，其中包含从头重新创建数据库所
+        必需的命令CREATE TABLE INSERT等。
+        使用mysqldump导出数据需要使用 --tab 选项来指定导出文件指定的目录，该目标必须是可写的
+        $ mysqldump -u root -p --no-create-info --tab=/tmp RUNOOB runoob_tbl
+        导出SQL格式的数据
+        表
+            $mysqldump -u root -p db_name tb_name > dump.txt
+        库
+            $mysqldump -u root -p db_name > database_dump.txt
+        所有库
+            $mysqldump -u root -p --all-databases > database_dump.txt
+
+        将导出的数据直接导入到远程的服务器上，但请确保两台服务器是相通的，是可以相互访问的：</p>
+            $mysqldump -u root -p database_name | mysql -h other-host.com database_name
+            $mysqldump -h other-host.com -P port -u root -p database_name > dump.txt
+
+导入数据
+LOAD DATA 导入数据 LOAD DATA INFILE
+mysql> LOAD DATA LOCAL INFILE 'dump.txt' INTO TABLE mytbl;
+LOAD DATA 默认情况下是按照数据文件中列的顺序插入数据的，如果数据文件中的列与插入表中的列不一致，
+则需要指定列的顺序。
+mysql> LOAD DATA LOCAL INFILE 'dump.txt'
+    -> INTO TABLE mytbl (b, c, a);
+
+    mysqlimport 导入数据
+        $ mysqlimport -u root -p --local database_name dump.txt
+        $ mysqlimport -u root -p --local --fields-terminated-by=":" \
+            --lines-terminated-by="\r\n"  database_name dump.txt
+        $ mysqlimport -u root -p --local --columns=b,c,a database_name dump.txt
+
+如，在数据文件中的列顺序是 a,b,c，但在插入表的列顺序为b,c,a，则数据导入语法如下：
+
+
+如果指定LOCAL关键词，则表明从客户主机上按路径读取文件。如果没有指定，则文件在服务器上按路径读取文件。
+
+你能明确地在LOAD DATA语句中指出列值的分隔符和行尾标记，但是默认标记是定位符和换行符。
+
+两个命令的 FIELDS 和 LINES 子句的语法是一样的。两个子句都是可选的，但是如果两个同时被指定，FIELDS 子句必须出现在 LINES 子句之前。
+
+如果用户指定一个 FIELDS 子句，它的子句 （TERMINATED BY、[OPTIONALLY] ENCLOSED BY 和 ESCAPED BY) 也是可选的，不过，用户必须至少指定它们中的一个。
+mysql> LOAD DATA LOCAL INFILE 'dump.txt' INTO TABLE mytbl
+  -> FIELDS TERMINATED BY ':'
+  -> LINES TERMINATED BY '\r\n';

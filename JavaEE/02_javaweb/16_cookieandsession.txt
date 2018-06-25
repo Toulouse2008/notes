@@ -1,0 +1,58 @@
+Cookie 对象
+    创建和发送
+        Cookie cookie = new Cookie("key", "value");
+        cookie.setPath("/path/for/cookiecarried");
+        cookie.setMaxAge(60 * 10);   //单位 秒
+        response.addCookie(cookie);
+    读取客户端携带的 cookie:
+        Cookie[] cookies = request.getCookies();
+        for(Cookie cookie: cookies){
+            String cookieName = cookie.getName();
+            String cookieValue = cookie.getValue();
+        }
+
+Session 对象
+    作用范围: 默认一次会话
+    // request.getSession(): 会先判断客户端是否已有 session 保存在server端，如果没有，则
+    // 创建一个新的 session 对象；如果已有 session，则获取该 session
+    HttpSession session = request.getSession();
+    String id = session.getId();    //得到的是 JSESSIONID，客户端访问时会携带该 id
+
+    Session 是一个域对象
+        session.setAttribute(String name, Object obj);
+        session.getAttribute(String name);
+        session.removeAttribute(String name);
+
+    周期
+        创建: 第一次执行 request.getSession()
+        销毁:
+            - 服务器非正常关闭
+            - Session 过期/失效
+                有效期: 从不操作服务器端资源开始计时，即从最后一次操作资源时开始计时
+                    默认 30 min，默认设置在 tomcat 下 config 中 web.xml
+                        <session-config>
+                            <session-timeout>30</session-timeout>  //单位 min
+                        </session-config>
+                    注意:
+                        此处设置对所有web应用有效，不建议在此处修改. 可以在特定web应用下
+                        WEB-INF-->web.xml中进行修改
+            - 手动销毁 session.invalidate()
+        此外，如果手动清理了客户端缓存的cookie，则丢失JSESSIONID，session 在销毁前仍然存在
+        于服务器端，但是客户端再也找不到该session
+
+
+
+
+
+
+
+
+
+
+获取Cookie报错An invalid character [32] was present in the Cookie value
+通过cookie保存并读取用户登录信息：
+An invalid character [32] was present in the Cookie value  中32对应的编码是空格，
+Stack Overflow上的回答：This is due to Tomcat's cookie processing being changed to
+a RFC 6265 compliant implementation by default in 8.5, which does not allow space
+(character 32), among others.
+--->cookie 中的键值对是不允许憨厚空格的字符串，必须替换掉所有空格

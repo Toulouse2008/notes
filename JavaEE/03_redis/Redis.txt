@@ -1,0 +1,48 @@
+配置 redis CentOS7
+
+1. 复制到虚拟机
+    $scp -P 7000 redis  frank@localhost:/home/frank/
+2. 解压文件
+    $tar xf redisFile
+3. 编译
+    $cd redisFolder
+    $make
+4. 安装
+    $make PREFIX=/usr/local/redis install
+5. 从redis 目录下复制 redis.conf 文件到 /usr/local/redis/
+    可通过修改此文件，更新redis 的配置
+6. 启动后端模式
+    -更改redis.conf
+        $vim /usr/local/redis/redis.conf
+        把 daemonize 选项下的默认值从 no 改为 yes
+        保存退出
+    - 启动, 同时指定配置文件
+        $cd /usr/local/redis
+        $./bin/redis-server  ./redis.conf
+    - 查看端口，确认启动成功
+        $ps -ef | grep -i redis
+        root      4622     1  0 08:48 ?        00:00:00 ./bin/redis-server *:6379
+        root      4628  1264  0 08:48 pts/0    00:00:00 grep --color=auto -i redis
+7. 终止 redis
+    - 强制结束
+        $kill -9 4622 #pid
+    - 正常结束
+        $cd /usr/local/redis
+        $./bin/redis-cli    shutdown
+
+8. 连接 redis 客户端到服务器
+    $cd /usr/local/redis
+    $./bin/redis-cli -h localhost -p 6379
+    localhost:6379>
+9. 测试连接
+    localhost:6379> ping
+    PONG        <===表示连接成功
+    set/get
+    localhost:6379> set name frank
+    OK
+    localhost:6379> get name
+    "frank"
+    localhost:6379> del name
+    (integer) 1
+    localhost:6379> keys *
+    (empty list or set)

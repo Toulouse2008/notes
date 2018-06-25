@@ -1,0 +1,27 @@
+bash内建命令
+
+bash defines the following built-in commands:
+	:, ., [, alias, bg, bind,break,  builtin,  case,  cd,  command,  compgen,
+	complete,   continue, declare,  dirs, disown, echo, enable, eval, exec, exit,
+	export, fc, fg, getopts, hash, help, history, if, jobs, kill, let, local,
+	logout, popd, printf,  pushd, pwd, read, readonly, return, set, shift, shopt,
+	source, suspend, test, times, trap,  type,  typeset,  ulimit,  umask,  unalias,
+	unset, until, wait, while.
+
+alias:
+
+bg:
+
+
+
+type: 	-t对应-type，-a对应-all，-p对应-path，使用：type [-a | -t | -p] name
+		或 type [-all | -type | -path] name。
+（1）没有参数的状况下，它会显示出shell如何解译name做为命令。
+
+（2）如果有"-type"，它将会显示alias、 keyword、function、builtin或file。
+         file：表示为外部指令；
+         alias：表示该指令为命令别名所设定的名称；
+         builtin：表示该指令为 bash 内建的指令功能。
+
+（3）如果有"-path"的参数，它将会显示该命令的完整档名(外部指令)或显示为内建指令
+（4）如果有"-all"的参数，会将由PATH变量定义的路径中所有含有name指令的路径都列出来，即显示所有可执行name的可能路径。

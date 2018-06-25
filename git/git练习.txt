@@ -1,0 +1,223 @@
+练习
+
+安装git Mac OS
+    安装brew
+    $mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+    安装git
+    $brew install git
+
+获取帮助
+    $man git
+    $git help commmit
+    $man git-commit
+
+初步-->主分支master
+    1. 建立github账号
+    2. 新建repository
+    3. Terminal line，新建git文件夹，并切入
+    4. 初始化git
+        $git init
+    5. 新建txt
+        $touch 1.txt
+    6. 加入本地git
+        $git add 1.txt
+    7. 执行commit
+        $git commit -m 'test 1'
+    8. 建立远程连接
+        $git remote add origin  git@github.com:Toulouse2008/git.git
+            -->有问题，参考git_key_issue.txt
+    9. 完成第一次推送
+        $git push -u origin master
+    10. 重复步骤, 即可推送不同文件
+        6-->7-->9
+    11. 删除加入本地但不想push的文件
+        $git rm --cached your_file_name
+
+撤销操作
+    1. 放弃工作目录下的所有修改
+        $git reset --hard HEAD
+    2. 移除缓存区的所有文件
+        $git reset HEAD
+    3. 放弃某个文件的所有本地修改
+        $git checkout HEAD <file_name>
+    4. 重置一个提交
+        $git revert <commit>
+    5. HEAD重置到指定位置，并放弃该位置之后的所有修改
+        $git reset --hard <commit>
+    6. HEAD重置到上次提交的位置，并之后的修改标记为未添加到缓存区的修改
+        $git reset <commit>
+    7. 将HEAD重置到上一次提交的位置，并保留未提交的本地修改
+        $git reset --keep <commit>
+
+玩玩submodule
+    1. 添加子模块
+        $git submodule add [url][path]
+        eg.==> $git submodule add git://github.com/soberh/ui-libs.git src/main/webapp/ui-libs
+    2. 初始化子模块
+        $git submodule init
+    3. 更新子模块
+        $git submodule update
+    4. 删除子模块
+        - $git rm --cached [path]
+        - 编辑 .gitmodules 文件，将子模块的相关配置节点删掉
+        - 编辑 .git/config 文件，将子模块的相关配置节点删掉
+        - 手动删除子模块残留的目录
+
+    忽略指定类型的文件 ==>配置一下 .gitignore
+    1. repo根目录下创建名为 .gitignore 的文件
+    2. 写入要忽略的文件和文件夹
+
+
+玩玩branch
+    1. 先看看当前的整体
+            $git branch  ==>本地
+            显示所有分支，并以 * 标记当前活动分支
+            $git branch -a      ==>包括远程，即github
+    2. 新建分支
+        $git branch new     //用分支名称替换new
+    3. 再次查看
+        $git branch
+            两个分支，new和master， * 标记在master上
+    4. 切入新建的new分支
+        $git checkout new
+    5. 看看是否切换成功
+        $git branch
+            此时，* 标记在new分支前面，表示切换成功
+    6. 给new分支添点东西
+        $echo "for new test 1" > new1.txt
+        $git add new1.txt
+        $git commit -m 'new first'
+        $git push origin new
+            也可以添加更多内容
+    7. 切回master
+        $git checkout master
+
+    8. 合并分支
+        注意：先切回master，然后再合并new到master
+        $git merge new
+    9. 删除本地合并后的分支
+        $git branch -d new
+        $git branch
+            // 只有master，new已经删除了
+    10. 删除github上，已经合并过的分支
+        $git push origin :new
+
+    11. 合并分支的策略
+        有很多其他合并策略，比如，ours，recursive, octopus, etc
+        $git merge -s ours
+        $git merge -s recursive
+
+
+分支重命名和rebase  ???
+    重命名
+    1. 本地
+        $git branch -m your_old_name your_new_name
+    2. 远程--->分两步，先推送重命名后的分支，在删除旧分支
+        $git push -u origin new_name
+        $git push origin :old_name
+    3. rebase -->把分支从当前主分支的节点，移动到另外的一个节点位置
+    4. 放弃rebase
+        $git rebase --abort
+    5. 继续rebase
+        $git rebase --continue
+
+
+看看你的状态
+    $git log [options] [commits] [[--]path...]
+    $git log        -->详细记录，退出 q
+    $git log --pretty=oneline   -->单行
+    $git log --oneline --decorate  -->同上
+    美观显示法
+    $git log --graph --all
+
+    $git log --stat
+    $git status
+
+    $git ls-files -s --abbrev
+    $git cat-file -p file_hash_num
+
+    $git log --author="username"
+    $git log -p <file>  ==>显示某个文件的所有修改信息
+    $git blame <file>   ==>显示谁，在何时，修改了什么
+    $git grep "搜索内容"
+
+玩玩tag   
+    1. 打上一个tag
+        $git tag -a tag_name -m 'your_tag_info'
+    2. 查看版本
+        $git tag
+    3. 删除版本
+        $git tag -d tag_name
+    4. 查看远程tag
+        $git tag -r
+    5. 推送本地tag到远程(现在本地创建, 后推送)
+        $git push origin --tags  
+    6. 删除远程版本
+        $git push origin :resf/tags/[name]  ==>???继续迷糊
+    7. 合并远程tag到本地
+        $git pull origin --tags
+    号外==> $git archive
+
+
+合作项目
+        - 在github账号，设置共享
+    1. 登录github
+    2. 进入要共享的项目
+    3. 进入该项目下的 settings
+    4. 左边，options下，进入Collaborators
+    5. 右边，Add collaborator
+    6. 等待接受
+
+        - 开始项目合作
+    0. 登录github
+    00. 接受邀请
+    1. clone 项目到本地
+        $git clone project_link //--> https://github.com/ssniu/angular_shoppinglist.git
+    2. 进入项目目录
+    3. 新建任意文件
+    4. 执行下列命令
+        $git add new_file
+        $git commit -m 'new'
+        $git push -u origin master
+    5. 去github连接查看，可以看到new_file
+
+    - 拉取合作者的更新到本地
+    pull
+    1. 拉取分支内容，同时merge到本地的当前分支，假设是master分支，也可以是任何其他的活动分支
+        $git pull origin new
+    2. 拉取分支并合并到指定的本地分支
+        $git pull origin remote_branch_name:local_branch_name
+    3. rebase模式
+        $git pull rebase remote_branch_name:local_branch_name
+    fetch + merge
+    1. 获取远程特定分支的内容
+        $git fetch origin branch_name
+    2. 合并到本地分支
+        $git merge ----???
+
+配置git
+    1. 通过修改 ~/.gitconfig, 控制自己的git信息
+        [user]
+            email = your_email
+            name = your name
+        [push]
+            default = simple
+
+    2. 命令行设置
+            格式
+                $git config --{local,global,system} parameter value
+        $git config --global user.name your_name   //-->如果有空格，请放入引号内
+        $git config --global user.email your_email
+
+    3. 查看当前配置
+        格式
+            $git config --list
+
+删除已经删除的folder
+    1. 删掉本地git内的
+        $it rm -rf --cached ./path/to/your_folder
+        $git commit -m 'Removed folder'
+    2. 删掉github上的
+        $git push origin master
+
+

@@ -1,0 +1,86 @@
+CentOS 7 安装 Docker
+准备
+1. 查看是否安装
+    #yum list installed | grep docker
+    #yum list installed | grep container
+2. 如果有任何安装, 需要先卸载
+    #yum -y remove docker docker-common container-selinux docker-selinux docker-engine
+
+方案一     yum 源安装
+    1. 安装 yum-utils 工具
+        #yum install -y yum-utils
+    2. 设置 yum 源的 docker 网址
+        #yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+        注:
+            非稳定版(testing)的 Docker 默认未启用
+            启用命令
+            #yum-config-manager --enable docker-ce-edge
+            关闭命令
+            #yum-config-manager --disable docker-ce-edge
+    3. 更新 yum 包索引
+        #yum makecache fast
+    4. 安装 Docker
+        最新安装
+            #yum -y install docker-ce
+        安装指定版本
+            #yum list docker-ce.x86_64 --showduplicates | sort -r
+            #yum -y install docker-ce-<Version_STRING>
+    5. 启动 Docker
+        #service docker start
+    6. 验证安装
+        #docker run hello-world
+        如下表示安装成功
+        Hello from Docker!
+        This message shows that your installation appears to be working correctly.
+        To generate this message, Docker took the following steps:
+        如下表示 Docker 未启动
+        docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
+        Is the docker daemon running?.
+        See 'docker run --help'.
+    7. 升级安装
+        #yum makecache fast
+
+方案二     rpm 包安装
+    1. 下载 .rpm 文件
+        Docker官方提供了CentOS 6/7两个发行版的.rpm二进制安装文件及src源安装文件，可以通过以下
+        网址查找并下载适用的安装包：https://yum.dockerproject.org/repo/main/centos/
+    2. 安装 rpm 包
+        #yum -y install /path/to/your_package.rpm
+    3. 启动验证同上
+    4. 升级
+        不支持在线升级, 需要下载新的 rpm 包，然后通过 yum -y upgrade 升级
+        #yum -y upgrade /path/to/package.rpm
+
+卸载
+    1. 卸载 Docker 程序包
+        #yum -y remove docker-ce
+    2. 删除 Docker 镜像等
+        #rm -rf /var/lib/docker
+
+Docker 的简单使用
+版本查看
+    #docker --version
+    #docker-compose --version
+    #docker-machine --version
+Dokcer 容器管理
+    启动一个容器  用 docker 启动一个 nginx web 服务器
+        $docker run -d -p 80:80 --name webserver nginx
+        如果没有本地镜像, 自动从 DockerHub 下载，启动完成后
+        访问 localhost
+    容器信息查看  查看正在运行的容器
+        #docker ps
+    查看系统中所有的容器
+        #docker ps -a
+    容器的停止与重启
+        #docker stop webserver
+        #docker ps
+        #docker start webserver
+    容器的移除与恢复
+        #docker -rm -f webserver
+        该命令会移除容器，但是会保留镜像，查看镜像 docker images
+        #docker images
+        如果有镜像，下次创建 docker 时就不需要再次拉取镜像
+        再次启动 docker
+        #docker run -d -p 80:80 --name webserver nginx
+    删除镜像
+        #docker rmi nignx

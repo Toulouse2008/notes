@@ -1,0 +1,13 @@
+如果在eclipse下项目上出现一个大大的加粗的红色叹号， 表示 jar 的 build path 出问题了!
+
+1. 查看问题包
+    在该项目上，右键点击-->Properties-->Java Build Path --> 右边Panel 点击Order and Export
+    标了红色xx的是有问题的 jar包
+2. 同一个panel中， 点击Libraries, 选中问题jar，即xx标记的， remove
+
+3. 红色加粗叹号消失， 但是项目上出现了红色 x 标记，重新导入包即可
+
+
+或者，效果一样
+    选中项目-右键-->Build Path-->Configure Build Path-->Libraries-->删除未正确导入的包
+    -->添加必须的包。

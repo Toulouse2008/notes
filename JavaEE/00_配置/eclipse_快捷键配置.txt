@@ -1,0 +1,8 @@
+Eclipse 中默认的 Content Asistant 热键--> Ctrl + Space
+
+修改: Mac
+    Eclipse -->Preferences-->General-->Editors-->Keys-->Right Panel Input "Content
+    Assist" --> Select Content Assist --> Unbind Command --> Go to Binding
+    --> Press Alt \ --> Apply
+    注意:
+        不要一个组合绑定多个操作!!!

@@ -1,0 +1,56 @@
+马哥 运维初级
+
+w
+who
+whoami
+
+last:
+	显示/var/log/wtmp文件的内容，用户登录历史
+	及系统重启历史
+
+	-n #: 显示最近#次的相关信息
+
+lastb: 
+	显示/var/log/btmp文件，显示用户错误的登录尝试
+
+	-n #: 最近 # 次错误尝试
+
+lastlog:
+	显示每个用户最近一次的登录的信息
+	-u USERNAME: USERNAME最近一次的登录信息
+
+basename:
+	basename /etc/sys.log  ==>sys.log
+
+dirname:
+	dirname /etc/hello/sys.log 	==>/etc/hello/
+
+mail:
+	-s:标题
+		$cat filename | mail -s "How are you" uname
+		$mail -s "How are you" uname<filename
+		$mail -s "How are you" uname<<EOF
+ 
+ hostname:
+ 	当前主机的主机名
+ 	改主机名：hostname new_name
+
+
+ 随机数：
+ 	RANDOM
+
+ 	for i in {1..10}; do
+ 		echo -n "$RANDOM"
+ 	done 
+
+ 随机数生成器：
+ 	熵池：敲击键盘的时间间隔，硬件中断等，被保存下来，用作随机数
+ 	加密算法需要随机数，边到熵池中获取，是取不是复制
+
+ 	/dev/random: 熵池空了，必须等有了才能再次运行，会阻塞用户
+ 				进程，安全性好
+ 	/dev/urandom: 熵池空了，即转而用软件模拟出随机数，
+ 				不会阻塞用户进程，安全性不好
+ 	两者在生产随机数时，都会到熵池中获取随机数，如果熵池空了，系统必须重新用同样的方式填满熵池（如必须不停敲键盘一段时间）。
+
+

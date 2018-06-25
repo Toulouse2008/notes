@@ -1,0 +1,139 @@
+git教程
+
+
+CMS: Content Management System，内容管理系统
+	svn: Apache Subversion, TortoiseSVN
+	cvs: concurrent versions/versioning system
+	git: the stupid content tracker  -->Linus Torvalds
+安装
+	$apt-get git-core
+
+	查看git版本
+		$git --version
+
+git folders
+	mkdir gitdemo
+	cd gitdemo
+	git init
+	echo 'asfadss'>1.txt
+	ls -a 	===>.git
+	cd .git
+	ls -ls 	==> COMMIT_EDITMSG, FETCH_HEAD, HEAD, ORIG_HEAD, branches,
+			==> config, description, hooks, index, info, logs, objects, 
+			==> refs
+
+			staging area === index
+
+git config
+	git config --global user.name 'Frank Du'
+	git config --global user.email 'frank.du2015@gmail.com'
+
+
+Git Three area
+	Repository: area to store all codes ==> .git, 通过git init 创建
+
+	Working Directory: your own directory ==> files you are working on
+										  ==> git add --> put the files to 
+										  				  staging area
+
+	Staging Area/index: tempory place to store code from git add
+						==> git commit will transfer the codes from here to  repository
+
+Git三个对象
+		每个对象都有type, size 和 content
+	blob: store file data, generally it's a file
+
+	tree: basically like a dir, references a bunch of other trees or blobs
+
+	commit: points to a single tree, marking it as what the project looked 
+			like at a certain time
+
+	tag: a pointer point to a commit object
+
+命令
+	初始化: git init 
+	加入stage: git add file_name
+	放入仓库: git commit -m 'your_comments'
+	找回删除的文件: $rm file_name
+				  $git checkout -f HEAD
+
+	生成hash:	$git hash-object file_name
+	查看git中的文件内容: $git show 'the first few hash identifiying a file'
+	tag:  $git tag 'tag_name' | git tag -a v1.0 -m "This is the stable v1"
+		  $cat .git/refs/tags/tag_name  
+
+		  $find .git/objects/ -type f | wc 
+
+
+	查看当前位置:
+		$cat .git/HEAD 	==>ref refs/heads/master
+		$cat .git/refs/heads/master 
+		$git cat-file -t { df87 | 9e7b }
+
+	打包下载特定tag: 
+		$git archive --format=tar --prefix=your_name/v1.0 | gzip >/tmp/v1.0.gz
+
+	分支:
+		$git branch branch_name
+		$cat .git/HEAD ==>ref: refs/heads/master
+		$ls .git/refs/heads/ 	==>master, branch_name
+		$cat .git/refs/heads/master		==>hash for master
+		$cat .git/refs/heads/branch_name ==>hash for branch_name
+			master 和 branch_name 有相同的hash，即指向相同的commit
+			==>HEAD始终指向活动的分支
+	切换分支:
+		$git branch 	==> *master -->活动， branch_name
+		$git checkout branch_name	==>切换到分支branch_name
+		$git branch 	==> master, *branch_name -->活动分支
+
+	分之合并:
+		1. 切回master
+			$git checkout master
+		2. 合并 -->会产生冲突??
+			$git merge branch_name_to_be_merged
+
+			Fast forwarding
+			Three way merge
+
+		3. 删除分支
+			$git branch -D branch_name_to_be_deleted
+
+操作
+本地操作
+1. 创建项目后
+	$git init  ==>Initialized empty Git repository
+2. 添加文件到本地
+	$git add [files_list | dir_lists]
+3. 提交的本地git库
+	$git commit -m "Your_comments"
+
+推送到github
+1. 到GitHub网站注册，自己账号下创建项目，得到项目的ssh 或者https 连接地址
+	https://github.com/Toulouse2008/Flaskr.git
+2. 本地连接到github
+	$git remote add origin https://github.com/Toulouse2008/Flaskr.git
+3. 推送
+	$git push -u origin master
+		==> Error: The requested URL returned error: 403
+		解决方案:
+			1. vi .git/config
+			2. modify url
+				from: https://github.com/Toulouse2008/Flaskr.git
+				to:	  https://Toulouse@github.com/Toulouse2008/Flaskr.git
+			3. $git push -u origin master
+				input your github password:xxxx
+			4. Done
+
+克隆github的protjec
+	clone
+		$git clone https://github.com/Toulouse2008/django
+
+
+
+
+
+ 
+
+
+
+

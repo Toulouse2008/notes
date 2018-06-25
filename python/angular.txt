@@ -1,0 +1,28 @@
+
+新建项目
+1. $ng new project_name
+2. 进入项目目录
+	$ng serve | ng serve --open
+
+安装第三方库
+1. $npm install package_name
+
+注意:
+	安装jquery & bootstrap要经过三部
+	- $npm install jquery --save  | npm install bootstrap --save
+	- 项目根目录下.angular-cli.json文件中, 在scripts和styles数组中，添加相应的js和css路径
+		"scripts":[
+					"../node_modules/jquery/dist/jquery.js",
+					"../node_modules/bootstrap/dist/js/bootstrap.js"
+					]
+		"styles":[
+					"styles.css",
+					"../node_modules/bootstrap/dist/css/bootstrap.css"
+					]
+	- 类型描述文件  -->让angular明白jquery和bootstap的语法
+		$npm install @types/jquery --save-dev
+		$npm install @types/bootstrap --save-dev
+
+生成组件
+	$ng g component components_name
+

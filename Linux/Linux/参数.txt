@@ -1,0 +1,32 @@
+bash的特性之九：bash中的变量
+	变量的类型：
+		本地变量：只对当前shell进程有效，对其子shell以及其它shell都无效；
+			定义变量： [set]Var_Name="Value"
+			引用变量： ${Var_Name}
+			撤销变量： unset Var_Name
+		局部变量：仅对局部代码生效
+			local Var_Name="Value"
+		环境变量：对当shell进程及其子shell有效；
+			export Var_Name="Value"
+			Var_Name="Value"
+			export Var_Name
+			导出
+		位置变量：
+			$1, ..., $n
+			./first.sh 2 8
+		特殊变量：
+			$0: 脚本名称自身
+			$?: 上一条命令的执行状态；
+				状态用数字来表示：0-255;
+					0: 成功
+					1-255: 失败
+			$$
+			$!
+			$#
+			$*
+
+	变量的命名要求：
+		只能使用数字、字母和下划线组成；
+		不能以数字开头；
+		不能使用程序中的关键字；
+		见名知义；totalWeight 

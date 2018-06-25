@@ -1,0 +1,23 @@
+- OS: CentOS 6.8
+- Install Tools: yum
+    - check packages installed for mysql
+        $yum list installed | grep mysql
+    - remove all packages for mysql
+        $yum -y remove mysql*
+    - install mysql
+        $yum -y install mysql-server mysql-devel
+    - check if mysql installed
+        $rpm -qi mysql-server
+    - start mysql
+        $service mysqld start
+    - No password has been set yet. Login from client
+        $mysql -uroot
+    - set up root password
+        >use mysql
+        >SELECT Host, User, Password FROM user WHERE User='root';
+        >UPDATE user SET Password='your_pass' WHERE User='root';
+        >SELECT Host, User, Password FROM user WHERE User='root';
+        Warning:
+            The Password is not hashed.
+            - call PASSWORD function to hash your pass
+            $UPDATE user SET Password=PASSWORD('your_pass') WHERE User='root';

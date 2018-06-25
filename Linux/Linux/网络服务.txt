@@ -1,0 +1,144 @@
+马哥 运维初级 21_01
+
+网络服务
+
+HTTP: HyperText Transfer Protocol
+	欧洲物理实验室
+	http/0.9
+
+HTML:
+	HyperText Markup Language
+	把不同服务器上的资源整合成一个html文档，并能够在webbrowser展示的语言
+
+超链接：
+
+Web:
+
+Browser:客户端
+
+URI: Uniform Resource Identifier, 统一资源定位符
+
+URL: Uniform Resource Locator, 网络资源
+	protocol://HOST:port/path/to/file
+		-http://www.mageedu.com/download/linux.tar.gz
+		-多个资源很肯能整合成一个html文档
+
+web对象:
+
+HTTP方法:
+	从服务器获取资源的方法。
+		HTTP/0.9-->Only GET, 获取服务器资源并显示在浏览器
+		HTTP/1.0-->PUT, POST, DELETE
+
+MIME: Multipurpose Internet Mail Extension
+	将非文本数据在传输前重新编码为文本格式，接收方能够用相反的方式将其重新还原为原来的格式，还能够调用相应的程序来打开此文件。 Base64编码格式
+SMTP: Simple Mail Transmission Protocol, 纯文本
+
+HTTP报文:
+	请求:
+		<method><request-URL><version><headers>
+
+		<entity-body>
+
+	响应:
+		<version><status><reason-phases><headers><entity-body>
+
+		状态码:
+			1xx:纯信息
+			2xx:'成功', 200
+			3xx:重定向
+				301:永久重定向
+				301:临时重定向
+				304:内容没变化，用缓存的内容即可， not modified
+			4xx:客户端错误信息
+				404: 文件不存在
+			5xx:服务器错误
+				501:
+				504:
+
+		reason-phrases: 进一步解释status的意义或者原因
+
+		例子：
+		首部: 参数/名称:值
+			GET / HTTP/1.1     <===起始行start line
+			HOST:www.magedu.com		<==首部 header,键值对key:value
+			Connection:keep-alive
+
+		响应报文：
+			HTTP/1.1 200 OK		<===起始行start line
+			X-Powered-By: PHP/5.2.17 <==首部 header,键值对key:value
+			Vary: Accept-Encoding, Cookie, User-Agent
+			Cache-Control: Max-age=3, must-revalidate
+			Content-Encoding: gzip
+			Content-Length:6931
+
+			<entity-body>
+
+Web服务器的主要操作
+	建立连接: 接受或者拒绝客户端连接请求
+	接受用户请求: 通过网络读取HTTP请求报文
+	处理请求: 解析报文并作出响应动作
+	访问资源: 访问请求报文中的相关资源
+	构建响应: 使用正确的首部生成HTTP响应报文
+	发送响应: 向客户端发送生成的响应报文
+	记录日志: 当已经完成的HTTP事务记录进日志文件
+
+请求页面:
+	5 秒 10 images 3 css 5 html  <===每个资源都要单独请求
+
+	浏览器：多线程的， IE6==>4线程  chrome==>2线程
+
+
+http, tcp：三次握手、四次断开
+
+http/1.1
+	增强缓存功能:
+	长连接: 避免同一个客户端发起多次请求，
+			==>空闲超时断开
+			==>限制请求次数
+			======>对服务器性能影响巨大
+
+服务器的响应模型
+	1. 单线程/单进程
+		FIFS
+	2. 多线程/多进程
+		有一定的并发能力
+	3. 事件驱动、异步I/O，单进程
+	4. 多个进程，每个处理多个请求
+
+c/s
+c: client agent(browser spider)
+	-IE'
+	-Firefox
+	-Chrome
+	-Bing
+	-Opera
+	-Safari
+s: server
+	c --> s --> d
+	httpd, MPM
+		-prefork
+		-work
+		-event
+
+	webserver
+		-Apache--httpd
+		-IIS
+		-nginx
+		-lighttpd
+		-thttpd
+	应用程序服务器
+		-IIS
+		-tomcat(apache, JSP, open source)
+		-websphere(IBM, JSP, Commodity)
+		-Weblogic(Oracle, JSP, commodity)
+		-JBoxx(RedHat)
+
+	www.netcraft.com
+	IDC公司: Internet Data Center
+		互联网数据中心（Internet Data Center）简称IDC，就是电信部门利用已有的互联网通信线路、带宽资源，建立标准化的电信专业级机房环境，为企业、政府提供服务器托管、租用以及相关增值等方面的全方位服务。
+
+
+
+HTTP Method
+	GET, POST, PUT, DELETE, HEAD, TRACE, OPTIONS, CONNECTION

@@ -1,0 +1,72 @@
+马哥 运维初级
+
+脚本编程
+
+控制：
+	顺序
+	选择：
+		if
+		case
+	循环：
+		for: 循环次数已知
+		while: 循环次数未知
+		until:
+
+脚本交互
+	read
+		read NAME --> abc -->echo $NAME ==>abc
+		read  NAME AGE -->abc 18 -->echo $NAME $AGE==>abc 18
+		read NAME -->abc def -->echo $NAME ==>abc def
+		read NAME AGE ==>abc 18 19 20 -->echo $AGE==>18 19 20
+		read NAME AGE ==>abc -->echo $AGE ==> NULL
+			#!/bin/bash
+			echo -n "Input two int:"   ==>read -p "Input:" A B
+			read A B
+			echo "$A plus $B is: $[$A+$B]"
+
+		-p "Prompt":提示
+		-t #: 等待 # 秒
+
+
+while循环：未知次数循环
+	while CONDITION; do
+		statement
+		statement
+		....
+	done
+
+	while特殊用法：
+		- while :; do
+
+		  done
+
+		- while read LINE; do
+		  done< /path/to/somefile 
+
+控制terminal line字体颜色：
+	echo -e "chars \033[1;31;41mCharToColor\033[0m,OtherChars"
+		- \033: 标识边界, ctrl键
+		- 1: 控制文字本身的表现，粗体,下划线等
+			1.粗体 2.半透明 3.默认 4.下划线 5.闪烁 6.？？ 7.交换前景和背景 8.隐藏
+		- 31: 3 为前景色，颜色1-7
+		- 41: 4 为背景色，颜色1-7
+		- 1m: 
+		-[:
+
+continue: 提前结束本次循环，并进入下次循环
+break: 结束循环体
+
+
+函数: Function
+	代码重用
+
+	function FUNCITION_NAME {
+		command
+	}
+
+	funcName() {
+	 command
+	}
+
+	返回状态：return #
+	

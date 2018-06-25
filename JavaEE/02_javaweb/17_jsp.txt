@@ -1,0 +1,12 @@
+JSP: Java Servlet Page
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
+JSP中三种插入 java 代码的格式
+    - <% java code %>   <% int i = 0; System.out.print(i); %>
+    - <%=java 变量表达式 %>:     <%=i %> | <%=1+1 %>
+    - <%! java code %>:     <%! String s = "Hello test"; System.out.print(s) %>
+注释
+    - HTML 注释:  <!-- 注释 -->
+    - java 单行注释:    //
+    - java 多行注释:    /* 多行 */
+    - jsp 注释:       <%-- 注释内容 --%>

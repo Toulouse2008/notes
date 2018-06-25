@@ -1,0 +1,9 @@
+XMind 8 Pro for Mac 破解方法：
+双击 .dmg 文件，会看到文件夹及其相应的安装指南
+1、将 XMind.app 拖至 应用程序 文件夹，并打开XMind.app软件。
+
+2、复制 net.xmind.verify_3.6.50.201606270419.jar 至 /Applications/XMind.app/Contents/Eclipse/plugins/，替换原文件
+
+3、重新打开 XMind.app，进入「帮助」-> 「序列号」
+
+4、输入任意邮箱，粘贴 SN.txt中的序列码即可。

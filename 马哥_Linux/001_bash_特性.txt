@@ -1,0 +1,112 @@
+shells: sh, csh, ksh, zsh, bash
+文件: /etc/shells
+
+命令历史    命令补全(tab)   命令替换
+管道、重定向
+命令别名
+命令行编辑
+命令行展开
+文件名通配
+变量
+编程
+
+提示符
+    #: root 用户
+    $: 普通用户
+
+shell   子shell: 在shell中，再次打开shell, 变量能共享吗?
+
+shell 分类，从用户角度:
+    登录式SHELL
+        - 正常通过终端输入用户名和密码登录进入的 SHELL
+        - su - USERNAME
+        - su -l USERNAME
+        配置文件读取顺序:
+            /etc/profile --> /etc/profile.d/*sh --> ~/.bash_profile
+                -->~/.bashrrc --> /etc/bashrd
+    非登录式 SHELL
+        - su USERNAME
+        - 图形终端下打开命令窗口
+        - 自动执行的 SHELL 脚本
+        配置文件读取顺序:
+            ~/.bashrc --> /etc/bashrc -->/etc/profile.d/*.sh
+
+bash 的配置文件
+    全局配置    /etc/skel
+        /etc/profile
+        /etc/profile.d/*.sh
+        /etc/bashrc
+    个人配置
+        ~/.bashrc
+        ~/.bash_profile
+
+    profile类:
+        - 设定环境变量
+        - 运行命令或者脚本: 用户登录即执行某些脚本
+    bashrc类:
+        - 设定本地变量
+        - 定义命令别名
+
+命令行快捷键
+    Ctrl + A: 跳转到行首
+    Ctrl + E: 跳转到行尾
+    ESC  + B: 后退一个单词
+    ESC  + F: 前进一个单词
+    Ctrl + U: 当前删到行首
+    Ctrl + K: 当前删到行尾
+    Ctrl + L: 清屏
+
+命令历史    history
+    -a:
+    -d OFFSET [n]: 删除指定的记录及之后的 n 条记录
+    -w: 保存命令历史到历史记录文件中
+
+快速调用历史命令
+    !n: 执行第 n 条命令
+    !-n: 执行倒数第 n 条命令
+    !!: 重复执行最近执行的命令，一次
+    !STRING: 执行最近一次以 STRING 开头的命令
+    !?STRING: 执行最近一次含有 STRING 记录的命令
+    !$: 引用上一个命令的最后一个参数
+
+
+环境变量
+    PATH: bash 命令的搜索路径
+    HISTSIZE: 默认1000条
+    HISTCONTROL:  =ignorespace | ignoredups | ignoreboth
+    USER, UID, LOGNAME, SHELL, PWD, LANG, JAVA_HOME, CATALINA_HOME
+
+命令别名    alias   unalias
+    定义格式:   $alias  NAME="value"
+    取消定义:   $unalias NAME
+    要想使用命令本身而不是别名，需要在命令前加反斜线
+    $\ls    <==没有空格，否则报错
+
+命令替换    把命令的执行结果放入命令所在位置，并替换掉命令本身   $(COMMAND) | `COMMAND`
+    $touch file-`date +"%F-%H-%M-%S"`.txt
+    $touch file-$(date +"%F-%H-%M-%S").txt
+
+bash中的引用
+    ``: 命令替换
+    "": 弱引用，如果遇到变量，则用值替换变量本身
+    '': 强引用，禁止任何变化，直接使用字符串本身
+
+文件名通配   globbing
+    *: 匹配任意长度的任意字符，包括没有东西
+    ?: 匹配任意单个字符
+    []: 匹配指定范围内的单个字符
+        [abc | a-z | A-Z | 0-9 |a-zA-Z]
+        [:space:]   [:punct:]   [:upper:]   [:lower:]   [:alpha:]   [:digit:]
+        [:alnum:]
+        支持取反: [^[:space:]] [^[:alnum:]] [^[:lower:]] [^[:upper:]] [^[:punct:]]
+    [^]: 反选 [^0-9]  [^a-zA-Z]
+    注:
+        - |: 没有这个 '|' 选项: 为什么？因为 | 在 bash 中表示管道
+        - .: 没有这个 '.' 选择: 为什么？因为 . 在 bash 中表示隐藏文件
+
+    a   a123    ab123   abc x12 xyz xyz123
+    $ls a*      $ls a*3     $ls [a-zA-Z]*[0-9]
+
+空格与文件名
+    - 空格可以作为文件名     $touch ' ' ==>创建一个名为 空格的文件
+    - 文件名中间可以有空格    $touch 'a b c' ==>创建一个名为 ’a b c'的文件

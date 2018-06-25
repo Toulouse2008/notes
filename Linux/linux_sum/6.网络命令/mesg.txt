@@ -1,0 +1,11 @@
+mesg
+    设置终端机的写入权限。将mesg设置y时，其他用户可利用write指令将信息直接显示在您的屏幕上
+    mesg [n|y]
+    参数：
+        n 不允许其他用户将信息直接显示在你的屏幕上。
+        y 允许其他用户将信息直接显示在你的屏幕上。
+
+    $ write root /dev/pts/4
+        hello
+        hello
+        EOF //Ctrl+D 结束输入

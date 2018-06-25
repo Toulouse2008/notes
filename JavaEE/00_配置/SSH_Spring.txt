@@ -1,0 +1,36 @@
+Spring History
+Version	Date	
+1.0	    2004
+2.0	    2006
+3.0	    2009
+4.0	    2013
+5.0	    2017
+
+
+The first version was written by Rod Johnson, who released the framework with the
+    publication of his book Expert One-on-One J2EE Design and Development in
+    October 2002. The framework was first released under the Apache 2.0 license
+    in June 2003.
+
+The first milestone release, 1.0, was released in March 2004 with further milestone
+    releases in September 2004 and March 2005. The Spring 1.2.6 framework won a
+    Jolt productivity award and a JAX (Java API for XML) Innovation Award in 2006.
+
+Spring 2.0 was released in October 2006,
+Spring 2.5 in November 2007
+Spring 3.0 in December 2009,
+Spring 3.1 in December 2011,
+Spring 3.2.5 in November 2013.
+Spring Framework 4.0 was released in December 2013. Notable improvements in
+    Spring 4.0 included support for Java SE (Standard Edition) 8, Groovy 2, some
+    aspects of Java EE 7, and WebSocket.
+
+Spring Framework 4.2.0 was released on 31 July 2015 and was immediately upgraded
+    to version 4.2.1, which was released on 01 Sept 2015. It is "compatible
+    with Java 6, 7 and 8, with a focus on core refinements and modern web capabilities".
+
+Spring Framework 4.3 has been released on 10 June 2016 and will be supported
+    until 2020. It "will be the final generation within the general Spring 4
+    system requirements (Java 6+, Servlet 2.5+), [...]".
+
+Spring 5 is announced to be built upon Reactive Streams compatible Reactor Core.

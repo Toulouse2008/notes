@@ -1,0 +1,293 @@
+btr
+
+
+压缩工具
+compress/uncompress: .z: 古老，很少见到
+gzip/gunzip: .gz
+bzip2/bunzip2: .bz2
+xz/unxz: .xz
+zip/unzip: zip
+tar: .tar
+cpio
+
+1. gzip/gunzip  只能压缩文件  算法 LZ77
+    gzip:
+        默认压缩完毕，删除原文件，只保留压缩文件
+        -d: 解压缩 相当于 gunzip
+        -t: 检查文件的完整性
+        -c: 操作结果输出到 stdout，不操作原文件
+            $gzip -c messages >messages.zip  ==>原文件保留
+        -#: 指定压缩比， 1-9
+        -r:
+        -q: quietly, 禁用所有警告
+        -v: verbose 显示每个文件的压缩信息
+        -r: 对一个目录下的每个文件单独压缩
+
+    gunzip:
+        默认解压完毕后，删除原压缩文件
+
+    zcat: 不解压查看 zip 文件内容
+
+2. bzip2/bunzip2   只能压缩文件  LZ77 LZ78    压缩比更大
+    -c | --stdout:
+    -d | --decompress:
+    -z | --compress:
+    -t | --test:
+    -k | --keep: 压缩后，保留原文件
+    -s | --small: reduce memory usage
+    -q | --quiet:
+    -v | --verbos:
+    -h | --help:
+    -#: 1-9
+
+    bzcat:
+
+3. xz / unxz/ xzcat
+    -z;
+    -d:
+    -t:
+    -k:
+    -c: 改变输出到 标准输出，不对原文件进行删除操作
+    -C <check>, --check=<check>: crc32, crc64, sha256: 校验
+    -[0-9]: 压缩比
+
+4. zip / unzip  打包压缩工具，
+    a compression and file packaging utility for Unix, VMS, MSDOS,
+    OS/2, Windows 9x/NT/XP, Minix, Atari, Macintosh, Amiga, and Acorn  RISC
+    OS.   It  is analogous to a combination of the Unix commands tar(1) and
+    compress(1) and is compatible with PKZIP (Phil  Katz's  ZIP  for  MSDOS
+    systems).
+
+5. tar   Tape Archive   不会删除源文件
+    tar -cf archvie.tar foo bar     创建归档    tar -cf /path/to/xxx.tar file ....
+    tar -tvf archive.tar    不展开归档查看文件列表
+    tar -xf archive.tar     展开归档
+
+    -c | --create: 新建归档
+    -d |--diff | --compare: 找出归档和文件系统之间的差异
+    -delete: 从归档中删除
+    -r | --append: 把文档添追加到归档
+    -u | --update: 只更新比归档中新的文件
+    -t | --list: 列出归档中的文件列表
+    -x | --extract | --get: 从归档中提取文件
+
+    -f | --file=ARCHIVE: 指明归档文件路径
+    -j: bzip2
+    -J: xz
+    -z: gzip
+    -p
+    -C | --directory=DIR: 将展开的文件放到 DIR 下
+
+
+
+bash 脚本编程
+    if 语句， bash -n,  bash -x
+    [ ] ==> 命令      [[ ]]  ==> 关键字
+    if [ -f $filename ]; then
+        echo "Commone file"
+    elif [ -d $filename ]; then
+        echo "DIR"
+    elif [ -L $filename ]; then
+        echo "Symbolic"
+    else
+        echo "Other"
+    fi
+
+    注意: if 可以嵌套
+
+    循环: for, while, until
+
+    for 循环结构
+        for 变量名 in 列表; do
+            循环体
+        done
+
+        列表生成方式
+            1. 直接给出列表
+            2. 生成列表
+                - [1..10]
+                - $(seq [start [step]] stop)
+                    seq 3 10 | seq 1 10 | seq 0 2 100   ==>100内的偶数
+                - 生成列表的命令， 如 `ls /etc`
+                - glob  如， /etc/*
+                - 变量引用  $@, $*
+
+    练习
+        1. /etc/re.d/rc3.d 目录下分别有多少个以 k 开头和以 s 开头的文件
+            以 k 开头的文件输出时，在源文件名后加上 stop， 以 s 开头的加上 start
+        2. 写一个脚本，使用 ping 探测 172.16.250.1 ~ 254 之间的主机在线状态，显示为
+            online | offline
+
+
+Linux 程序包管理
+    API: Application Programming Interface
+        POSIX: Portable Operating System IX
+
+    程序源代码 --> 预处理 --> 编译 --> 汇编 --> 链接
+        静态编译
+        共享编译
+    ABI: Application Binary Interface
+        win 与 linux 不兼容
+        库级别的虚拟化
+            Linux: WINE
+            Windows: Cywin
+        系统开发
+            C  C++
+        应用级开发
+            java    python  PHP
+
+        二进制程序的组成部分
+            二进制文本、库文件、配置文件、帮助文件
+
+            程序包管理文件
+                debian: .deb,  dpt
+                RedHat: rpm
+                    rpm:  Redhat Pachage Manager  <== Perl 写的
+                          RPM is Package Manager  <== C 语言研发
+                Gentoo
+                ArchLinux
+
+        源码      name-Version.tar.gz
+            Version: Major.minor.release
+                    Major: 重大改变
+                    Minor: 添加feature 或者 分支
+                    Release: fix bugs
+        rpm 包命名
+            name-Version-release.arch.rpm
+                Version: major.minor.release 保持和源码包的版本号一致
+                ARCH: release.os.arch
+                        release, RPM 包的 release 号， arch: 内核架构
+                        ==> zlib-1.2.7-13.el7.i686.rpm
+                        x86: i386, i486, i586,i686
+                        x86_64: x64 x86_64  amd64
+                        powepc: ppc
+                        平台无关: noarch
+            testapp 拆包
+                testapp-VERSION-ARCH.rpm: 主包
+                testapp-devel-VERSION-ARCH.rpm
+                testapp-testing-VERSION-ARCH.rpm
+
+            包之间的依赖关系
+                yum: rpm 包管理器的前端工具
+                apt-get: deb 包管理器的前端工具
+                zypper: suse 的 rpm 前端工具
+                dnf: Fedora 22+ 的 rpm 包管理器的前端工具
+
+        相关命令
+            ldd
+                ldd /bin/ls
+            ldconfig
+                /sbin/ldconfig -p: 显示主机已经缓存的所有可用库文件名及路径映射关系
+                配置文件: /etc/ld.so.conf   /etc/ld.so.conf.d/*.conf
+                缓存文件: /etc/ld.so.cache
+
+        程序包管理器的作用
+            功能: 将编译好的应用程序打包成一个或者几个小程序包，从而方便快捷的实现安装、卸载
+                查询、升级、校验等管理操作
+            1. 程序的组成清单(每个包独有)
+                文件清单
+                安装或者下载时运行的脚步
+            2. 数据库(公共)
+                程序包的名称及版本
+                依赖关系
+                功能说明
+                安装生成的各个文件的路径及其校验码信息
+
+        管理程序包的方式
+            使用包管理器: rpm
+            使用前端工具: yum, dnf
+
+        获取程序包的途径:
+            - 系统发行版的光盘 或者 官方服务器 或者 镜像网站
+            - 项目官方站点
+            - 第三方组织
+                Fedora EPEL -->
+            - 自己制作
+                下载源码，自己来
+    建议:
+        网上下的所有的包，检查合法性
+
+
+    rpm 安装
+        rpm {-i|--install} [install-options] PACKAGE_FILE ...
+            -v: verbose
+            -vv: ugly verbose
+            -h: 以 # 显示程序包管理执行的进度，每个 # 表示 2% 的进度  50 个结束
+
+            rpm -ivh PACKAGE_FILE ...
+                --test: 测试安装，不真正执行安装，dry run 模式 --> 赶跑一趟
+                --nodeps: 忽略依赖关系(需要你自己手动解决依赖关系)
+                --replacepkgs: 替换原有的安装
+
+                --nodigest: 不检查 hash
+                --nosignature: 不检查包来源的合法性
+                --noscripts: 不执行程序包中的脚本
+                    pre: 安装前脚本, --nopre     post: 安装后脚本,     --nopost
+                    preun: 卸载前脚本，--nopreun  postun: 卸载后脚本   --nopostun
+
+        升级
+            rpm {-U|--upgrade} [install-options] PACKAGE_FILE ...
+                如果没有安装过，则直接安装新版
+                rpm -Uvh package_file
+
+            rpm {-F|--freshen} [install-options] PACKAGE_FILE ...
+                如果没有安装过，则不做任何处理
+                rpm -Fvh package_file
+
+                --oldpackage: 降级操作
+                --force: 强制升级
+
+            注意:
+                1. 不要对内核进行升级操作，Linux支持多内核版本并存，对新内核，直接安装
+                2. 如果原程序包的配置文件安装后曾经被修改过，新版本配置文件不会覆盖原有的配置
+                    文件，新版本会生成一个重新命名的配置文件(FILENAME.rpmnew)后保留
+
+        查询
+            rpm {-q|--query} [select-options] [query-options]
+                select-options
+                    -a: 查询所有安装的包
+                    -f: 查询指定文件是哪个包安装生成的
+                    -p /path/to/packageFile: 针对未安装的包进行查询
+
+                query-options
+                    --changelogs: 查询rpm包的changelog
+                    -c: 查询程序的配置文件
+                    -d: 查询文件的文档
+                    -i: information
+                    -l: 查看指定程序包安装后生成的所有文件
+                    --scripts: 程序包自带的脚本片段
+                    -R: 查询指定包所依赖的CAPABILITY
+                    --provides: 列出本包提供的CAPABILITY
+
+
+        卸载
+            rpm {-e|--erase} [--allmatches] [--justdb] [--nodeps] [--noscripts]
+            [--notriggers] [--test] PACKAGE_NAME ...
+
+        校验
+            rpm {-V|--verify} [select-options] [verify-options]
+                S: file size differs
+                M: mode differs(permissions and file type)
+                5 digest (MD5) differs
+                D Device Major/minor number mismatch
+                L readLind(2) path mismatch
+                U User ownership differs
+                G Group ownership differs
+                T mTime differs
+                P caPabilities differ
+
+        包来源合法性验证及完整性验证
+            完整性验证
+                核对特征码
+
+            公钥加密
+                对称加密
+                非对称加密
+
+            导入所需公钥
+                rpm --import /path/to/pub_key_file
+
+        数据看重建
+            rpm {--initdb | --rebuilddb}
+                initdb: 如果不存在，创建数据库; 如果存在，不执行任何操作
+                rebuilddb: 无论当前存在与否，直接重新创建数据库

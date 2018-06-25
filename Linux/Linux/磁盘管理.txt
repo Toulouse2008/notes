@@ -1,0 +1,836 @@
+马哥 运维初级
+
+2014.02.20
+
+存储设备：
+	u盘，光盘，磁带，硬盘，软盘
+
+机械硬盘：
+	同轴双面可读写多盘片
+
+	-盘片，platter:
+	-磁道，track: 一个盘面内划分为不同的同心圆
+	-扇区，sector: 磁道被划分为等存储容量的区块，(sector 
+				number, head number or platter number, and track number)
+		Track density:
+		Sector number per track: 17(最初)
+		Sector size: 512 bytes
+	-柱面，cylinder: 不同盘片上的相同磁道
+
+	-注意：不同磁道，数据存取速度不同，因为角速度固定，外层线速度高很多，同时间内磁头扫过的面积外道大很多。C盘->外道
+	
+	低级格式化：磁盘出厂时，厂商做低级格式化，对磁盘划分磁道
+	高级格式化：创建文件系统
+
+	分区：partition, 磁盘的逻辑边界
+	主引导记录: Master Boot Record/Main Boot Record
+			  0盘面0磁道0扇区的头 512 bytes ==>3 片段
+			  	-446 bytes: Boot Loader, 程序
+			  	-64 bytes:
+			  		-每16bytes,标识一个分区，因此，磁盘最多
+			  			只有 4 个主分区
+			  		-2 bytes: Magic Number, 标记 MBR 
+			  			是否有效
+			  		==>拿出一个磁盘分区，即16个字节，存储一个指针，从而可以创建多个分区，扩展分区
+			  		即：3个主分区，一个扩展分区，扩展分区，数量几乎没有限制
+			  		条件：主+扩展 <= 4
+
+		启动：BIOS中ROM中的程序段映射到内存低端地址，操作系统一次寻找不同设备的 MBR， 第一个没有找第二个，
+		依次进行；发现，则加载相应的Boot Loader, BIOS退出，控制权交给Boot Loader。Boot Loader 读取分区表，据此寻找操作系统内核，找到后读取内核并解压缩，控制权转交给内核，内核启动自身，根据配置，找到相应的配置和程序，最终完成启动
+		注意：MBR至关重要，没有正常的MBR，就不能读取数据
+
+		inode bitmap， block bitmap
+
+	磁盘分区：按柱面进行，即柱面分盘，柱面存取
+		寻道时间：磁头找磁道
+
+		笔记本：5400 rpm
+		台式机：7200 rpm
+		工业级，scsi：10k rpm， 15k rpm
+		铀分离机：30k rpm
+
+	磁盘管理：
+		可用空间：bitmap 来追踪不同存储快可用与否
+
+	文件读写：
+		元数据，meta data：
+			存储文件对应信息，如文件名，存储位置，文件大小等
+			==>inode: inode号，权限，大小，就是没有文件名
+					  时间戳等，基本上是ls -l 显示的
+					间接目录，二级三级...，如果文件太大
+				==>文件的名字实际存储在文件所在目录中
+			==>用位图来追踪元数据区存储空间的使用情况
+
+硬链接：
+	-/backup/m.txt  /backup/n.txt 指向相同的inode
+
+	硬链接：如果连接数大于1，删除一次，并不能删除源文件，只有当
+			连接数为0时，文件才真正被删除
+		源文件删除后，连接文件可以继续访问文件
+
+	软链接：
+		-/backup/t.txt -->/backup/w.txt
+			==>t.txt指向的另一个文件的路径，与inode无关，其大小是/backup/w.txt的字符个数，权限777， 保证每个人都能找到真实文件，但是，真实权限由最终文件的权限决定。
+
+		删除源文件后，软连接broken
+
+	建立软链接，需要绝对路径
+		区别：
+			-硬链接：
+				- 只能作用于文件，不能对文件夹；
+					==>文件夹默认硬链接数是 2，-->'.', 当前路径
+				- 不能跨文件系统
+				- 创建硬链接，会增加文件被引用的次数
+			-软链接：
+				- 可以作用于目录
+				- 可以跨文件系统
+				- 不增加硬链接次数
+				- 其大小为所指向的路径的字符个数
+
+	du
+		- 显示当前路径下，每个文件夹的大小
+		-s: 显示本身及其内容的大小
+		-h： 
+
+	df
+		- 报告文件系统磁盘分区及其使用情况
+		-h:显示磁盘分区空间大小
+		-i: inode 情况
+		-P: POSIX风格显示，不许分行， 按block统计
+		-P -i:POSIX风格显示，不许分行， 按inode统计
+
+	字符设备 块设备 /dev
+			信息存储在inode中，没有大小，他们本身没有占用磁盘存放文件的空间，只占用的inode区的空间
+		crwxrwx--- 1 root tty 4 45 Nov 17 19:09 tty31
+			-'4' : 主设备号-->表示设备类型，major number
+			-'45': 次设备号-->同一种类型下的不同设备，minor
+
+		创建设备：
+			命令格式: 
+				mknod [option]...NAME TYPE[MAJOR MINOR]
+				-m MODE:
+					mknod mydev c 88 0
+					mknod -m 640 mydev2 b 88 1
+			==>作为硬件接口使用
+
+		删除设备：
+			命令格式:
+
+		-tty:显示当前CLI的设备号
+			echo 'hello'>>/dev/pts/1 ==>向1号tty问好
+			==>向设备发送数据极其危险！！tty还好，硬盘则挂了
+
+	硬盘：
+		相同类型的设备，通过a,b,c...区分
+
+		分类：
+			并口：
+				IDE， ATA
+				    IDE理论峰值：133  Mbps
+				  -hd 开头
+				  两个IDE接口，控制器，每个口可接两个盘
+				  第一个：hda hdb， 主-从
+				  		/dev/hda  /dev/hdb
+				  第二个：hdc hdd， 主-从
+				  		/dev/hdc  /dev/hdd
+
+				SCSI: Small Computer System Interface
+				 		控制器本身有个小的CPU，负责控制读写数据，90% 左右的任务				 		
+				 	高速盘：10000rpm 15000rpm
+				 	理论峰值：ultraSCSI, 320 Mbps
+
+			串口：SATA，理论峰值：SATA1->300Mbps, 2-->600, 
+								3-->6Gbp
+
+				 USB
+				 	理论峰值：usb2：40 Mbps USB3: 480 Mbps
+				 	-sd 开头
+				
+				分区：
+					hda：hda1, hda2, hda3, hda4(主分区)
+						逻辑分区只能从5开始， hda5，6，7...
+						==>扩展分区只能有一个
+
+		fdisk -l [/dev/to/certain_file]
+			- 显示硬盘数，大小，磁道，扇区，柱面信息，分区情况，*表示
+				可引导分区
+
+			-创建分区 
+
+			-分区管理
+				-fdisk /dev/sda
+					p: 显示当前硬盘的分区，包括没保存的改动
+					n: 创建分区
+						e:extended
+						p: primary(1-4)
+					d: 删除分区
+					w: 保存退出
+					q: 不保存退出
+					t: 修改分区类型
+						L: 跟着t后，同l
+					l: 现实所支持的分区类型
+
+				- cat /proc/partitions ==>没有新建分区
+					=>$partprobe  ==>让内核重读分区表
+					==>$partprobe /dev/sd5 ==>指定设备
+					cat /proc/partitions
+					==>新分区可用了
+
+	接口：interface ==>system call
+		4种级别：0环，1，2，3 环， ring 0，1，2，3
+				ring 1， 2 没有使用
+
+		内核空间：内和模式，ring 0，可以操作硬件
+		用户空间：用户模式，ring 3，不能操作硬件
+
+
+
+
+
+文件系统：
+	-内核提供的功能
+	-管理文件系统的软件是用户空间的
+
+	操作：open,close,create, delete, edit
+		各个文件系统的系统调用方式不同，因此
+
+	VFS(Virtual File System):
+		广泛支持文件系统：
+			FAT32: file allocationt table 
+			NTFS: 商业文件系统，linux默认不支持， new techneloy 
+					file system
+			ISO9660:光盘
+			CIFS: 通用互联网文件系统 common internet file system
+			jfs: Journal file System （IBM)
+			jfs2
+
+		Linux: ext2, ext3, ext4, swap, etc （extened) xfs 
+			reiserfs(开发者杀妻)
+			nfs：newwork file system
+			ocfs：集群文件系统， ocfs2
+			gfs：global file system， 全局文件系统， gfs2
+
+
+硬盘：
+MBR--512:
+	不属于任何分区
+
+分区：
+	Boot Block: block 0
+	Block Group 0...n
+		Super Block:
+		GDT: Group Description Table
+		Block Bitmap:
+		Inode Bitmap:
+		Inode Table:
+			============元数据
+		Data Blocks:
+
+	ext3: jounal file system
+		元数据区、日志区、数据区
+
+		- 大大缩减开机修复检查文件的速度
+		- 写操作，速度慢于ext2
+
+文件系统管理：
+	创建文件系统：mkfs  ==>make file system
+		- cat /proc/filesystems  ==>查看支持的文件系统
+		- mkfs -t FSTYPE device_name  ==>/dev/sda5...7
+			mkfs -t ext3 /dev/sda6
+
+	管理ext系列文件：
+		mke2fs:
+			-j: 创建ext3类型文件系统，journal
+			-b BLOCK_SIZE: 指定块大小，默认4096，可取1024，2048
+			-L new_label: 指定分区卷标，即名称
+			-m #:指定预留给超级用户的块数百分比 ==>没有百分号 no %
+			-i byte_per_inode: 指定多少字节一个inode，默认8192
+			-N #: 指定要创建的inode个数
+			-F:强制创建文件系统
+			-E:用户指定额外文件系统属性
+
+		blkid：查询或查看磁盘设备相关属性
+			- UUID
+			- TYPE
+			- LABEL
+
+		e2label: 查看或者定义卷标
+			- $e2lable /dev/sda5   <==查看卷标
+			- $e2label 设备文件 新卷标名称  <==设置卷标
+
+		调整文件系统的属性：
+			tune2fs -j 设备文件  <==无损调整ext2为ext3，不损数据
+			tune2fs -L 卷标名   <== 设定或修改卷标
+			tune2fs -m 新大小   <== 调整预留百分比
+			-r #: 指定预留块数
+			-o: 设定默认挂载选项  <== acl 
+
+			-c #: 设定多少次挂载后自检，指定0 或者-1，表示关闭自检
+			-C :
+			-i #: 指定挂载 i天后自检，0 | -1 关闭自检
+
+			-l: 显示超级块中的信息
+
+			==>不能改block size，物理属性，只能重新格式化
+
+	显示文件信息：
+		dumpe2fs 系统名称		<==详细信息
+			-h: 只显示超级块中的信息
+
+	检查修复：
+		fsck
+			-t FSTYPE: 指定文件系统
+			-a: 自动修复
+
+		e2fsck
+			专用于修复ext2/3
+			-f: 强制检查
+			-a: 同 -p
+			-p: 自动修复
+挂载：
+	命令: mount 设备 挂载点
+		$mount /dev/sda5 /mnt/test/
+
+		mount 不带任何参数==>显示当前系统上挂载的设备及其挂载点、属性
+
+		mount [options] [-o options] device mount_point
+			==> -o options: 表示device的挂载属性
+					-atime
+					-async:异步写入
+					-auto:
+					-defaults
+					-dev
+					-exec
+					.......
+					loop:本地回环设备，挂载iso镜像
+
+		-a: 表示挂载/etc/fstab文件中指定的所有文件系统
+
+
+	设备：
+		设备文件： /dev/sda5
+		卷标： LABEL=''
+		UUID: UUID=''
+
+		挂载点：目录
+			默认挂载点：
+			- mnt: 
+			- media: 移动设备
+			要求：
+				- 此目录没有被其他进程使用
+				- 目录得事先存在
+				- 目录中的原有文件暂时隐藏
+卸载：
+	命令: umount 设备 | 挂载点
+		-> 设备未被进程使用   <== device is busy
+		-> 
+
+
+swap 分区：
+	page out <--> page in  swap in <--> swap out
+	虚拟内存
+
+	查看内存情况：
+		缓冲: ->buffer  -->flush
+		缓存: ->cache   -->cache 1,2..
+
+		free
+			-m:
+
+	fdisk命令：调整分区类型为swap-->82
+	mkswap 设备名称
+	swapon /dev/sda8
+		-a: 启用所有定义在fstab中的交换设备
+	swapoff /dev/sda8
+
+
+回环设备：
+loopback，使用软件来模拟现实硬件
+	创建一个镜像文件， 120G，当做硬件来用
+
+	dd命令：-convert and copy a file
+		dd if=/etc/initab of=/initab
+			- if: input file
+			- of: output file
+
+			bs=1
+			count=2
+			seek=#: 创建时跳过block数
+
+		注意:
+			dd 直接复制数据流，复制的是010101代码
+				-可以指定复制字节数，而不必复制整个文件
+
+			cp 以文件的形式复制
+
+		dd if=/dev/sda of=/mnt/usb/mbr.backup bs=512 count =1
+			if没有指定文件名，从设备开始
+			备份mbr
+
+		dd if=/dev/zero of=/var/swapfile bs=1M count=1024
+				泡泡设备-->吐零，要多少有多少
+				/dev/null -->黑洞，有多少吞多少
+
+		cat /dev/cdrom > /root/rhel5.iso  ==>制作镜像
+
+
+	wget ftp://172.23.2.3/  iso file
+	mount -o loop DEVICE MOUNT_POINT
+
+文件系统配置文件: 
+	fstab
+	cat /etc/fstab
+	格式：
+		要挂载的设备：
+		挂载点：
+		文件系统类型：
+		挂载选项：
+		转储频率：每多少天做一次完全备份，0->不备份，1->1天
+		文件系统检查次序：开机文件系统检查次序，一般根目录为1，其他2，0
+						表示不检查
+
+		swap分区：挂载点是swap，很独特
+
+		fstab插入新设备：
+		/dev/sda5 /mnt/test ext3 0 0
+
+
+		查看谁在访问特定文件系统：
+			fuser 验证进程正在使用的文件或套接字
+				-v: 
+				-m:
+				-k:
+			fuser -v 设备名称或者挂载点
+			fuser -v /mnt/test
+
+			fuser -km 挂载点    -->
+					/mnt/test  -->终止正在访问设备所有的进程
+		
+SLED: Single Large Expensive Disk
+
+RAID: Redundant Array of Inexpensive Disks
+		==>Redundant Array of Independent Disks <==真实意义
+
+	- 1987 Patterson, Gibson and Katz, UC, Berkeley
+		A case for Redundant Array of Inexpensive Disks
+
+	- 适配器控制外接硬盘，完成读写
+	- 多快盘，最合起来，当做一块盘用
+
+	关键技术===>条带技术
+		数据按照不同大小进行分割，不同数据放到相应的磁盘上的类似位置
+		-->大大提升了 I/O 的吞吐量
+
+RAID分类：
+	级别：表示磁盘的组织方式不同，没有上下之分
+	0: 条带：0
+		性能提升n倍，n磁盘数量，读写均提高
+		不提供数据冗余能力
+		空间利用率： 
+	1: 镜像：1 
+		提供冗余
+		写性能下降，读性能提高
+		空间利用率：50%
+	2:
+	3:
+	4:校验码, 一个单独校验盘，只允许挂一块盘
+	5: 校验码，轮流当做校验盘，只允许挂一块盘
+		读写都提升
+		提供冗余
+		空间利用了 (n-1)/n
+	6: 校验码，两块校验盘， 允许挂两块盘
+	RAID: 01
+		提升读写
+		提供冗余
+		空间利用率：1/2
+	RAID: 10
+		提升读写
+		提供冗余
+		空间利用率：1/2
+	RAID: 50
+		提升读写
+		提供冗余
+		空间利用率：(n-2)/2
+
+	jbod: 把多个小盘，融合成大盘使用
+
+	条带->镜像：先做条带，再做镜像 RAID 01
+	镜像->条带：先做镜像，再做条带 RAID 10
+
+
+磁盘镜像：数据安全
+
+校验码机制：数据安全
+
+
+
+
+
+
+
+
+
+
+
+======================================= 以下是马哥写的
+MBR: Master Boot Record, 主引导记录
+
+512bytes: 
+	bootloader: 446bytes
+	fat: 64bytes, 16bytes, 4
+	MBR有效性标记：5A 
+
+4：主分区
+3主，1扩展分区：引用额外的分区表：
+	逻辑分区
+
+硬盘：/dev/
+
+
+硬盘接口：
+	IDE(ATA): 并口，每个控制器可接两个硬盘，master/slave，133MB/s
+		/dev/hd[a-z]
+		/dev/hda
+			/dev/hda[1-4]
+			/dev/hda[5+]
+	SCSI: Small Computer System Interface
+		320MB/S
+	SATA(Serial): 300Mbps, 600Mbps, 6Gbps
+	SAS：6Gbps
+
+	USB：
+
+	/dev/sd[a-z]
+		[1-4]
+		[5+]
+
+/bin, /sbin
+	/usr/bin, /usr/sbin, /usr/local/bin, /usr/local/sbin
+/lib, /lib64, /usr/lib, /usr/lib64
+/etc/
+/media, /mnt
+/dev
+/proc, /sys
+/home, /root
+/var
+/opt, /misc
+/srv
+/tmp
+/boot
+/usr
+
+
+fdisk, sfdisk, parted
+
+VFS:
+	文件系统：
+		基本文件系统：Ext2, Ext3, Ext4, Reiserfs, xfs, JFS, vfat, NTFS
+		交换分区：swap
+		集群文件系统：GFS2, OCFS2
+		网络文件系统：NFS, smbfs(CIFS)
+		光盘：iso9660
+
+	raw: 
+
+fdisk /dev/sda
+	d: 删除
+	n: 新建
+	p: 列出
+	t: 调整分区ID
+	l: 列出内核支持的分区ID
+	w: 保存退出
+	q: 不保存退出
+
+CentOS 5: partprobe 
+CentOS 6: partx, kpartx
+	kpartx -l /dev/sda
+	kpartx -af /dev/sda
+	partx -a /dev/sda
+
+Linux: ext2,3,4
+
+mkfs: 
+	-t fstype /dev/somedevice
+
+# mkfs -t ext2 /dev/sda3
+# mkfs.ext2 
+# mke2fs 
+	-t 
+
+Ext4: mkfs -t ext4 = mkfs.ext4 = mke2fs -t ext4 
+Ext3: mkfs -t ext3 = mkfs.ext3 = mke2fs -t ext3 = mke2fs -j
+Ext2: 
+
+mke2fs: 
+	配置文件：/etc/mke2fs.conf
+
+	-t {ext2|ext3|ext4}
+	-j : 相当于-t ext3
+	-L Label：卷标
+	-b {1024|2048|4096}：指定块大小
+	-i #: #个字节给预留一个inode
+	-N #: 直接指定预留多少个Inode
+	-I #：Inode大小
+	-m #：预留管理员的空间百分比，默认为5
+
+	-O：指定分区特性
+
+
+
+
+e2label 
+	e2label /dev/SOMEDEVICE: 查看卷标
+	e2label /dev/SOMEDEVICE  Label: 设定卷标
+
+blkid /dev/SOMEDEVICE: 查看设备的属性，UUID和TYPE
+
+dumpe2fs 
+	-h: 仅查看超级块中保存的信息
+
+tune2fs
+	-l: 查看超级块中的信息
+	-L label: 设定卷标
+	-m: 预留管理员的空间百分比，默认为5
+	-j: 如果原来的文件系统为ext2, -j能够将其提升为ext3
+	-o [^]mount-options[,...]：设定其默认挂载选项
+	-O [^]feature[,...] ：调整分区特性
+
+
+fsck: 
+	-t fstype 
+	-a: 自动修复错误
+	-r: 交互式修复错误
+
+e2fsck:
+	-f: 强制检测
+	-y: 对问题自动回答为yes
+
+交换分区：
+	虚拟内存
+
+	mkswap 
+		-L label
+
+	swapon 
+		-a: 
+		-p #: 指定优先级 
+
+	swapoff
+		-a
+
+
+GPT
+
+DMA: Direct Memory Access
+
+总结：fdisk, mke2fs, mkfs, blkid, e2label, dumpe2fs, tune2fs, fsck, e2fsck, mkswap, swapon, swapoff
+
+
+GPT, 
+SSD
+
+分区：fdisk, 
+格式化：创建文件系统
+
+hdparm 
+	-i 
+	-I
+	-g
+	-t
+	-T
+
+/proc/partitions
+/proc/meminfo
+/proc/filesystems
+
+
+挂载：
+	手动挂载：
+	按需挂载：
+	开机自动挂载：
+
+
+mount [options] [-t fstype] [-o option] 设备 挂载点
+	[options]: 命令的选项
+	-o options: 挂载时启用分区特性
+
+	挂载点：原始数据将被暂时隐藏；
+		1、选项反空闲路径；
+		2、事先得存在；
+
+	卸载：
+		1、空闲时可以被卸载；
+
+mount: 直接使用，可显示当前系统所有已挂载的设备
+	/proc/mounts, /etc/mtab
+
+常用选项：
+	-t fstype
+	-r: 只读挂载
+	-w: 读写
+	-L lable: 以卷标指定， LABLE=“label”
+	-U UUID：以UUID指定挂载设备，UUID=“UUID”
+	-a: 自动挂载所有（/etc/fstab文件中）支持自动挂载的设备
+
+-o options
+	async: 异步I/O
+	sync: 同步I/O
+	noatime/atime: 建议noatime
+	auto/noauto: 是否能够被mount -a选项自动挂载；
+	diratime/nodiratime: 是否更新目录的访问时间戳；
+	exec/noexec：是否允许执行其中的二进制程序；
+	_netdev: 
+	remount: 重新挂载
+    acl: 启用facl
+
+    # tune2fs -o mount-option 设备
+    # tune2fs -o ^mount-option 取消
+
+光盘：
+    	/dev/cdrom, /dev/dvd, /dev/sr0
+    	[-t iso9660]
+
+查看占用挂载的设备的进程：
+    	fuser -v 挂载点
+    	fuser -km 挂载点
+
+
+umount 设备|挂载点
+	
+
+df: 磁盘空间使用状态报告
+	-h: human-readable
+	-i: inode
+	-P: POSIX
+
+	df [options] [device]
+
+du: 评估文件占用磁盘空间的情况
+	-s
+	-h
+
+
+开机自动挂载：
+	/etc/rc.d/rc.sysinit：系统初始化脚本
+		其中一个功能：挂载/etc/fstab文件中定义的文件系统挂载表
+#
+# /etc/fstab
+# Created by anaconda on Wed Feb 12 09:48:07 2014
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+/dev/mapper/vg0-root   					  /                       ext4    defaults        1 1
+UUID=958ea5da-eafc-4311-8609-1e97fe11e6f9 /boot                   ext4    defaults        1 2
+/dev/mapper/vg0-usr   					  /usr                    ext4    defaults        1 2
+/dev/mapper/vg0-var    					  /var                    ext4    defaults        1 2
+/dev/mapper/vg0-swap    swap                    swap    defaults        0 0
+tmpfs                   /dev/shm                tmpfs   defaults        0 0
+devpts                  /dev/pts                devpts  gid=5,mode=620  0 0
+sysfs                   /sys                    sysfs   defaults        0 0
+proc                    /proc                   proc    defaults        0 0
+
+
+要挂载的设备：设备文件、LABEL=, UUID=
+挂载点：swap没有挂载点，挂载点为swap
+文件系统类型
+挂载选项：多个选项间使用逗号分隔; 
+转储频率：
+	0：从不备份
+	1：每日备份
+	2：
+自检次序：
+	0: 不自检
+	1：首先自检，通常只能被/使用；
+	2: 
+
+
+交换分区：
+	Linux使用内存机制：/proc/sys/vm/swapiness
+
+	多大为好：
+		2G，4G = 4G
+		2G-，= 2*物理内存
+		8G+: = 4G
+
+	mkswap, swapon, swapoff
+
+查看内存空间使用状态：
+	# cat /proc/meminfo
+    # free
+    	-m: 显示结果以MB为单位
+    	-g: 显示结果以GB为单位 
+
+dd命令：
+	dd if=input_file of=output_file
+	dd if=input_file of=output_file bs=#[b|k|m|g] count=#
+
+	dd if=/dev/cdrom of=/tmp/linux.iso
+	cat /dev/cdrom > /tmp/linux.iso 
+
+	dd if=/dev/sda of=/tmp/myfile bs=512 count=1
+	dd if=/dev/zero of=/dev/sdb bs=500 count=1
+
+		/dev/zero, /dev/null
+
+总结：mount, umount, fuser, free, du, df, dd
+
+
+链接文件：
+	ln [-s] SRC LINKFILE
+	硬链接：
+		硬链接不能跨分区; 
+		不能对目录创建硬链接;
+		硬链接会改变文件被链接的次数；
+		硬链接与原文件指向同一个inode
+	符号链接：
+		符号链接可以跨分区; 
+		符号链接文件跟原文件不同一个inode；
+		可以对目录创建符号链接；
+		符号链接不会改变原文件被链接的次数；
+
+		/lib/libmc.2.so
+
+	ls /lib/libmc.1.so
+
+
+xyzabc 12
+
+xyzabc xyzabc
+
+
+压缩工具：
+	zip, unzip
+	gzip, gunzip = gzip -d, zcat
+		后缀：.gz
+		-c: 将压缩结果送往标准输出，可以使用重定向将其保存为压缩文件，从而保留原文件；
+	bzip2, bunzip2 = bzip2 -d, bzcat
+		后缀：.bz2
+
+	xz, unxz = xz -d, xzcat
+		后缀：.xz
+
+	-#: 指定压缩比，1-9
+
+归档工具：
+	tar [options] -f file.tar File1 ...
+		-c: 创建归档
+		-x: 展开归档
+		-t: 不展开而直接查看被归档的文件
+
+		-z: gzip
+		-j: bzip2
+		-J: xz
+
+		-zcf
+		-zxf
+
+		-jcf
+		-jxf
+
+		-Jcf
+		-Jxf
+
+	cpio
+
+命令总结：hdparm, ln, dd, df, du, gzip, gunzip, zcat, bzip2, bunzip2, bzcat, zip, unzip, xz, unxz, xzcat, tar

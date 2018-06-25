@@ -1,0 +1,167 @@
+文件系统
+
+根文件系统   root filesystem
+    LSB, FHS: FileSystem Hierachy Standard，制定Linux文件系统规范
+
+    /etc, /usr, /var, /root, /home, /dev
+    /boot:  引导文件存放目录，内核文件(vmlinuz), 引导加载器(bootloader, grub)都放在此目录下
+    /bin:   普通用户命令二进制文件, 不能关联到独立分区， OS启动即会用到的程序
+    /sbin:  管理员用到的管理命令, 不能关联到独立分区， OS启动即会用到的程序
+            /usr/sbin
+            /usr/local/sbin
+    /lib:   基本共享库和内核模块文件(/lib/modules)
+    /lib64: x86_64系统存放内核模块和库文件
+    /etc:   配置文件目录
+            /etc/opt:   为 /opt 下的应用程序提供配置文件
+            /etc/X11:   配置图形界面
+    /home:  用户家目录       /root:  管理员的家目录
+    /media: 挂载便携式移动设备
+    /mnt:   挂载额外的临时设备
+    /dev:   设备文件和特殊文件   b: block device  随机访问  c: character device  线性访问
+    /opt:   第三方应用程序安装位置
+    /srv:   系统上运行服务所用到的数据   data for services provided by this system
+    /tmp:   临时文件
+        boot 和 home 可独立分区，其他一般不可以
+
+    /usr:   独立分区    universal shared read-only data
+            /usr/bin    保证系统拥有完整功能而提供的程序
+            /usr/sbin
+            /usr/lib
+            /usr/lib64
+            /usr/share
+            /usr/include    c程序头文件
+            /usr/local  第三方应用程序，取代opt, 可设为独立分区
+                bin, sbin, lib, lib64, etc, share
+
+    /var:   varaible data file
+            cache:  应用程序缓存数据目录
+            lib:    应用程序状态信息数据
+            local:  专用于 /usr/local 下的应用程序保存可变数据
+            lock:   锁文件
+            log:    日志目录及文件
+            opt:    专用于 /opt 下的应用程序保存可变数据
+            run:    运行中进程相关数据，通常保存pid文件
+            spool:  应用程序数据池
+            tmp:    保存系统两次重启期间产生的临时数据
+
+    /proc:  process     与内核和进程相关的虚拟文件系统  <==系统调优时，主要调整此处文件配置
+    /sys:   虚拟文件系统，输出当前系统上硬件设备相关信息的虚拟文件系统
+
+    /misc:  杂项，备用目录
+    /lost+found:
+    /selinux:   security enhanced linux     selinux 相关的安全策略
+
+Linux上的应用程序的组成部分
+    二进制: /bin, /sbin, /usr/bin, /usr/sbin, /usr/local/bin, /usr/local/sbin
+    库文件: /lib, /lib64, /usr/lib, /usr/lib64, /usr/local/lib, /usr/local/lib64
+    配置文件: /etc, /etc/DIRECTORY, /usr/local/etc
+    帮助文件: /usr/share/man, /usr/share/doc, /usr/local/share/man, /usr/local/share/doc
+
+Linux 下文件类型
+    -: 普通文件
+    d: 目录文件
+    b: 块设备
+    c: 字符设备
+    l: 符号链接 | 软链接
+    p: 管道文件， pipe
+    s: 套接字，socket
+
+
+bash 基础特性
+    1. 命令历史
+        环境变量
+            HISTSIZE: 设定历史记录的条数
+            HISTFILE:   ~/.bash_history
+            HISTFILESIZE:   设定命令历史文件记录中最大记录条数
+
+        history -d OFFSET: 删除历史中的第几条记录
+        history -c: 清空历史记录
+        history #:  显示最近的 # 条记录
+        history -a: 手动追加当前会哈缓冲区的命令历史到历史文件中
+
+        调用历史记录中的命令:
+            !#,  !!,  !str, !?str
+            调用最近一条命令的参数
+                !$() === ESC --> .  | alt + .
+            控制命令历史的记录方式
+                变量 HISTCONTROL: 默认 ignoredups   可选值 ignoredups | ignorespace | ignoreboth
+                    $export HISTCONTROL=ignoreboth   <==变量名，没有 $ 符号
+
+    2. 命令补全
+        tab: 单次，命令自动补全，两次给出match的命令列表，
+            查找内部和外部命令
+                内部命令
+                外部命令: 搜索 PATH 中的目录列表，找到即停止，然后 hash
+
+    3. 路径补全
+        tab 敲目录时，不需要给出完整名称，shell 自动匹配、补全
+
+    4. 命令行展开
+        ~: 展开为用户家目录
+        ~user_name: 展开为指定用户的家目录，需要root权限
+        {}: 逗号分隔的列表，展开为多个路径
+            /tmp/{a,b}
+            /tmp/{tom,jerry}/hi
+
+    5. 命令执行结果的状态
+        成功  0   失败  1~255
+        $?: 保存最近一次命令的执行结果的状态    查看: $?
+
+
+目录管理命令
+    cd, pwd, ls
+
+    mkdir:  创建目录    $mkdir /path/to/dir_name    如果目录存在或者有同名文件，报错:已经存在
+        -p: 1. 如果中间的目录不存在，则递归创建 ==>没有 p 选项，则报错，no such file or dir
+            2. 如果目录存在，不报错，没有任何反应, 不会覆盖原有目录
+        -m: mode    $mkdir -m 777 file_name
+        -v: 显示信息
+
+    rmdir: 只能删除空目录，删非空目录==>报错: Failed not empty
+
+    tree:   列出目录的树形结构
+        -L: 限制最多显示到第几层目录
+        -d: 只显示目录
+
+    练习:
+        1.创建 /tmp/x/y1, /tmp/x/y2,
+            /tmp/x/y1/a, /tmp/x/y1/b,
+            /tmp/x/y2/a, /tmp/x/y2/b
+
+            Solution: $mkdir -p tmp/x/y{1,2}/{a,b}
+        2. 如何创建x_m, y_m, x_m, y_n?
+            Solution: $mkdir {x,y}_{m,n}
+
+        3. 如何创建 tmp/bin, tmp/sbin, tmp/usr, tmp/usr/bin, tmp/usr/sbin?
+            Solution: mkdir -p test/{,usr}/{s,}bin
+
+文本文件查看类命令
+    cat  tac
+    more    less    tail    head
+
+    more:
+        -d: 显示当前页面在所在文件的位置 #%
+    less:
+
+    head:
+        -c #: 看前面的 # 个字节
+        -n #: 看前面的 # 行
+    tail:
+        -c #:
+        -n #:
+        -f:     显示尾10行，并且跟踪文件新加入的内容     退出: Ctrl+c
+
+文件时间戳管理工具
+    touch
+        -a: change atime    指定时间: $touch -a -t
+        -m: change mtime
+        -t: 指定时间点   [YY]YYMMDDhhmm.ss
+        -c: 只是修改文件的时间戳，如果文件不存在，不要创建文件
+
+        touch file_name: 如果文件不存在，则创建一个
+
+    stat: 查看文件状态信息
+            三个时间戳:
+                access time: atime 访问时间
+                modify time: mtime  修改时间
+                change time: ctime  元数据发生改变

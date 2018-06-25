@@ -1,0 +1,25 @@
+#!/bin/bash
+read -p "enter your option: " useroption
+[ $# -lt 1 ] && echo"$0 options {start|stop|restart|status}" && exit 4
+dir=/var/lock/subsys/script
+useroption=`echo $useroption |tr 'A-Z' 'a-z'`
+if [[ "$useroption" == "start" ]];then
+touch $dir
+echo "starting script successfully."
+elif [[ "$useroption" == "stop" ]];then
+rm -rf $dir
+echo "Stop script successfully."
+elif [[ "$useroption" == "restart" ]];then
+rm -rf $dir
+touch $dir
+echo "Restarting script successfully."
+elif  [[ "$useroption" == "status" ]] && [[ -e $dir ]];then
+echo "Script is running..."
+elif  [[ "$useroption" == "status" ]] && ! [[ -e $dir ]];then
+echo "Script is stopped..."
+else
+  echo "$0 options {start|stop|restart|status}"
+fi
+~
+~
+~

@@ -1,0 +1,7 @@
+
+#!/bin/bash
+idNum=0
+for i in `cut -d: -f 3 /etc/passwd`;do
+  let idNum=$idNum+$i
+done
+echo $idNum

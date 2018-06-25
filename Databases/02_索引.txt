@@ -1,0 +1,73 @@
+索引
+    ALTER...ADD...
+        ALTER TABLE  t_name ADD INDEX index_name(column_list);
+        ALTER TABLE  t_name ADD UNIQUE(column_list);
+        ALTER TABLE  t_name ADD PRIMARY KEY(column_list);
+    ALTER ... DROP ...
+        ALTER TABLE t_name DROP INDEX index_name;
+        ALTER TABLE t_name DROP PRIMARY KEY;
+    CREATE
+        CREATE INDEX index_name ON t_name(column_list);
+        CREATE UNIQUE INDEX index_name ON t_name(columns_list);
+    DROP
+        DROP INDEX index_name ON t_name;
+视图
+    创建视图
+    CREATE VIEW view_name AS SELECT * FROM t_name WHERE...;
+    视图帮助信息
+    mysql>? view;   ==>显示view的帮助信息
+    删除视图
+    mysql>DROP VIEW v_name;
+    注意:
+        如果原表数据修改，则VIEW中的数据也会相应改变
+        如果原表被删除，则查看view时报错
+
+内置函数
+    字符串
+        CONCAT(str2[,...])
+        LCASE(str)
+        UCASE(str)
+        LENGTH(str)
+        LTRIM(str)
+        RTRIM(str)
+        REPEAT(str, count)
+        REPLACE(str, search_str, replace_str)
+        SUBSTRING(str, position[,length])
+        SPACE(count)    //生成count空格
+    数学
+        BIN(decimal_number)  //十进制转二进制
+        CEILING(number)
+        FLOOR(number)
+        MAX(num1, num2)
+        MIN(num1, num2)
+        SQRT(num)
+        RAND()  ==>返回[0,1)之间的随机值 mysql>SELECT * FROM t_name ORDER BY RAND();
+    日期
+        CURDATE()
+        CURTIME()
+        NOW()
+        UNIX_TIMESTAMP(date)
+        FROM_UNIXTIME()
+        WEEK(date)
+        YEAR(date)
+        DATEDIFF(expr1, expr2)
+
+事务
+    InnoDB
+    SET AUTOCOMMIT=0;
+    SAVEPOINT p1;
+    ROLLBACK;
+    COMMIT;
+    
+触发器
+
+存储
+    CREATE PROCEDURE p1()
+    ->BEGIN
+    ->SET @i=0;
+    ->WHILE @i<10 do
+    ->SELECT @i;
+    ->SET @i=@i+1;
+    ->END WHILE;
+    ->END:
+    mysql> call p1();

@@ -1,0 +1,42 @@
+map <F4> ms:call TitleDet()<cr>'s
+function AddTitle()
+    call append(0,"##############################################")
+    call append(1,"#")
+    call append(2,"#Author: wangshenghui - wangfeng17399@163.com")
+    call append(3,"#")
+    call append(4,"#QQ:417685417")
+    call append(5,"#")
+    call append(6,"#Last modified: ".strftime("%Y-%m-%d %H:%M"))
+    call append(7,"#")
+    call append(8,"#Filename: ".expand("%:t"))
+    call append(9,"#")
+    call append(10,"#Description: ")
+    call append(11,"##############################################")
+    call append(12,"#!/bin/bash")
+    echohl WarningMsg | echo "Successful in adding the copyright." | echohl None
+endfunction
+
+function UpdateTitle()
+    normal m'
+    execute '/#*Last modified:/s@:.*$@\=strftime(":%Y-%m-%d %H:%M")@'
+    normal ''
+    normal mk
+    execute '/#*Filename:/s@:.*$@\=":".expand("%:t")@'
+    execute "noh"
+    normal 'k
+    echohl WarningMsg | echo "Successful in updating the copy right." | echohl None
+endfunction
+
+
+function TitleDet()
+    let n=1
+    while n < 10
+        let line = getline(n)
+        if line =~ '^\#\s*\S*Last\smodified:\S*.*$'
+            call UpdateTitle()
+            return
+        endif
+        let n = n + 1
+    endwhile
+    call AddTitle()
+endfunction

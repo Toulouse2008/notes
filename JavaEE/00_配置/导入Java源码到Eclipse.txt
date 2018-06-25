@@ -1,0 +1,17 @@
+方案一
+1. Window --> Preferences --> Java --> Installed JRES
+2. 选中你的 jre --> 点击右侧的 Edit, 弹出 Edit JRE
+3. 选中 rt.jar, 点击右侧的 Add ExternalJARs 或者 Source Attachment
+    添加你的 JDK 中的源码， src.zip,
+
+方案二
+1. 按住 Command 或者 Ctrl 键，同时点击 println 方法，如果你已经导入了 JDK 源码，就可以直接
+查看源码了
+
+2. 如果没有导入 JDK 源码，则会进入 Source not found 提示页面
+
+3. 点击按钮 Attach Source...，会弹出窗口 Source Attachment Configuration
+
+4. 点击按钮 External File...，
+    找到 JDK 的源码 src.zip
+    可以通过terminal line，找到 JAVA_HOME，压缩包在此目录下

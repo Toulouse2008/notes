@@ -1,0 +1,23 @@
+MacOS 安装
+通过brew安装
+    $brew install postgresql@10
+启动postgres服务
+    $ brew services start postgres
+建立一个数据库
+    $createdb db_name
+进入数据库
+    $psql db_name
+    ==>psql(10.4)   Type "help" for help
+    testdb=#
+关闭数据库
+    $brew services stop postgres
+    
+使用tutorial自带的数据库
+    - 官网下载source code tar包
+    - $createdb mydb
+    - $cd .../src/tutorial
+    - $ make
+    - $cd .../src/tutorial
+    - $psql -s mydb
+        ....
+    - mydb=>\i basics.sql

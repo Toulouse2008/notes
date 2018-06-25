@@ -1,0 +1,9 @@
+向量接口    Vector
+    底层类似数组，是数组的抽象和泛化
+    循秩访问，即按照下表访问
+    Vector 接口
+        size(), get(r), put(r,e), insert(r, e), remove(r), disordered(),
+        sort(), find(e), search(e), deduplicate(), uniquify(), traverse()
+
+无序向量: 所存储的元素只支持 == 和 != 运算符，基本类型或者重载了判等运算符
+有序向量: 所存储的元素支持比较大小，< >，基本类型或者重载了比较运算符

@@ -1,0 +1,57 @@
+clock
+    用于调整 RTC 时间.RTC 是电脑内建的硬件时间，执行这项指令可以显示现在时刻，调整硬件时钟的
+    时间，将系统时间设成与硬件时钟之时间一致，或是把系统时间回存到硬件时钟
+    clock [--adjust][--debug][--directisa][--getepoch][--hctosys]
+    [--set --date="<日期时间>"][--setepoch --epoch=< >][--show][--systohc][--test]
+    [--utc][--version]
+    参数说明：
+        --adjust 　第一次使用"--set"或"--systohc"参数设置硬件时钟，会在/etc目录下产生一个
+            名称为adjtime的文件。当再次使用这两个参数调整硬件时钟，此文件便会记录两次调整间之
+            差异，日后执行clock指令加上"--adjust"参数时，程序会自动根 据记录文件的数值差异，
+            计算出平均值，自动调整硬件时钟的时间。
+        --debug 　详细显示指令执行过程，便于排错或了解程序执行的情形。
+        --directisa 　告诉clock指令不要通过/dev/rtc设备文件，直接对硬件时钟进行存取。这个
+            参数适用于仅有ISA总线结构的老式电脑。
+        --getepoch 　把系统核心内的硬件时钟新时代数值，呈现到标准输出设备。
+        --hctosys 　Hardware Clock to System Time，把系统时间设成和硬件时钟一致。由于这
+            个动作将会造成系统全面更新文件的存取时间，所以最好在系统启动时就执行它。
+        --set--date 　设置硬件时钟的日期和时间。
+        --setepoch--epoch=<年份> 　设置系统核心之硬件时钟的新时代数值，年份以四位树字表示。
+        --show 　读取硬件时钟的时间，并将其呈现至标准输出设备。
+        --systohc 　System Time to Hardware Clock，将系统时间存回硬件时钟内。
+        --test 　仅作测试，并不真的将时间写入硬件时钟或系统时间。
+        --utc 　把硬件时钟上的时间时为CUT，有时也称为UTC或UCT。
+        --version 　显示版本信息。
+
+    获取当前的时间
+        # clock //获取当前的时间
+    显示UTC时间
+        # clock -utc //显示UTC时间
+
+
+hwclock
+    显示与设定硬件时钟。在Linux中有硬件时钟与系统时钟等两种时钟。硬件时钟是指主机板上的时钟设备，
+    也就是通常可在BIOS画面设定的时钟。系统时钟则是指kernel中的时钟。当Linux启动时，系统时钟会
+    去读取硬件时钟的设定，之后系统时钟即独立运作。所有Linux相关指令与函数都是读取系统时钟的设定。
+    hwclock [--adjust][--debug][--directisa][--hctosys][--show][--systohc][--test]
+    [--utc][--version][--set --date=<日期与时间>]
+    参数：
+        --adjust 　hwclock每次更改硬件时钟时，都会记录在/etc/adjtime文件中。使用--adjust
+            参数，可使hwclock根据先前的记录来估算硬件时钟的偏差，并用来校正目前的硬件时钟。
+        --debug 　显示hwclock执行时详细的信息。
+        --directisa 　hwclock预设从/dev/rtc设备来存取硬件时钟。若无法存取时，可用此参数直
+            接以I/O指令来存取硬件时钟。
+        --hctosys 　将系统时钟调整为与目前的硬件时钟一致。
+        --set --date=<日期与时间> 　设定硬件时钟。
+        --show 　显示硬件时钟的时间与日期。
+        --systohc 　将硬件时钟调整为与目前的系统时钟一致。
+        --test 　仅测试程序，而不会实际更改硬件时钟。
+        --utc 　若要使用格林威治时间，请加入此参数，hwclock会执行转换的工作。
+        --version 　显示版本信息。
+
+    显示当前时间
+    # hwclock
+    2010年05月27日 星期四 18时04分31秒 -0.704214 seconds
+    查看版本信息
+    # hwclock -v
+    hwclock from util-linux-2.12a

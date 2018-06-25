@@ -1,0 +1,50 @@
+shutdown
+    关机程序，并且在关机以前传送讯息给所有使用者正在执行的程序，shutdown 也可以用来重开机。
+    shutdown [-t seconds] [-rkhncfF] time [message]
+    参数说明：
+        -t seconds : 设定在几秒钟之后进行关机程序
+        -k : 并不会真的关机，只是将警告讯息传送给所有只用者
+        -r : 关机后重新开机
+        -h : 关机后停机
+        -n : 不采用正常程序来关机，用强迫的方式杀掉所有执行中的程序后自行关机
+        -c : 取消目前已经进行中的关机动作
+        -f : 关机时，不做 fcsk 动作(检查 Linux 档系统)
+        -F : 关机时，强迫进行 fsck 动作
+        time : 设定关机的时间
+        message : 传送给所有使用者的警告讯息
+    立即关机
+        # shutdown -h now
+    指定5分钟后关机
+        # shutdown +5 “System will shutdown in 5 minutes” //5分钟够关机并显示警告信息
+
+
+
+halt
+    关闭系统，否则以 shutdown 指令（加上 -h 参数）来取代
+    halt [-n] [-w] [-d] [-f] [-i] [-p]
+    参数说明：
+        -n : 在关机前不做将记忆体资料写回硬盘的动作
+        -w : 并不会真的关机，只是把记录写到 /var/log/wtmp 档案里
+        -d : 不把记录写到 /var/log/wtmp 档案里（-n 这个参数包含了 -d） -f : 强迫关机，不
+            呼叫 shutdown 这个指令
+        -i : 在关机之前先把所有网络相关的装置先停止
+        -p : 当关机的时候，顺便做关闭电源（poweroff）的动作
+    关闭系统
+    # halt
+    关闭系统并关闭电源
+    # halt -p
+    关闭系统，但不留下纪录
+    # halt -d
+
+reboot
+    重新启动计算机。若系统的 runlevel 为 0 或 6 ，则重新开机，否则以 shutdown 指令（加上
+    -r 参数）来取代
+    reboot [-n] [-w] [-d] [-f] [-i]
+    参数：
+        -n : 在重开机前不做将记忆体资料写回硬盘的动作
+        -w : 并不会真的重开机，只是把记录写到 /var/log/wtmp 档案里
+        -d : 不把记录写到 /var/log/wtmp 档案里（-n 这个参数包含了 -d）
+        -f : 强迫重开机，不呼叫 shutdown 这个指令
+        -i : 在重开机之前先把所有网络相关的装置先停止
+    重新启动
+        # reboot

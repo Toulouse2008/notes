@@ -1,0 +1,91 @@
+特殊权限
+
+SUID:用户发起程序时，相应进程不再是启动用户，而是程序源文	件的属主
+	添加SUID:
+		-命令格式: chmod u+s file_name
+			==>如果文件本身原来就有执行权限，显示SUID为s，否则，显示为S
+			==>-rwsr-xr-x  || -rwSr-xr-x
+		-清除SGID:
+			-命令格式: chmode u-s file_name
+-
+SGID:用户发起程序时，相应进程的属组是源程序文件的属组，而	非发起用户的属组
+	添加SGID:
+		-命令格式： chmod g+s file_name
+				  ==>-rwxr-sr-x  || -rwxr-sr-x
+	清除SGID:
+		-命令格式: chmode g-s file_name
+
+Stciky:公共目录下，每个人都可以创建文件，删除自己的文件
+		但是不能他删其他人的文件。<===针对目录
+
+	-命令格式: chmod o+t dir_name
+				==>-rwxr-xr-s  || -rwxr-xr-s
+			  chmod o-t dir_name
+			  =====>
+			  如果文件夹原来有执行权限，显示为t
+			  如果原来没有执行权限，显示为T
+
+	000：  001：  010:	100	:	
+	 No	 sticky	 sgid 	suid
+
+	 101:	011: 110:111
+
+	 $chmod 1755 dir_name  ==>sticky
+	 5755 ==>suid + sticky
+	 2755 ==>sgid 
+	 3755 ==>sgid + sticky
+
+	 这就是为什么 umask 总共有4位
+
+ facl: 文件访问控制列表
+
+	docker: /tmp/docker.txt
+	hadoop：
+
+		-rw-rw-r-- 1 docker docker 0 Feb 25 17:00 docker.txt
+
+	普通用户无法安全地将某文件授权给其它用户访问：??
+
+	facl: 附加原有权限模型之上另一层权限控制机制，保存至文件扩展属性信息中；
+
+	getfacl FILE ...
+	setfacl {-x|-m} 权限 FILE ...
+		-m: 设定权限
+			-m u:UserName:Perms
+				==>$setfacl -m u:hadoop:rw files
+			-m g:GroupName:Perms
+				==>$setfacl -m g:mygroup:rw files
+			-m m::Perms
+		==>
+		-x: 取消权限
+			-x u:UserName
+			-x g:GroupName
+			-x m:
+
+		-R: 递归
+
+	mask: rw-  ==>不能给x，若给了直接丢弃
+
+1. 进程访问文件过程(no FACL)
+	-1 进程属主与文件属主一致，使用owner
+	-2 用户是否属于文件的属组，一致则用组
+	-3 使用others
+
+1. 进程访问文件过程(With FACL)
+	-1 进程属主与文件属主一致，使用owner
+	-2 检查facl中的user权限
+	-3 用户是否属于文件的属组，一致则用组
+	-4 检查facl中组的权限，符合即用此权限
+	-5 使用others
+
+
+扩展属性：
+	-rw-rwxr--+ 	<== + 来自于FACL
+			   <===表示文件有扩展属性，归档时属性可能丢失
+
+访问控制列表：
+	作用于目录：
+		任何文件在该目录下创建的文件，自动继承目录的扩展属性
+		命令格式：
+			- d:u:UID:perm
+			- d:g:GID:perm

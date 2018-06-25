@@ -1,0 +1,30 @@
+Warning: mysqli_connect(): (HY000/2002): No such file or directory in
+/Users/frank/LAMP/president/login.php on line 12
+
+Fatal error: Call to a member function query() on a non-object in
+/Users/frank/LAMP/president/login.php on line 20
+
+This is for Mac OS X with the native installation of Apache HTTP and custom
+installation of MySQL.
+
+1. Make sure httpd supports php5
+Enable PHP5 support for Apache HTTP. Make sure the PHP5 support is enabled in
+/etc/apache2/httpd.conf.
+Edit the file with sudo vi /etc/apache2/httpd.conf (enter the password when asked)
+and uncomment (remove ; from the beginning of) the line to load the php5_module module.
+    LoadModule php5_module libexec/apache2/libphp5.so
+Start Apache HTTP with sudo apachectl start or restart
+
+2. Looking up Socket file's name. MySQL client, search for socket:
+    mysql>show variables like '%socket%';
+
+3. Configure PHP5 to support MySQL in /etc/php.ini
+    Copy /etc/php.ini.default to /etc/php.ini
+        $sudo cp /etc/php.ini.default /etc/php.ini
+    Edit /etc/php.ini
+        $sudo vi /etc/php.ini
+        mysql.default_socket = /tmp/mysql.sock
+        mysqli.default_socket = /tmp/mysql.sock
+        also set default port number to 3306 or whatever your port number is
+    restart apache
+        $sudo apachectl restart

@@ -1,0 +1,145 @@
+事务
+    事务是一组原子性sql查询语句，被当作一个工作单元。若mysql对改事务单元内的所有sql语句都正常
+    的执行完，则事务操作视为成功，所有的sql语句才对数据生效，若sql中任意不能执行或出错则事务操
+    作失败，所有对数据的操作则无效（通过回滚恢复数据）。
+    MySQL默认设置为 autocommit， 即每条语句执行完成后，自动完成提交
+
+事务的状态
+    Active：事务的初始状态，表示事务正在执行；
+    Partially Commited：在最后一条语句执行之后；
+    Failed：发现事务无法正常执行之后；
+    Aborted：事务被回滚并且数据库恢复到了事务进行之前的状态之后；
+    Commited：成功执行整个事务；
+
+
+事务（Transaction）的 ACID 特性：
+    原子性 (atomicity): 事务中的所有操作要么全部提交成功，要么全部失败回滚。回滚日志（undo log）
+    一致性 (consistency): 数据库总是从一个一致性状态转换到另一个一致性状态。
+    隔离性 (isolation): 一个事务所做的修改在提交之前对其它事务是不可见的。
+    持久性 (durability): 一旦事务提交，其所做的修改便会永久保存在数据库中。重做日志（redo log）
+
+
+手动改变设置: set autocommit=false
+查看当前事务的隔离级别
+    select @@tx_isolation;
+修改事务的隔离级别
+>set  [global | session]  transaction isolation level 隔离级别名称;
+>set tx_isolation=’隔离级别名称;’
+隔离级别：Serializable | Repeatable read | Read committed |
+Read uncommitted
+注意：
+设置默认级别是指当前session的下一个事务
+设置session级别是指当前session以后的所有事务
+设置global级别是指对之后的所有session，不包括当前session
+
+
+
+MYSQL事务的实现：
+    回滚日志（undo log）和重做日志（redo log）；在数据库系统中，事务的原子性和持久性是由事务日志
+    （transaction log）保证的，在实现时也就是上面提到的两种日志，前者用于对事务的影响进行撤销，
+    后者在错误处理时对已经提交的事务进行重做，它们能保证两点：
+
+发生错误或者需要回滚的事务能够成功回滚（原子性）；
+在事务提交后，数据没来得及写会磁盘就宕机时，在下次重新启动后能够成功恢复数据（持久性
+    恢复机制是通过回滚日志（undo log）实现的，所有事务进行的修改都会先记录到这个回滚日志中，然
+    后在对数据库中的对应行进行写入。
+    Redo Log 在InnoDB存储引擎中，事务日志是通过重做（redo）日志文件和InnoDB存储引擎的日志
+    缓冲（InnoDB Log Buffer）来实现的。当开始一个事务的时候，会记录该事务的LSN
+    (Log Sequence Number，日志序列号); 当事务执行时，会往InnoDB存储引擎的日志 的日志缓存里
+    面插入事务日志；当事务提交时，必须将InnoDB存储引擎的日志缓冲写入磁盘
+    （通过innodb_flush_log_at_trx_commit来控制，默认的实现，即innodb_flush_log_at_trx_commit=1）。
+    也就是写数据前，需要先写日志。这种方式称为“预写日志方式”（Write-Ahead Logging, WAL）。
+    重做日志由两部分组成，一是内存中的重做日志缓冲区，因为重做日志缓冲区在内存中，所以它是易失的，
+    另一个就是在磁盘上的重做日志文件，它是持久的。
+
+    InnoDB通过此方式来保证事务的完整性。也就意味着磁盘上存储的数据页和内存缓冲池上面的页是不同
+    步的，对于内存缓冲池中页的修改，先是先写入重做日志文件（redo log），然后再写入磁盘（data file），
+    因此是一种异步的方式。可以通过 show engine innodb status\G 来观察当前磁盘和日志之间的“差距”。
+
+    Undo 重做日志记录了事务的行为，可以很好地通过其进行“重做”。但是事务有时还需要撤销，这是就
+    需要undo。undo与redo正好相反，对于数据库进行修改时，数据库不但会产生redo，而且还会产生一
+    定量的undo，即使你执行的事务或语句由于某种原因失败了，或者如果你用一条ROLLBACk语句请求回滚，
+    就可以利用这些undo信息将数据回滚到修改之前的样子。与redo不同的是，redo存放在重做日志文件中，
+    undo存放在数据库内部的一个特殊段（segment）中，这称为undo段（undo segment），undo段位于
+    共享表空间内。
+
+事务的隔离级别
+    ANSI/ISO SQL标准定义了4中事务隔离级别：
+        未提交读(read uncommitted): 所有事务都可以看到其他未提交事务的执行结果, 很少用于实际
+            dirty read  >SET GLOBAL tx_isolation='READ-UNCOMMITTED';
+        提交读（read committed): 大多数数据库系统的默认隔离级别(但不是MySQL默认的), 支持
+            不可重复读(Nonrepeatable Read)
+        重复读(repeatable read): MySQL的默认事务隔离级别，它确保同一事务的多个实例在并发
+            读取数据时，会看到同样的数据行. 理论上会导致另一个棘手的问题：幻读(Phantom Read).
+            InnoDB和Falcon存储引擎通过多版本并发控制(MVCC，Multiversion Concurrency
+            Control) 机制解决了该问题
+        串行读(serializable): 最高的隔离级别，它通过强制事务排序，使之不可能相互冲突，从而解
+            决幻读问题
+
+    不同的隔离级别有不同的现象。主要有下面3种现在：
+        1、脏读（dirty read）：一个事务可以读取另一个尚未提交事务的修改数据。
+        2、不可重复读（nonrepeatable read）：对于数据库中的某个数据，一个事务范围内多次查询
+            却返回了不同的数据值，这是由于在查询的间隔期间，另外一个事务修改并提交了该数据。
+            不可重复读和脏读的区别是，脏读是某一事务读取了另一个事务未提交的脏数据，而不可重复
+            读则是读取了前一事务提交的数据。
+        3、幻像读（phantom read）：在同一事务中，同一查询多次进行时候，由于其他插入操作
+            （insert）的事务提交，导致每次返回不同的结果集。
+            如丙存款100元未提交，这时银行做报表统计account表中所有用户的总额为500元，然后丙
+            提交了，这时银行再统计发现帐户为600元了，造成虚读同样会使银行不知所措，到底以哪个为准
+事务控制语句：
+    BEGIN或START TRANSACTION；显式地开启一个事务；
+    COMMIT；也可以使用COMMIT WORK，不过二者是等价的。
+            COMMIT会提交事务，并使已对数据库进行的所有修改成为永久性的；
+    ROLLBACK；有可以使用ROLLBACK WORK，不过二者是等价的。
+            回滚会结束用户的事务，并撤销正在进行的所有未提交的修改；
+    SAVEPOINT identifier: SAVEPOINT允许在事务中创建一个保存点，一个事务中可以有多个SAVEPOINT；
+    RELEASE SAVEPOINT identifier: 删除一个事务的保存点，当没有指定的保存点时，执行该语句会抛出一个异常；
+    ROLLBACK TO identifier；把事务回滚到标记点；
+    SET TRANSACTION；用来设置事务的隔离级别。InnoDB存储引擎提供事务的隔离级别有
+            READ UNCOMMITTED、READ COMMITTED、REPEATABLE READ和SERIALIZABLE。
+
+直接用 SET 来改变 MySQL 的自动提交模式:
+    SET AUTOCOMMIT=0 禁止自动提交
+    SET AUTOCOMMIT=1 开启自动提交
+
+MySQL语句分类
+    1、DDL（Data Definition Language）数据定义语言，于定义和管理 SQL 数据库中的所有对象的
+        语言 CREATE、ALTER、DROP、TRUNCATE、COMMENT、RENAME===>DDL 不能 rollback
+    2、DML（Data Manipulation Language）数据操纵语言，SQL中处理数据等操作统称为数据操纵语
+        言 SELECT、INSERT、UPDATE、DELETE、MERGE、CALL、EXPLAIN、PLAN、LOCK TABLE
+    3、DCL（Data Control Language）数据控制语言 授权，角色控制等 GRANT 授权 REVOKE 取消授权
+    4、TCL（Transaction Control Language）事务控制语言 COMMIT 提交 SAVEPOINT 设置保存点
+        ROLLBACK 回滚 SET TRANSACTION
+
+例子
+BEGIN; //开始事务，挂起自动提交
+insert into t_cart_shopcart (user_id, sku_id, amount, shop_id,  status) values(10001, 10001, 1, 10001, 0);
+insert into t_cart_shopcart (user_id, sku_id, amount, shop_id,  status) values(10001, 10002, 1, 10001, 0);
+COMMIT; //提交事务，恢复自动提交
+
+set autocommit = 0; //挂起自动提交
+insert into t_cart_shopcart (user_id, sku_id, amount, shop_id,  status) values(10001, 10001, 1, 10001, 0);
+insert into t_cart_shopcart (user_id, sku_id, amount, shop_id,  status) values(10001, 10002, 1, 10001, 0);
+COMMIT; //提交事务
+set autocommit = 1; //恢复自动提交
+
+
+锁方案
+    共享锁（Shared）和互斥锁（Exclusive），前者也叫读锁，后者叫写锁。
+    一次封锁
+        因为有大量的并发访问，为了预防死锁，一般应用中采用的是一次封锁的方案：就是在方法的开始
+        阶段，已经预先知道需要用到那些数据，然后全部锁住，在方法执行之后，再全部解锁。
+        这种方案可以有效避免死锁发生，当时由于数据库操作在事务开始阶段并不知道具体会用到哪些数
+        据，所以该方案不合适在数据库中使用。
+
+    两段锁
+        两段锁协议将事务分成两个阶段：加锁阶段和解锁阶段
+
+    加锁阶段：在该阶段可以进行加锁操作。读数据前需要申请获取S锁（共享锁：其他事务可以继续加共享
+        锁，但不能加排他锁）；写数据前需要申请获取X锁（排他锁：其他事务不能获取任何锁）。加锁不
+        成功，则事务进入等待状态，直到加锁成功才继续执行。
+    解锁阶段：当事务释放了一个封锁以后，事务进入解锁阶段，在该阶段只能进行解锁操作不能进行加锁操作。
+
+MySQL的锁类型
+表锁
+对一整张表加锁，并发能力低下（即使有分读锁、写锁），一般在DDL处理时使用

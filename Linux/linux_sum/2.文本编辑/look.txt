@@ -1,0 +1,17 @@
+look
+    用于英文单字的查询。您仅需给予它欲查询的字首字符串，它会显示所有开头字符串符合该条件的单字
+    look [-adf][-t<字尾字符串>][字首字符串][字典文件]
+    参数说明：
+        -a 使用另一个字典文件web2，该文件也位于/usr/dict目录下。
+            ==>注意: 该字段必须存在，否则无法使用该命令，不报错但没有任何结果
+        -d 只对比英文字母和数字，其余一慨忽略不予比对。
+        -f 忽略字符大小写差别。
+        -t<字尾字符串> 设置字尾字符串。
+    $ cat testfile #查看testfile 文件内容
+        HELLO LINUX!
+        Linux is a free unix-type opterating system.
+        This is a linux testfile!
+        Linux test$look L testfile
+    $ look L testfile
+        Linux is a free unix-type opterating system.   #第二行以“L”开头，列出全句
+        Linux test                                     #第四行以“L”开头，列出全句

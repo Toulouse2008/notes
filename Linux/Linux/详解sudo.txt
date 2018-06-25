@@ -1,0 +1,43 @@
+马哥 运维初级 17_03
+
+详解sudo
+
+sudo  sudo COMMAND
+	以对应用户的权限，执行相应的命令，类似suid
+	某用户能够以另一个用户的身份通过某主机执行某命令
+
+	Jerry只能在本地主机以root的身份执行useradd，但是，需要输入密码，jerry自己的密码，确认身份
+
+配置文件
+	/etc/sudoers  mode 440 root:root
+	不建议vim设置或者修改sudoers
+	应该使用visudo进行配置
+
+	ALL:表示所有
+
+	- 每行定义一个条目
+		who  which_host=(runas)     TAG:command
+		谁	  哪个主机	以什么身份	哪个命令
+
+		==>TAG: NOPASSWD
+
+	别名机制：类似定义组
+		man sudoers  ==>例子
+		别名只能是大写英文字母的组合
+
+		user_alias: USERADMIN= 用户名 组名用%引导
+		host_alias: 主机名 IP 网络地址 其他主机别名
+		runas_alias: 用户名 %组名 其他runas别名
+		Cmnd_alias:
+			-命令路径：最好用绝对路径
+			-目录：表示该目录下所有命令
+			-其他失效定义过的命令别名
+
+	visudoers   ==>
+	/etc/sudoers
+hadoop ALL=(root) NOPASSWD: /usr/sbin/useradd, /usr/sbin/usermod
+
+	sudo 密码输入后，默认有效期 5 min
+	sudo -k: 看清除认证
+	sudo -l: 显示当前用户所有可以使用的sudo命令
+	sudo -c:

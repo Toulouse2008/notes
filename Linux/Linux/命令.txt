@@ -1,0 +1,495 @@
+命令
+
+帮助命令
+man, info, help, apropos, whatis, makewhatis
+
+type, which, who, which, echo, hash, tty
+
+日期时间
+date, hwclock, cal
+
+开关系统
+shutdown, reboot, halt, poweroff
+
+目录
+cd, dirname, basename,  pwd, mkdir, rmdir, rm
+
+文件
+	ls
+	查看内容: cat, tac, more, less, tail head
+	复制: cp
+	移动: mv
+	创建: touch
+	元数据: stat
+	文件类型: file
+	编辑: cut, paste
+
+useradd，usermod，usedel,
+groupadd, groupmod,groupdel,
+passwd，chsh,chage,chfn,su
+
+
+history
+
+引号:
+	'': 强引用，变量不展开，原样输出
+		echo 'The PATH is not expanded $PATH'
+	"":	弱引用，执行变量展开/替换，显示变量的内容而非变量本身
+		echo "The PATH is not expanded $PATH"
+	``: 命令引用，引用命令的执行结果
+	$(): 引用命令的执行结果
+		mkdir $(date +%F-%H-%M-%S)  ==== mkdir `date +%F-%H-%M-%S`
+
+变量
+	变量赋值
+		变量名称=变量值
+		变量名：
+			-字母、下划线和字母  
+			-字母不能开头
+			-区分大小写
+	变量替换
+		${变量名}  <===很多情况下{}可以省略
+
+格式：
+	命令 选项 参数
+
+shell
+	type
+	which
+	帮助：
+		help 命令
+		命令 --help
+		man 命令:
+			1, 8, 5
+		info
+		应用程序自带文档: README， Install， /usr/share/doc
+		Google
+		官方文档
+
+export LANG=en
+
+帮助类
+	man 	mannual
+		SYNOPSIS 
+		格式：OPTIONS 
+		EXAMPLES
+		DESCRIPTION
+	      使用帮助中命令格式中的字符意义：
+	      []：可选的部分
+	      {a|b}：分组，a和b作为一个使用单元来使用
+	      |：或者，只能选其一
+	      <>:必不可少的部分
+	      ...:同类内容可以出现多个
+	      简要使用机制
+	      翻屏：
+	       空格键：向文件尾部翻一屏
+	       b：向文件首部翻一屏
+	       回车键：向文件尾部翻一行
+	       k：向文件首部翻一行
+	       ctrl+d：向文件尾部翻半屏
+	       ctrl+u：向文件首部翻半屏
+	       1G：第一行
+	       G：最后一行
+	       文本搜索：
+	        /keyword ： 顺向，向文件尾部搜索
+			 查看下一个被匹配到的
+			  n 跟命令方向一致
+			  N 跟命令方向相反
+			？keyword ： 逆向，向文件首部搜索
+			   q：退出
+
+		补充：man其实能为命令（普通命令、管理命令）、程序的配置文件格式、系统调用、库调用、游戏及其他不便归类的文件提供帮助手册
+		    man命令的分段机制：
+			1：用户命令：
+			2：系统调用
+			3：库调用
+			4：设备文件
+			5：文件格式
+			6：游戏
+			7：杂项
+			8：管理命令
+
+	info:
+		readable online documentation
+		如: info useradd  ==>显示useradd的详细信息
+
+	apropos:
+		只知道部分命令名称
+		如: apropos user  ==>a full list of command containing user
+
+	whatis:
+		search the database for the keyword, print a single line
+		如: whatis finger
+
+	help:
+		格式: 命令 --help
+		如: reboot --help
+
+history		Display or manipulate the history list
+		当前shell进程的命令保存在缓冲区，退出shell后，写入家目录下的 .bash_history
+		$cat .bash_history  <==查看历史记录
+
+	格式: history [-c] [-d offset] [n]
+	opotions:
+		-c: clear the history list, truncate the file .bash_history
+		-d offset n: delete n lines counting from offset
+			history -d 5 2  <==从第5条开始删2条，即删除第五条和第六条
+			history -d 5	<==删除第五条记录
+		-a: 追加当前shell的命令记录到history
+		-n: 读入 hisotry file
+		-r: 读入 hisotry file
+		-w: 把当前shell的命令记录，写入history file
+
+	快捷执行方式:
+		!number: 执行number号命令历史记录
+		!!: 执行上一条命令
+		!-number: 执行倒数number号历史记录
+		!string: 执行命令列表中最近一次以string开头的命令记录
+		!$: 引用上一条命令的最后一个参数  ===ESC + .
+		!?: 上一条命令执行的结束状态，即成功与否， 0:成功 !:失败
+
+	相关环境变量:
+		HISTSIZE: 命令历史中可以保存的命令个数 	echo $HISTSIZE
+		HISTFILE: echo $HISTFILE，命令历史文件
+		HISTFILESIZE: 命令历史文件可以保存的命令个数
+		HISTCONTROL: 控制命令历史的生成
+					ignoredups:忽略重复记录，连续的完全相同的命令，才是重复的
+					ignorespace:以空白字符开头的记录，不被记录
+					ignoreboth: 忽略以上两种记录，即不做记录
+
+开关机
+	shutdown 	-bring system down
+	格式:
+		shutdown [options]... TIME [MESSAGE]
+			options:
+				-r: reboot after shutdown
+				-h: halted or powered off after shutdown
+				-H: halted after shutdown
+				-P: powered off after down
+				-c: cancel a running shutdown
+				-k: only send out the warning messages and disable logins, 
+					do not actually bring the system down
+			TIME: 
+				now, 
+				+m, (min)
+				hh:mm
+			HOW: send a request to the init(8) daemon performed by emitting 
+				the runlevel(7)
+		examples:
+			sudo shutdown -h now "Going down ..."
+			sudo shutdown -h +30 "Going down 30min..."
+			sudo shutdown -c
+
+	reboot, halt, poweroff:
+		格式:
+			reboot [OPTION]
+			halt [OPTION]
+			poweroff[OPTION]
+		options:
+			-f, --force: poweroff，快==断电
+			-p, --poweroff:
+			-w,
+
+		HOW: invoke the shutdown(8) tool with appropriate arguments. 
+			默认调用shutdown，--force directly reboot the system
+
+时间日期
+	日期
+	date:	print or set the system date and time
+		date [option]...[+FORMAT]
+		date [-u|-utc|universal]
+
+		设置时间: date MMDDHHMMYYYY.SS  <=年：4位或2位，年可以使用默认，秒默认00
+		显示当前时间
+			date: 默认格式输出当前时间
+			date [+format]
+				format:
+					%Y/y: 年
+					%m: 月
+					%h: Feb
+					%d: 日
+					%M: 分钟
+					%H: hour
+					%S: second
+					%s: timestamp 秒数，1970.01.01 00:00:00计时
+
+					%D: 02/12/2017		date +%Y-%m-%d =>2017-01-12
+					%F: 2017-12-02		date +%F
+	时钟
+	hwclock:	query and set the hardware clock
+		linux两个时钟：
+			hwclock:	hardware clock
+			sysclock:   
+		格式:
+			hwclock [functions] [options]
+		functions:
+			-r,--show: read the hardware time and print to stdout
+			--set: set the hardware clock to the time give by --date option
+			-s, --hctosys: set the system time from the hardware clock
+			-w, --systohc: set the hardware clock to the current system time
+			--systz: set the kernel timezone and reset the system time based on the current timezone
+	日历
+	cal 	show calendar
+		格式: cal [-A number] [-B number] [[month] year]
+
+		option:
+			-h: turn off the highlight of the current day
+			-1: only current month
+			-3: previous, current and next month
+			-A number: current and next number months
+			-B number: current and before number months
+			-N: equal to ncal,竖排版
+目录
+	cd 	change directory
+		格式: cd /path/to/
+		命令行展开:
+		~: 用户家目录		cd ~  == cd
+		-: 回到上一次所在的目录，本质上环境变量只能记住一次
+		..: 当前目录的上一级目录
+		.:	当前目录
+
+		{,}: 展开为多个目录 	x/{a,b} ==>x/a, x/b
+
+	mkdir	create directories
+		格式: mkdir [option]... /path/to/new_dir
+		options:
+			-m, --mode=MODE: set file mode 
+			-p, --parents: make parent dir as needed
+				mkdir -p ./a/b/c
+			-v: verbose,
+			-Z: set SELinux security context
+
+	rmdir	delete empty directories
+		格式: rmdir [option]... DIR...
+		options:
+			-p, --parents: remove dir and its ancestors if empty
+			-v: verbose
+
+	rm 	remove files or directories
+		格式: rm [option]... [FILE]...
+		options:
+			-f,--force: never prompt
+			-i: prompt before every removal
+			-r, -R, --recursive: remove recursively
+			-d, --dir: remove empty directories
+			-v, --verbose: explain what is being done
+
+		WARNING:	Detrimental Effect
+			rm -rf /
+			rm -rf /*
+
+文件
+	ls 	显示目录内容
+		格式: ls [options]... [dir]
+		默认当前目录
+		options:
+			-a：显示所有文件，包含隐藏文件
+		    -A：不显示.和..常见的通用路径
+		    --color：显示颜色
+		    -l：长格式显示
+		        文件类型  权限 硬链接数 属主 属组 最近一次的修改时间 文件名->原始文件
+		    -d：显示目录自身的属性，通常与-l同时使用
+		    -r:实现逆序显示
+		    -R：递归显示
+		    -i：inode号，index node
+		    -h：文件大小以人类易读格式显示
+		    -c: with -lt: sort by and show ctime, time of last modification
+		    -C: 列显示
+		    -F: 添加文件标识符，* / => @ |
+		    -g: 不显示文件的属组
+		    -n: 数字格式显示uid 和 gid
+		    -s/S: 大小排序，先大后小
+		    tree，以树状显示
+
+	alias 	别名
+		当前shell中定义的所有别名：任何随进程而生的属性，会在进程结束，属性消失
+	    alias 别名=‘原始命令’
+	    unalias 别名 取消定义的别名
+	    在命令前加\使用命令本身，而不是别名
+
+	file FILE..
+		格式: file file_name1,2,3... 查看文件内容的格式	
+
+	cat：将文本连接起来显示在标准输出上
+		格式: tac [option] [file_name1,2,3]...
+			$cat 	<==nothing following 接受stdin，原样打印输出 ctrl+D 结束
+			$cat f_1 f_2 f_3>>f_4 <==把多个文件合并成一个
+			$cat >>text<<EOF	<==接受标准输入，追加到文件text
+			$cat <<EOF >>text	<==同上
+			$cat >text<<EOF	<==清空文件text，并接受标准输入保存到text
+
+		控制符 如换行符
+			-E --show-ends 显示行结束符$
+			-e:等于-vE
+			-v：显示非打印符
+			-n：显示每行按顺序编号
+			-b: 空白行无行号
+			-s：将多个连续的空白行合并显示一个空白行, squeeze repeated empty lines
+
+ 	tac：按行逆序显示文件
+ 		格式: tac file_name1,2,3...
+
+	more | less
+		/: 从头部查找匹配
+		?: 从尾部查找匹配
+		N: previous match
+		n: next match
+
+	head | tail
+		head | tail [option]... [FILE]...
+			$head    <==no file, the same as cat
+			$tail	 <==as above
+
+		option
+			-c, --bytes=[-]NUM: print  the  first  NUM bytes of each file; 
+				with the leading '-', print all but the last NUM bytes of each file 
+			-n, --lines=[-]NUM: print the first NUM lines instead of  the  
+				first  10;  with  the leading '-', print all but the last NUM lines of each file
+
+		Special for tail:
+			-f: 显示尾部，但不退出，等待新内容加进来，用于监控
+
+	echo 
+		-e
+		\a: sound a bell, alert
+	    \b:删除前面的字符
+	    \n: new line
+	    \r: carriage return
+	    \t:制表符
+	    \v:垂直制表符
+
+	cp	copy
+		格式: cp [option] src... des
+
+		options:
+			-r：递归
+		    -i：提示，交互
+		    -f：强制覆盖
+		    -a: -dr 保留所有的文件信息
+		    -d：当源为连接文件时，复制链接文件本身，而非指向的源文件
+		    -p: 保持原有属性
+		    -u: copy only when the source file if newer
+
+	mv	移动，剪切，与cp相近
+		-f: 不显示提示信息
+		-i: prompt before overwrite
+		-u: 
+
+	rm：	
+		格式: rm [option]... [FILE]...
+		options:
+			-f,--force: never prompt
+			-i: prompt before every removal
+			-r, -R, --recursive: remove recursively
+			-d, --dir: remove empty directories
+			-v, --verbose: explain what is being done
+
+		WARNING:	Detrimental Effect
+			rm -rf /
+			rm -rf /*
+
+	touch：用来修改时间戳，创建空文件
+		-c：不创建空文件，只修改时间戳
+		-d, --date=STRING
+		-t：指定时间戳
+		-a：仅修改访问时间
+		-m：仅修改修改时间
+		先加-m，在加-t 后跟时间
+		access time atime
+		modify time mtime
+		change time ctime
+
+	stat命令：显示文件源数据信息，详细信息
+    	格式: stat FILE
+
+    cut: 
+    	cut [option] file
+
+    	-c:
+    	-d: delimiter
+    	-f:
+    	--complement:反选
+    	--output-delimiter:指定输出分隔符
+
+    paste:
+    	paste [options] file1,...
+
+    	-d: 指定分隔符
+
+    wc
+    	wc [options] file1,2,3....
+
+    	-c: chars
+    	-b: bytes
+    	-l: lines
+    	-w: words
+
+    sort
+    	sort [options] file
+
+    	-b：忽略每行前面开始出的空格字符；
+		-c：检查文件是否已经按照顺序排序；
+		-d：排序时，处理英文字母、数字及空格字符外，忽略其他的字符；
+		-f：排序时，将小写字母视为大写字母；
+		-i：排序时，除了040至176之间的ASCII字符外，忽略其他的字符；
+		-m：将几个排序号的文件进行合并；
+		-M：将前面3个字母依照月份的缩写进行排序；
+		-n：依照数值的大小排序；
+		-o<输出文件>：将排序后的结果存入制定的文件；
+		-r：以相反的顺序来排序；
+		-t<分隔字符>：指定排序时所用的栏位分隔字符；
+		+<起始栏位>-<结束栏位>：以指定的栏位来排序，范围由起始栏位到结束栏位的前一栏位。
+
+	uniq
+		-c: the number of occurences
+		-d: duplicated, only duplicated
+		-s: skip the first n chars
+		-i: ignore case
+		-u: uniq, only print unique lines
+		-w n: compare no more than n chars
+
+	colrm:		
+		从标准输入读入数据，移除列后，输出到标准输出
+		colrm 
+
+
+
+
+
+用户和权限管理
+	/etc/passwd
+
+
+
+	
+	编辑: nano, vi, vim
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

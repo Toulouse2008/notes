@@ -1,0 +1,163 @@
+整数测试
+bash编程之：整数测试
+	二元测试：
+		num1 OPRAND num2
+		-gt: 大于[ $num1 -gt $num2 ]
+		-lt: 小于
+		-ge：大于等于
+		-le: 小于等于
+		-ne: 不等于
+		-eq: 等于
+
+练习：判定两个数孰大孰小，整数是通过命令行参数传递而来。
+
+#!/bin/bash
+#
+if [ $1 -gt $2 ]; then
+	echo "The max num is $1."
+else
+	echo "The max num is $2."
+fi
+
+
+bash知识点之脚本自定义退出：
+	exit [n]
+
+
+
+#!/bin/bash
+#
+if [ $# -lt 2 ]; then
+        echo "Stupid..."
+        echo "Usage: `basename $0` argu1 argu2"
+        exit 4
+fi
+
+if [ $1 -gt $2 ]; then
+        echo "The max num is $1."
+else
+    	echo "The max num is $2."
+fi
+
+
+grep "^root\>" /etc/passwd
+id root
+
+
+bash知识点：只要命令用作条件，就表示引用是其状态结果（即执行成功与否），而非命令的输出结果，因此，不能使用命令替换符；
+
+
+2014.02.17
+
+
+练习：写一脚本，实现如下功能：
+	1、让用户通过键盘输入一个用户名
+	2、如果用户存在，就显示其用户名和UID；
+	3、否则，就显示用户不存在；
+
+#!/bin/bash
+read -t 10 -p "Enter a username: " userName
+# userName=${userName:-root}
+if id $userName &> /dev/null; then
+	userID=`id -u $userName`
+	echo "$userName: $userID"
+else
+	echo "$userName not exist."
+fi
+
+
+练习：写一脚本，实现如下功能：
+	1、让用户通过键盘输入一个用户名，如果用户不存在就退出；
+	2、如果用户的UID大于等于500，就说明它是普通用户；
+	3、否则，就说明这是管理员或系统用户；
+
+#!/bin/bash
+
+
+# exit 6 -- 
+read -t 10 -p "Enter a username: " userName
+if ! id $userName &> /dev/null; then
+	echo "$userName not exist."
+	exit 6
+fi
+
+userID=`id -u $userName`
+
+if [ $userID -ge 500 ]; then
+	echo "A common user."
+else
+	echo "Admin or System user."
+fi
+
+
+bash的知识点：
+	组合条件测试：对条件做逻辑运算
+		与：条件1 && 条件2
+			条件1为假，则最终结果一定为假，因此，条件2将不执行；
+			条件1为真，则最终结果决于后面条件，因此，条件2必须执行; 
+		或：条件1 || 条件2
+			条件1为真，则最终结果一定为真，因此，条件2将不再执行；
+			条件1为假，则最终结果决于后面条件，因此，条件2必须执行; 
+		非: ! 条件
+
+
+
+练习：写一脚本，实现如下功能：
+	1、让用户通过键盘输入一个用户名，如果用户不存在就退出；
+	2、如果其UID等于其GID，就说它是个"good guy"
+	3、否则，就说它是个“bad guy”；
+
+#!/bin/bash
+# exit 6 -- 
+read -t 10 -p "Enter a username: " userName
+if ! id $userName &> /dev/null; then
+	echo "$userName not exist."
+	exit 6
+fi
+
+if [ `id -u $userName` -eq `id -g $userName` ]; then
+	echo "Good guy."
+else
+	echo "Bad guy."
+fi
+
+扩展：判断当前系统上的所有用户是Good guy还是Bad guy.
+
+for userName in `cut -d: -f1 /etc/passwd`; do
+	
+done
+
+
+练习：写一个脚本，实现如下功能：
+	1、添加10个用户stu1-stu10；但要先判断用户是否存在；
+	2、如果存在，就用红色显示其已经存在
+	3、否则，就添加此用户；并绿色显示；
+	4、最后显示一共添加了几个用户；
+
+#!/bin/bash
+#
+declare -i userCount=0
+for i in {1..10}; do
+	if id stu$i &> /dev/null; then
+		echo -e "\033[31mstu$i\033[0m exists."
+	else
+		useradd stu$i && echo -e "add \033[32mstu$i\033[0m finished."
+		let userCount++
+	fi
+done
+
+echo "Add $userCount users."
+
+
+
+
+练习：求200以内所有3的整数倍的正整数的和；
+#!/bin/bash
+declare -i sum=0
+for i in {1..200}; do
+	if [ $[$i%3] -eq 0 ]; then
+		let sum+=$i
+	fi
+done
+
+echo "The sum is: $sum."

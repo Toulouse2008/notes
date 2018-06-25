@@ -1,0 +1,76 @@
+马哥 运维初级 21_02
+
+httpd
+
+NCSA, httpd
+	A patchy server = apache
+
+FSF: GNU, GPL
+ASF: Apache Software Foundation
+	web:fttpd
+		Tomcat
+		Hadoop
+		www.apache.org
+		http://httpd.apache.org
+httpd:
+	web server open source
+	2.2 2.4 2.0
+
+httpd:
+	事先创建进程，等待请求
+	按需维持适当的进程，过多则销毁空闲进程
+	模块化设计，核心比较小，各种功能都模块添加(包括php)，支持运行配置
+	支持多种方式的虚拟主机：
+		基于IP的虚拟主机:
+		基于端口的虚拟主机:
+		基于域名的虚拟主机:
+
+	支持https协议
+	支持用户认证
+	支持基于IP或主机名的ACL
+	支持目录的访问控制
+	支持url重写
+
+	安装：
+		rpm包：
+		源码编译：
+
+httpd:
+	/usr/sbin/httpd  <== MPM:prefork 
+		httpd  root:root	<==事先创建进程，Master Process
+							<==linux低于1024的进程只有管理员能启动
+							<==负责创建其他httpd和销毁不用的httpd
+							<==不响应用户请求
+		httpd  apache:apache <==work process
+
+	/etc/rc.d/init.d/httpd
+		Port: 8-/tcp,	ssl:443/ssl
+	/etc/httpd    <==工作的根目录，相当于程序安装目录
+	/etc/httpd/conf: 配置文件目录 		<==主配置文件
+		/etc/httpd/conf.d/*.conf 	<==所有文件
+	/etc/httpd/modules:    <==模块目录
+	/etc/httpd/logs---->/var/log/httpd:   <==日志目录
+		两类日志：
+			访问日志:access_log
+			错误日志:err_log
+	/var/www/
+			html	  <==静态文件
+			cgi-bin   <==动态内容 (任何程序语言，c，java，etc)
+				cgi:让web服务器调用其他应用服务，获得结果后返回client
+					client-->httpd(index.cgi)
+						-->spawn process(index.cgi)
+						-->httpd -->Client
+
+				cgi: Common Gateway Interface
+				Perl:很多cgi都是perl写的，可以管理软件包，好于shell
+				Python: Django
+				java: Servlet, JSP
+				PHP:
+web
+	httpd: -->apache, 静态页面
+	PHP: -->动态页面
+	MySQL: -->数据库
+	Linux:
+
+
+nginx：反向代理

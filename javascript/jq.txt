@@ -1,0 +1,89 @@
+选择器
+    - 标签 $('tag_name')
+    - id  $('#id')
+    - 类  $('.class_name')
+    -
+        所有标签 $("*")  当前元素   $(this)     p元素下的intro类 $("p.intro")
+        p元素的第一个 $("p:first")    $("ul li:first")  $("ul li:first-child")
+        $("[href]")     $("a['target='_blank']")    $("a['target!='_blank']")
+        $(":button")    $("tr:even")    $("tr:odd")
+
+事件
+    鼠标
+        click   dbclick     mouseenter  mouseleave  hover
+    键盘
+        keypress    keydown     keyup
+    表单
+        submit  change  focus   blur
+    Document/window
+        load    resize  scroll  unload
+
+    on:
+
+    $(selector).hide(speed,callback);
+    $(selector).show(speed,callback);
+    $(selector).toggle(speed,callback);
+    $(selector).fadeIn(speed,callback);
+    $(selector).fadeOut(speed,callback);
+    $(selector).fadeToggle(speed,callback);
+    $(selector).fadeTo(speed,opacity,callback);
+    $(selector).slideDown(speed,callback);
+    $(selector).slideUp(speed,callback);
+    $(selector).slideToggle(speed,callback);
+
+    $(selector).animate({params},speed,callback);
+    $("button").click(function(){
+    $("div").animate({
+        left: '250px',
+        opacity: '0.5',
+        height: '150px',
+        width: '150px'
+        });
+    });
+    $("button").click(function(){
+    $("div").animate({
+        left: '250px',
+        height: '+=150px',
+        width: '+=150px'
+        });
+    });
+    $("button").click(function(){
+    $("div").animate({
+        height: 'toggle'
+        });
+    });
+
+
+    $(selector).stop(stopAll,goToEnd);
+    $(selector).hide(speed,callback);
+    $("#p1").css("color", "red").slideUp(2000).slideDown(2000);
+
+获取元素内容
+    Get Content - text(), html(), and val()
+    $("#btn1").click(function(){
+        alert("Text: " + $("#test").text());
+    });
+    $("#btn2").click(function(){
+        alert("HTML: " + $("#test").html());
+    });
+
+
+    append() - Inserts content at the end of the selected elements
+    prepend() - Inserts content at the beginning of the selected elements
+    after() - Inserts content after the selected elements
+    before() - Inserts content before the selected elements
+
+    $("p").append("Some appended text.");
+    $("p").prepend("Some prepended text.");
+
+
+    remove() - Removes the selected element (and its child elements)
+    empty() - Removes the child elements from the selected element
+        $("#div1").remove();
+        $("#div1").empty();
+
+
+    addClass() - Adds one or more classes to the selected elements
+    removeClass() - Removes one or more classes from the selected elements
+    toggleClass() - Toggles between adding/removing classes from the selected elements
+    css() - Sets or returns the style attribute

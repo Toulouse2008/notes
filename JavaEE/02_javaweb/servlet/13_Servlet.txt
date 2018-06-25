@@ -1,0 +1,34 @@
+Servlet API
+    Servlet 接口中的方法
+        1. init(ServletConfig config)
+            ServletConfig: 封装了 Servlet 对象的配置信息
+            执行: servlet 对象创建的时候执行  --> 默认第一次访问 servlet 时创建
+        2. service(ServletRequest req, ServletResponse res)
+            执行: 每次访问都执行一次  -->
+        3. destroy
+            执行: servlet 销毁的时候执行 --> tomcat 服务器关闭时销毁
+
+web.xml
+    <servlet>
+        <servlet-name>myservlet</servlet-name>
+        <servlet-class>myservlet.MyServlet</servlet-class>
+
+
+        <init-param>
+            <param-name></param-name>
+            <param-value>jdbc:mysql:///mydb</param-value>
+        </init-param>
+
+        <load-on-startup>3</load-on-startup>
+
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>myservlet</servlet-name>
+        <url-pattern>/myservlet</url-pattern>
+    </servlet-mapping>
+        匹配方式:
+            /string: 默认匹配
+            /string.*: 扩展名匹配    *.abc  *.html  *.jsp
+            /*     : 通配符匹配
+            注意: 第二种和第三种不能混用, /aaa/bbb/*.abcd 是错误的!!!

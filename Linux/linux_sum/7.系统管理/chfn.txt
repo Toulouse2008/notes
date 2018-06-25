@@ -1,0 +1,39 @@
+chfn
+    提供使用者更改个人资讯，用于 finger and mail username
+    # chfn
+        Changing finger information for root.
+        Name [root]: hnlinux
+        Office []: hn
+        Office Phone []: 888888
+        Home Phone []: 9999999
+        Finger information changed.
+
+    改变账号真实姓名
+    # chfn -f hnunix
+        Changing finger information for root.
+        Finger information changed.
+        
+finger
+    查询一些其他使用者的资料。会列出来的资料有：
+    Login Name
+    User Name
+    Home directory
+    Shell
+    Login status
+    mail status
+    .plan
+    .project
+    .forward
+    其中 .plan、.project 和 .forward 就是使用者在他的 Home Directory 里的 .plan ，
+    .project 和 .forward 等档案里的资料。如果没有就没有。finger 指令并不限定于在同一服务器
+    上查询，也可以寻找某一个远端服务器上的使用者。只要给一个像是 E-mail address 一般的地址即可
+    参数说明：
+
+    -l 　多行显示。
+    -s 　单行显示。这个选项只显示登入名称、真实姓名、终端机名称、闲置时间、登入时间、办公室号码
+        及电话号码。如果所查询的使用者是远端服务器的使用者，这个选项无效。
+
+    # finger -l //显示用户信息
+    # finger -m hnlinux
+    # finger -m root@192.168.1.13
+    #finger root

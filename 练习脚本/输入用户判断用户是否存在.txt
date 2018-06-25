@@ -1,0 +1,20 @@
+练习：提示用户输入一个用户名，如果存在：显示用户UID和SHELL信息；否则，则显示无此用户；
+	  显示完成之后，提示用户再次输入；如果是quit则退出；
+#!/bin/bash
+read -p "Enter you name : " useroption
+  while [[ "$useroption" != "quit" ]];do
+if[ -z "$useroptions" ];then
+   echo "user name null"
+else
+   id $useroption &> /dev/null
+    if [[ $? -eq 0 ]];then
+       useruid=`grep "^$useroption\>" /etc/passwd|cut -d: -f3,7`
+       echo " $useroption UID and SHELL: $useruid"
+    else
+         echo "$useroption" is not user
+    fi
+fi
+   read -p "Enter you name angin : " useroption
+  done
+~
+~

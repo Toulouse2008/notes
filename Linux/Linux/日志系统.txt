@@ -1,0 +1,97 @@
+马哥 运维初级 16_03
+
+日志系统
+
+syslog:
+syslog-ng:
+
+日志系统: syslog()
+
+syslog服务的两个服务 ：
+	syslogd:系统，非内核产生的日志信息
+	klogd: 内核，专门负责记录内核产生的日志信息
+
+	配置文件: /etc/syslog.conf
+			facility:来源
+				-auth: 认证
+				-authpriv: 权限授权
+				-cron: 任务计划
+				-daemon: 守护进程
+				-lpr: 打印
+				-mail: 邮件
+				-mark: 标记
+				-news: 新闻
+				-security: 安全，类似auth
+				-syslog: syslog自己的
+				-user: 用户相关的
+				-uucp: unix to unix cp
+				-local0 to local7: 用户自定义
+				-*: * 表示所有的facility
+
+			priority：级别(从低到高)
+				级别越低，记录的越详细
+				debug: 程序或系统的调试信息
+				info: 一般信息
+				notice: 不影响正常功能，需要注意的消息
+				warning/warn: 可能会影响系统功能，需要提醒用户的重要事件
+				err/error: 错误信息
+				crit: 蓝色，比较严重
+				alert: 橙色，必须马上处理
+				emerg/panic: 红色，可能会导致系统不可用，会马上挂掉的
+				*： 表示所有的日志级别
+				none: 和*相反，表示什么也没有
+
+			action:动作，指定日志记录的位置
+				保存到文件： 如/var/log/xxxx
+				|: 送给其他命令处理
+				终端：如/dev/console
+				@HOST: 发送到远程主机， @10.10.0.2
+				用户:系统用户，如root
+				*： 登录到系统上的所有用户，一般emergence级别的这样定义
+
+			定义格式：？？？？未必准确
+				mail.info  /var/log/mail.log  将mail相关的级别info 
+					以上的记录到/var/log/mail.log
+				auth.=info @10.0.0.2
+					==>将auth相关级别info的记录到其他主机，其他主机同意
+				user.!=error ==>user相关，不包括error
+				user.！error  ==>与user.
+				*.info  ==>所有info日志信息
+				mail.*  ==>记录mail相关所有级别的信息
+				*.*
+				cron.info;mail.info
+				cron,mail.info
+				mail.*;mail.!=info
+
+				/etc/syslog.conf
+
+
+
+
+
+
+	- chkconfig --list syslog
+	- service syslog status
+
+	kernel-->物理终端(/dev/console)-->/var/log/dmesg
+	查看：
+		dmesg
+		cat /var/log/dmesg
+
+	日志需要滚动(日志切割):防止日志过大
+		messages, 每个特定时间，当前文件更名为messages1，并重新生成一个messages
+		可设定滚动规则
+
+		logrotate:专门负责日志切割
+
+		/etc/cron.daily/logrotate
+		/etc/logrotate.conf   <==配置文件
+
+
+	/sbin/init
+		/var/log/messages: 系统标准错误日志信息，非内核产生的引导信息，
+							各个子系统产生的信息
+		/var/log/maillog: 邮件系统日志
+		/var/log/secure: 安全系统日志
+
+详细日志程序：日志级别

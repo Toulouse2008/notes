@@ -1,0 +1,36 @@
+类加载器
+    BootStrp: 引导类加载器    --> C 写的, 负责加载JVM运行时的jar, JRE/lib/rt.jar
+    ExtClassLoad: 扩展类加载器    --> 加载其他运行时需要的 jiar, JRE/lib/ext/*.jar
+    AppClassLoad: 应用类加载器    --> 自己写的或者其他第三方 jar, CLASSPATH指定目录的所
+                                    有jar或者目录
+    自定义类加载器: 很少用
+    获得类加载器:
+        ClassName.class
+        Class.forName()
+        obj.getClass()
+
+        ClassLoader classObject.getClassLoader()
+注解
+    @xxxx
+        @Test:
+        @Deprecated: 定义方法过时
+        @Override: 确保方法重写正确，检查方法名和参数列表
+        @SuppressWarning:   忽略警告    @SuppressWaring({"rawtypes","unused")
+            deprecation, rawtypes, unused, unchecked, null, all
+
+
+    替代配置文件
+    优点:
+        开发效率高，成本低
+    缺点:
+        耦合性大，不利于后期维护
+
+    注解属性类型:
+        基本类型
+        String
+        枚举类型
+        注解类型
+        Class类型
+        以上类型的一维数组
+
+动态代理

@@ -1,0 +1,5 @@
+显示/etc/passwd中第3、7和11个用户的用户名和ID号；
+#!/bin/bash
+for i in `seq 3 4 11`;do
+head -$i /etc/passwd|tail -1 |cut -d: -f1,3
+done

@@ -1,0 +1,14 @@
+awk     报告生成器
+        /bin/awk->gawk
+    awk [options] 'scripts' file1,file2...
+    awk [options] 'Pattern {action}' file1, file2,...
+
+awk 'Pattern{Action}' file
+    NF: number of fields，总字段数
+    action
+        -print: 打印  awk '{print $1}'    | '{print $1,$3}'
+                $0: 表示一行中的所有字段
+                $NF: 表示最后一个字段
+        -printf: 指定打印格式
+
+    -F: : 指定输入分隔符，此处用 :, 默认分隔符是 空格

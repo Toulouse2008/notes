@@ -1,0 +1,51 @@
+flask
+
+1. install flask 
+	vitrualenv
+	$sudo easy_install virtualenv  |  sudo pip install virtualenv  
+			==>install virtualenv
+	$mkdir yourproject
+	$cd yourproject
+	$virtualenv venv 		===>establish the env
+	$. venv/bin/activate	==>activate virtualenv
+	$pip install flask 		==>install flask
+
+2. create webpage "Hello world"
+	-pycharm
+	-create new project
+		location: /Users/Desktop/movie_project
+		interpreter: 3.6 at /Library/Frameworks/Python.framework/Version/3.6/bin/python3.6
+		on the same row as interpreter, click the right most icon-->create virtualenv -->Name: movie_venv-->create
+
+	-new python file--->app
+		test: print("Hello Flask")
+
+	-pycharm terminal
+		$pip freeze ---> nothing popup
+	-pycharm system preferences
+		-project:movie_project
+			-project interpreter
+				- click '+'
+					-search for "Flask"
+						-Install packages
+	doublecheck from project interpreter or $pip freeze
+
+	helloworld
+		from flask import Flask
+
+		app = Flask(__name__)
+
+		@app.route("/")
+		def index():
+		    return "<h1 style='color:red'>Hello world</h1>"
+
+		if __name__ == "__main__":
+		    app.run()
+
+		 ==> * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+
+create manage.py
+
+
+
+

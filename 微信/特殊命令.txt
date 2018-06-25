@@ -1,0 +1,78 @@
+
+1. $sudo !!   --> $!!  ==>重复执行一次，刚刚执行过的那个命令
+2. $python -m SimpleHTTPServer  ==>简单python http服务器，8000访问目录结构
+3. $nl file_name   ==>输出带行号的文件内容, eg, $nl 1.txt
+4. $ls | shuf -n2   ==>从ls的内容中随机输出2个
+5. $ss      ==>类似netstat，统计socket，显示TCP
+6. $last    ==>显示上次登录用户的历史信息，底层: 搜索/var/log/wtm文件来查找信息
+7. $tree    ==>树形显示文件机构
+8. $pstree  ==>树形显示进程
+9. $stat    ==>显示文件或文件夹的状态信息，大小 ,块, 权限, atime, ctime, mtime
+10. $file file_name   ==>显示文件类型，
+
+与shell配置有关的命令
+1. 显示所有快捷键  $bind -p
+
+任务管理命令
+1. at
+    eg. $"ls -l >/dev/pts/0" | at {14:12 | 2:12 PM}
+2. crontab
+
+
+
+用户有关的命令
+1. $id user_id#     ==> 显示用户信息 -u:uid -g:gid
+
+
+文件操作命令
+1. 新建文件     $touch file_name  ==> $touch /forcefsck   -->强制启动时文件检查
+cat | tac
+
+
+查看文件或文件夹metadata
+1. du
+    $du -h --max-depth=1
+
+硬件信息
+1. getconf LONG_BIT  ==>系统架构信息, 32 | 64
+
+
+远程管理命令
+11. Screen
+2. disown   $disown -a&&exit
+
+
+
+网络相关的命令
+1. ping         ping -i 60 -a IP-address
+    $ping -i 60 -a www.google.com
+2. route
+3. host $host www.google.com
+4. dig  $dig www.google.com
+5. 检查端口是否打开     $nc -zv localhost 80
+6. 查看当前ip配置的详细信息    $curl ipinfo.io  -->IP，hostname,city, region, etc
+7. netstat
+8. lsof
+
+7. 查看端口是否占用并杀死占用进程
+    $netstat -an | grep port_number
+    $lsof -i:port_number    <==may need sudo
+    $kill -TERM pid     //-->-9
+
+    $netstat -tln
+    $netstat -tln |grep 9090
+    $lsof -i:9090
+
+
+查找命令
+1. find
+
+
+
+数学运算有关的命令
+1. factor
+    $factor 22  ==>22:2 11
+2. expr
+    $expr 2 + 3   ==>5
+
+bc

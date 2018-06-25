@@ -1,0 +1,26 @@
+Selenium setup
+1. Install Java, Python
+2. Install Eclipse
+3. Install testNG
+    Eclipse -->Help-->Install New Software -->Work with: testng - http://beust.com/eclipse
+    -->Add==>Name:pending.....>TestNG==>Check box to select-->Next==>Restart Eclipse
+4. Download selenium-server-standalone-2.12.0.jar
+   Download geckodriver
+   Download SarafiDriver.safariextz
+
+5. Hello world for selenium
+    -Create Java project in Eclipse
+    -Create package test
+    -Create class Test
+        public static void main(String[] args) {
+            System.setProperty("webdriver.gecko.driver", "/Users/frank/eclipse-workspace/geckodriver");
+            WebDriver driver = new FirefoxDriver();
+            driver.get("http://www.google.com");
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            driver.findElement(By.name("q")).sendKeys("download selenium");
+            driver.findElement(By.name("btnK")).click();
+        }

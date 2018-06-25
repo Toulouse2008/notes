@@ -1,0 +1,63 @@
+泛型(掌握)
+	(1)泛型概述
+		是一种把明确类型的工作推迟到创建对象或者调用方法的时候才去明确的特殊的类型。
+	(2)格式：
+		<数据类型>
+		注意：该数据类型只能是引用类型。
+	(3)好处：
+		A:把运行时期的问题提前到了编译期间
+		B:避免了强制类型转换
+		C:优化了程序设计，解决了黄色警告线问题，让程序更安全
+	(4)泛型的前世今生
+		A:泛型的由来
+			Object类型作为任意类型的时候，在向下转型的时候，会隐含一个转型问题
+		B:泛型类
+		C:泛型方法
+		D:泛型接口
+			public interface Comparable<T>{
+				int compareTo(T other);
+			}
+		E:泛型高级通配符
+			?
+			? extends E
+				<E extends Comparable<E> & Cloneable>
+				public static <E extends Measurable> double average(ArrayList<E> objects)
+				public static <E extends Comparable<E>> E min(E[] a)
+			? super E
+				public static <E extends Comparable<? super E>> E min(E[] a)
+
+	(5)我们在哪里使用呢?
+		一般是在集合中使用。
+
+伪泛型
+	The virtual machine erases type parameters, replacing them  with their bounds
+	or Objects.
+
+
+
+Type   Variable	Meaning
+
+E	Element type in a collection
+
+K	Key type in a map
+
+V	Value type in a map
+
+T	General type
+
+S,   U	Additional general types
+
+泛型类
+	public class Pair<T, S>{
+		private T first;  private S second;
+		public Pair(T firstElement, S secondElement){
+			first = firstElement;  second = secondElement;
+		}
+
+		public T getFirst() { return first; }
+
+		public S getSecond() { return second; }
+	}
+泛型方法
+	Generic method: method with a type parameter.
+	Can be declared inside non-generic class.

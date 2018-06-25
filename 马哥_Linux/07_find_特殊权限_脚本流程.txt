@@ -1,0 +1,411 @@
+文件查找
+    locate: 基于事先构建的索引，在数据库中查找，非实时查找
+    find  : 实时查找
+
+
+locate
+    基于索引，速度快
+    自动构建
+        索引在系统空闲时系统(周期性任务计划)
+    手动更新
+        updatedb  <== 需要遍历整个文件系统，非常消耗资源，可能持续一段时间
+
+    特点
+        速度快     模糊查找    非实时查找
+
+    使用:     $locate your_key
+
+        类似的还有, whatis，也是基于数据库的
+
+
+find        实时查找，遍历指定路径下的文件系统，完成查找
+    特点
+        速度慢     精确查找    实时查找
+
+    语法
+        find [option] [Olevel] path
+        find [option]... [path] [查找条件] [处理动作]
+            查找路径: 指定具体路径，默认为当前目录
+            查找条件: 指定查找标准，文件名，大小，类型，权限，
+                    不给条件时默认: 列出路径下的所有文件，包括隐藏文件
+            处理动作: 对符合条件的文件做何种操作
+
+            条件
+                文件名:
+                    -name "文件名称": 支持 glob 通配 * ？[] [^]
+                    -iname "文件名称": 查找时忽略大小写
+                    -regex "pattern"： 以 pattern 匹配整个路径，而不仅仅是文件名
+                属主数组
+                    -user USERNAME: 查找属主为指定用户的文件
+                    -group GROUPNAME: 查找数组为指定组的文件
+
+                    -uid UserID:
+                    -gid GroupID:
+
+                    -nouser:
+                    -nogroup:
+
+                文件类型查找
+                    -type TYPE:
+                        f: 普通文件
+                        d: 目录
+                        l: 软链接
+                        s: 套接字
+                        b: 块设备
+                        c: 字符设备
+                        p: 管道
+
+                组合条件
+                    -a: 与
+                    -o: 或
+                    -not, !: 非
+
+                    !A -a !B   ==> !(A -o B)
+                    !A -o !B   ==> !(A -a B)
+
+                找出 /tmp 下，属主不是 root 且文件名不是 fstab 的文件
+                    find /tmp \(-not -user root -a -not -name "fstab"\) -ls
+
+                文件大小
+                    -size [+|-]#UNIT
+                        常用单位: k, M, G
+                        #UNIT: (#-1, #]
+                        +#UNIT: (#, )
+                        -#UNIT: [0, #-1]
+                时间戳
+                    以天:
+                        -atime [+|-]#:
+                            +#: #天之前，至少三天没动过  [#+1, oo)
+                            -#: #天之内，三天之内动过 [0, #)
+                            #: 刚好 # 天   [#, #+1)
+                        -mtime [+|-]#:
+                        -ctime [+|-]#:
+                    以分钟
+                        -amin [+|-]#:
+                        -mmin [+|-]#:
+                        -cmin [+|-]#:
+
+                权限匹配
+                    -perm [+|-]MODE     0: 不作为查找条件，不关心 0
+                        +MODE: 任何一类(u,g,o)中，只要有一位匹配即可
+                            $find /etc -perm +222 -ls
+                            $find /etc -perm +600 -ls
+                            类似 或
+                        -MODE: 三类(u,g,o), 每一类都必须有指定的权限标准
+                            类似 与
+                        MODE: 精确匹配权限
+
+            处理动作
+                -print: 默认，显示到屏幕
+                -ls: 执行 "ls -l"
+                -delete: 删除查找到的文件
+                -fls /path/to/file: 查找的所有文件的长格式信息保存到 file
+                -ok COMMAND {} \;: 对找到的文件执行 COMMAND，要求用户交互式确认
+                -exec COMMAND {} \;: 对找到的文件执行 COMMAND, 不要求交互
+                    {}: 表示找到的文件本身
+                    注意
+                        find 传递找到的文件到指定的命令时，如果文件列表过长，有可能失败
+                        xargs: find | xargs
+                            但是不是每个命令都支持 xargs
+                $find /tmp -cmin -5 -exec mv {} {}.new \;
+        练习
+            1. 查找 /var 目录下属主为 root， 且属组为 mail 的文件或目录
+                $find /usr -user root -a -group mail
+            2. 查找 /usr 目录下不属于 root， bin 或 hadoop 的所有文件和目录
+                $find /usr -not -user root -a -not -user bin -a -not -user hadoop
+                $find /usr -not \( -user root -o -user bin -o -user hadoop \)
+            3. 查找 /etc 目录下最近一周内内容修改过，且属主不是 root 也不是 hadoop 的文件或目录
+                $find /etc -mtime -7 -a -not -user root -a -not -user hadoop
+                $find /etc -mtime -7 -a -not \( -user root -o -user hadoop \)
+            4. 查找当前系统上没有属组且没有属主，且最近一周内被访问过的文件或目录
+                $find / -nouser -a -nogroup -a -atime -7
+
+            5. 查找 /etc 目录下大于 1M 且类型为普通文件的文件
+                $find /etc -size +1M -type f
+            6. 查找 /etc 目录下所有用户都没有写权限的文件
+                $find /etc -perm +222
+            7. 查找 /etc 目录下至少有一类用户没有执行权限的文件
+                $find /etc -perm -111
+            8. 查找 /etc/init.d 目录下，所有用户都有执行权限，且其他用户有写权限的文件
+                $find /etc/init.d -perm -113
+
+
+特殊权限
+    SUID, SGID, Sticky
+    进程的属组，没有太大的意义
+    1. 权限   r   w   x       user    group   other
+    2. 安全上下文    进程有属主和属组
+            进程的属主是进程的发起者   进程的权限取决于进程发起者的权限
+
+        - 任何一个可执行文件能否启动为进程，取决于发起者是否有执行权限
+        - 进程启动后，进程的属主为进程的发起者，进程的属组为发起者发起时所在的组
+        - 进程访问文件时所拥有的权限，取决于进程的发起者
+            - 发起者是文件的属主，则拥有属主权限
+            - 发起者在文件的属组内，则拥有属组权限
+            - 否则，进程拥有应用文件的其他权限
+
+    3. SUID
+        可执行文件设定 SUID 后，进程发起后，进程的属主不是发起者
+        - 任何一个可执行文件能否启动为进程，取决于发起者是否有执行权限
+        - 进程启动后，进程的属主不是发起者，而是可执行文件的属主
+        例子
+            /etc/passwd 文件: 000 权限，但每个用户都可改自己的密码
+            /usr/bin/passwd  rwsr-xr-x  root root
+
+        设定该权限
+            chmod u+s file...
+            chmod u-s file...
+
+    4. SGID
+        默认，用户创建文件时，该文件属组是创建者所在的基本组
+        一旦目录设定了 SGID，对此目录有写权限的用户，在该目录下创建的文件的属组，不再是该用户
+        的基本组，而是该目录的属组
+
+        设定目录的 SGID
+            chmod g+s DIR
+            chmod g-s DIR
+    5. Sticky
+        对于一个多人可写的目录，如果设置了 sticky, 则每个人只能删除自己的文件，不能删除其他人
+        文件
+            chmod o+t DIR
+            chmod o-t DIR
+        例子
+            /tmp
+            /var/tmp
+
+        SUID SGID STICKY    ==> s s t
+         0     0    0 - 1  1  1 ==> 7
+            chmod 1777 /tmp/a.txt       2777    3777
+    关于几个执行权限位
+        SUID: user 占据属主的执行权限位
+            s: 表示属主本来拥有 x 权限
+            S: 表示属主没有 x 权限
+        SGID: group, 占据 group 的执行权限位
+            s: group拥有 x 权限
+            S: group没有 x 权限
+        Sticky: other, 占据other的执行权限位
+            t: other 拥有 x 权限
+            T: other 没有 x 权限
+
+
+bash 脚本编程
+    流程控制
+        顺序执行    选择执行    循环执行
+
+    选择控制
+        单分支
+            if 判断条件；then    ===> if 条件 \n then
+                分支代码
+            fi
+        双分支
+            if 判断条件；then
+                分支代码
+            else
+                分支代码
+            fi
+        多分支
+
+
+Linux 系统管理
+    第一阶段 入门结束
+    第二阶段
+    磁盘管理    文件系统管理
+    RAID 基础原理   LVM2(Logic Volume Management 2) (LVM2 ==> 如果误删，数据难以恢复???)
+    程序包管理 rpm yum
+    网络管理(TCP/IP协议)  linux网络属性配置
+    进程管理: htop glance tsar 等
+    sed awk
+    Linux系统开机流程
+    内核管理基础: 编译内核、模块
+    Linux系统裁剪
+        kernel + busybox
+        课外作业
+            LFS
+    第三阶段
+        iptables
+
+    第四阶段
+        MySQL
+
+    一切皆文件
+        open(), read(), write(), close()
+
+        块设备: block 磁盘
+        字符设备: char  键盘
+
+        设备文件: 关联到一个设备驱动程序，进而能够跟与之对应的硬件设备进行通信
+            设备号:
+                主设备号: major number   标识设备类型
+                次设备号: minor number 标识同一类型下的不同设备
+
+            硬盘接口 (此处的速率是接口的速度，不是硬件速度)
+                并行
+                    IDE     早起个人电脑  理论 133MB/s
+                    SCSI    工业级的应用  ultral SCSI 640MB/s 使用寿命约为 IDE的4-8倍
+                串口
+                    SATA    SATA3 6Gbps
+                    SAS     6Gpbs
+                    USB 1.1 2.0     3.0 480MB/s
+
+                    转速 rpm: rotations per minute
+                        5400    7200    10000   15000 rpm
+
+            /dev/DEV_FILE
+                IDE:  /dev/hd
+                SCSI, SATA, SAS, USB: /dev/sd
+                    区分不同设备: a-z
+                        /dev/sda, /dev/sdb, ...
+                    同一设备不同分区: 1,2,3,...
+                        /dev/sda1, /dev/sda2, ...
+            机械盘
+                platter: 盘片，每个盘片有两个面，用来存储数据，每个磁头负责读写一个盘面
+                track: 磁道   真正用来存数据的结构
+                cylinder: 柱面
+                sector: 扇区  虚拟扇区    512 bytes/sector
+
+                如何分区:
+                    按照柱面划分
+                    编号小的分区，磁头单位时间内扫过的面积大，读写快
+
+                    0柱面的0磁道0扇区: 不属于任何分区，512 bytes, 存放BootLoader
+                        MBR: Master Boot Record
+                            前 446 bytes: boot loader
+                            64 bytes: 分区表
+                                16 bytes: 标识一个分区，总共能分 4 个主分区
+                                          或者: 三个主分区 + 一个扩展分区(N 个逻辑分区)
+                                          //编号: 1,2,3...
+                                          取出一个 16 bytes，做扩展分区，引导找到更多的分区
+                            2 bytes: 55AA  表示前面的字节是有效的
+
+                        MBR: 无法识别大于 2T 之后的空间
+
+                    问题:
+                        UEFI, GPT?
+
+        分区工具     fdisk  parted  sfdisk
+            fdisk: 对于单块硬盘，最多只能管理 15 个分区
+            查看
+                $fdisk -l   显示系统的所有分区信息
+                    磁盘 /dev/sda     128GB sector
+                    * Boot 可引导设备
+                    start: 起始柱面
+                    end: 结束柱面
+                    Block: 包含的磁盘块数
+                    Id: 分区标识
+                    System: 操作系统类型
+            对磁盘进行分区
+                fdisk /dev/sda  //进入后 自身带有很多子命令，可以看懂
+                    --> p   ==> 显示已有分区 print
+                    --> n   ==> 创建一个新分区 new
+                    --> d   ==> 删除一个分区 delete
+                    --> w   ==> 保存分区并退出 write
+                    --> q   ==> 放弃操作并退出 quit
+                    --> m   ==> 获取帮助
+                    --> l   ==> 列出所有分区 id
+                    --> t   ==> 调整分区 id
+                    ==> p primary (3 primary, 0 extended, 1 free)
+                        e extended
+                        Select(default e):
+                    -->e
+                    -->所有的扇区分在磁盘
+                    -->n
+
+                    管理文件查看新分区是否被内核识别
+                        cat /proc/partitions
+
+                如果未识别，手动通知内核，重新读取内核分区表
+                    partx --show /dev/sdb3
+                        -a
+                        -n M:N
+                    kpartx
+                        -a
+                        -f
+                    centos 5:
+                        partprobe [/dev/device]
+
+Linux文件系统
+    ext2, ext3, ext4, xfs, btrsf, reiserfs, jfs, swap
+        swap: 交互分区，把磁盘当内存用
+             大小: 如果是 oracle 或其他 数据库应用，放入交换分区，性能会急剧下降! 一般很小，512M
+                  批处理系统，hadoop 大一些，可以达到与物理内存一般大
+                  一般 2 G 的 swap 都能够用了
+        光盘: iso9660
+        Windows: fat32, ntfs
+        Unix: FFS, UFS, JFS2
+        网络文件系统: NFS, CIFS
+        集群文件: GFS2, OCFS2(oracle cluster file system 2)
+        分布式文件系统: ceph,  moosefs, mogilefs, GlusterFS, Lustre
+    是否支持日志
+        日志文件系统: ext3, ext4, xfs, ...
+        非日志文件系统: ext2, vfat
+
+    文件系统组成
+        内核中模块: ext4
+        用户空间的管理工具: mkfs.ext4, mkfs.xfs, mkfs.vfat
+    Linux虚拟文集系统
+        VFS
+    创建文件系统
+        cat /proc/filesystems  ==>支持的文件系统  centos 7
+        lsmod   ==>列出内核中的所有模块
+        mkfs 格式化
+            命令格式
+                1. mkfs.FS_TYPE    /dev/DEVICE
+                    FS_TYPE: xfs
+                             ext4
+                             ext3
+                             ...
+                     mkfs.ext4 /dev/sda5
+                     blkid /dev/sd5  ==> 磁盘信息 UUID   TYPE
+                2. mkfs -t xfs -f -L /dev/sda5
+
+            -L 'LABEL': 设定卷标
+        mke2fs: ext 系列系统文件工具
+            -t {ext2 | ext3 | ext4}
+            -b [1024 | 2048 | 4096] -->默认4096
+            -L 'LABEL': 卷标
+            -j: journal, 相当于 -t ext3
+                mkfs.ext3 == mkfs -t ext3 == mke2fs -j   == mke2fs -t ext3
+            -i #: 为数据空间中每多少字节创建一个 inode， 一个文件至少一个块，不应该小于块大小
+            -N #: 指定创建 inode 的数目
+            -m #: 为管理空间预留的空间占的百分比， 3 ==> 3%  默认 5， 即 5%
+            -O FEATURE[,...]: 启用指定特性
+                -O ^FEATURE: 关闭指定特性
+            mkfs.xfs
+            mkfs.ext4
+
+        其他常用工具
+        blkid [option] DIVICE
+            -U: 根据 UUID 查找DEVICE
+            -L: 根据 LABEL 查找设备
+        e2label: 管理 ext 系列的 label 信息的
+            查看label: e2label DEVICE
+            设置label: e2label LABEL
+        tune2fs:
+            重新设定 ext 系列文件系统的可调整参数值
+                -l: 查看指定文件系统的超级快信息
+                -l 'lable': 修改卷标
+                -m #:
+                -j: 将ext2 升级为 ext3
+                -O:
+                -o: 调整系统的默认挂载
+                -U UUID: 修改 UUID
+        dumpe2fs
+            -h: 查看超级块信息
+        mkswap:
+            mkswap [option] device
+                -L 'LABEL'
+            前提: 调整分区 id 为 82
+                fdisk 调整为 82
+                partx -a -n 6 /dev/sda6
+                mkswap /dev/sda6
+                blkid /dev/sda6 ==>显示详细信息
+
+    文件系统检测
+        开机检测速度慢，非关键文件系统，开机跳过检测，然后手动检测
+        fsck: file system check
+            fsck.FS_TYPE | fsck -t FS_TYPE
+            FS_TYPE 必须与分区上已有的文件系统相同
+            -r: 交互式修复
+        e2fsck: ext 系列文件系统专用的文件修复工具
+            -y: 同意修复
+            -f: 强制修复

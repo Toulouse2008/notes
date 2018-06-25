@@ -1,0 +1,82 @@
+马哥 运维初级
+
+压缩、解压缩
+
+格式：gz, bz2, xz, zip, bzip2, z
+
+压缩算法：算法不同，压缩比不同
+		压缩比：(压缩前大小 - 压缩过的文件大小)/源文件大小
+		winARA:融合了多种压缩算法
+
+		- 对文本压缩，效率高
+		- 对jpg，效率低
+
+	compresss/uncompress: Linux下最古老的
+
+	gzp: 
+		 gzip /path/to/file --> file.gz
+		 	-d:解压
+		 	- #：1-9，指定压缩比， 9 压缩比最大，默认 6
+		 gunzip /path/to/file.gz  === gzip -d /path/to/file.gz
+
+		 zcat:
+		 	- zcat /path/to/file.gz
+		 		- 临时解压，查看文本文件内容，并非真实解压
+
+	bzip2: 
+		对大文件，压缩效率比gzip高
+		对小文件，效果和gzip差不多
+		 bzip2 /path/fo/file --> file.bz2
+		 	-d:
+		 	-#:
+		 	-k:
+
+	gzp/bzip2:	
+			- 只压缩文件，不能压缩目录
+			- 不保留源文件,不管是压缩还是解压
+
+
+	xz: 
+		-d:
+	 	-#:
+	 	-k:
+
+	 	unzx:
+
+	xzdec:
+	xzcat:
+
+	zip: 归档并压缩，保留原文件
+	 	zip f-name.zip f1 f2 ...
+
+	 	unzip f.zip
+
+	archive:
+		tar: tape archive，只归档不压缩
+			-f: 一定是最后的选项，.tar 文件名紧跟其后
+
+			tar -cf file.tar f1 f2 f3 ...
+				-c: 创建归档文件
+				--xattrs:归档时，保留文件的扩展信息
+				-f FILE.tar: 操作的归档文件
+			tar -xf file.tar
+				-x: 展开归档
+
+			tar -tf file.tar
+				-t:不展开归档，查看归档了那些文件
+
+			tar -zcf file.tar.zip f1 f2 ...
+				-zc: 归档并调用gzip压缩 
+			tar -zxf file.tar.zip
+				-zx: 调用gunzip解压同时展开归档
+
+				-jcf: 调用bzip2
+				-jxf:
+
+				-Jcf: 调用xz
+				-Jxf: 
+
+				注意：展开压缩归档文件，压缩选项可以省略，tar会根据后	缀调用相应工具
+
+			cpio:
+

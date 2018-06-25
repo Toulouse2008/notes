@@ -1,0 +1,114 @@
+马哥 运维初级
+
+文件测试
+bash知识点：文件测试
+	[]
+	[[]]
+	test
+
+	单目测试：
+		-e file: 
+		-a file: 测试文件是否存在;
+		-f /path/to/file: 测试是否为普通文件;
+		-d /path/to/somefile: 测试是否为目录文件;
+		-b /path/to/somefile: 测试文件是否存在并且是否是一个块设备文件; 
+		-c /path/to/somefile:                               字符设备文件;
+		-h|-L /path/to/somefile: 测试文件是否存在并且为符号链接文件：
+		-p /path/to/somefile:                       管道文件;  
+		-S /path/to/somefile:                        套接字文件; 
+		-r /path/to/somefile: 测试其有效用户是否对此文件有读取权限；
+		-w
+		-x 
+		-s /path/to/somefile: 测试文件是否存在并且不空，
+
+	双目测试：
+		file1 -nt file2: 测试file1是否为file2更 新一些；
+
+
+      -a file
+              True if file exists.
+       -b file
+              True if file exists and is a block special file.
+       -c file
+              True if file exists and is a character special file.
+       -d file
+              True if file exists and is a directory.
+       -e file
+              True if file exists.
+       -f file
+              True if file exists and is a regular file.
+       -g file
+              True if file exists and is set-group-id.
+       -h file
+              True if file exists and is a symbolic link.
+       -k file
+              True if file exists and its ?.€.ticky?.€.bit is set.
+       -p file
+              True if file exists and is a named pipe (FIFO).
+       -r file
+              True if file exists and is readable.
+       -s file
+              True if file exists and has a size greater than zero.
+       -t fd  True if file descriptor fd is open and refers to a terminal.
+       -u file
+              True if file exists and its set-user-id bit is set.
+       -w file
+              True if file exists and is writable.
+       -x file
+              True if file exists and is executable.
+       -O file
+              True if file exists and is owned by the effective user id.
+       -G file
+              True if file exists and is owned by the effective group id.
+       -L file
+              True if file exists and is a symbolic link.
+       -S file
+              True if file exists and is a socket.
+       -N file
+              True if file exists and has been modified since it was last read.
+       file1 -nt file2
+              True if file1 is newer (according to modification date) than file2, or if file1 exists and file2 does not.
+       file1 -ot file2
+              True if file1 is older than file2, or if file2 exists and file1 does not.
+       file1 -ef file2
+              True if file1 and file2 refer to the same device and inode numbers.
+
+
+写一个脚本，完成如下任务：
+	1、分别复制/var/log下的文件至/tmp/logs/目录中；
+	2、复制目录时，才使用cp -r
+	3、复制文件时，使用cp
+	4、复制链接文件，使用cp -d
+	5、余下的类型，使用cp -a
+
+#!/bin/bash
+#
+targetDir='/tmp/logs'
+
+[ -e $targetDir ] || mkdir $targetDir
+
+for fileName in /var/log/*; do
+  if [ -d $fileName ]; then
+    copyCommand='cp -r'
+  elif [ -f $fileName ]; then
+    copyCommand='cp'
+  elif [ -h $fileName ]; then
+    copyCommand='cp -d'
+  else
+    copyCommand='cp -a'
+  fi  
+
+  $copyCommand $fileName $targetDir
+done
+
+
+
+写一个脚本，完成如下任务，其使用形式如下所示：
+	script.sh {start|stop|restart|status}
+其中：
+	如果参数为空，则显示帮助信息，并退出脚本；
+	如果参数为start，则创建空文件/var/lock/subsys/script，并显示“starting script successfully.”
+	如果参数为stop，则删除文件/var/lock/subsys/script，并显示“Stop script successfully.”
+	如果参数为restart，则删除文件/var/locksubsys/script并重新创建，而后显示“Restarting script successfully.”
+	如果参数为status，那么：
+		如果文件/var/lock/subsys/script存在，则显示“Script is running...”，否则，则显示“Script is stopped.”

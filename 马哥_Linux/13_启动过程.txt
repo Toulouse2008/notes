@@ -1,0 +1,107 @@
+CentOS 6 启动
+
+    内核设计
+        单内核设计: Linux
+            把素有功能集成于同一个程序
+        微内核设计: Windows, Solaris
+            每种功能使用一个单独子系统
+
+    Linux 内核特点
+        支持模块化: .ko
+        支持模块的动态装载和卸载
+
+        组成部分
+            核心文件: /boot/vimlinuz-VERSION-release
+            模块文件: /lib/modules/vmlinux-VERSION-release
+                    /lib/modules/vmlinux-VERSION-release/kernel
+                    /lib/modules/vmlinux-VERSION-release/kernel/drivers
+
+    流程
+        1. POST: Power On and Self Test 加电自检  检查所有硬件是否正常工作
+            ROM: Read Only Memory
+                CMOS Complementary Metal Oxide Substance
+                    BIOS: Basic Input and Output System
+            加电自检 --> 加载 BIOS
+        2. Boot Sequence
+            BootLoader: 引导加载器， 程序包
+                Windows: ntloader   win8 是加密的，不允许多系统共存
+                Linux:
+                        LILO: LInux LOader, 无法支撑装在 1024 柱面后的系统
+                        GRUB 0.x: GRUB Legacy CentOS 5 6GRand Uniform Bootloader
+                            支持windows，Linux，FreeBSD Unix
+                        GRUB 1.x: GRUB2 完全重写的 GRUB
+            按照次序尝试着读取 Boot loader，找不到则跳过，尝试下一个启动设备，一旦找到含有
+            Boot Loader 的设备，即加载 Boot Loader，即使该设备没有操作系统或者操作系统被
+            删除了，计算机也不再尝试读取其他设备. 启动失败!
+            如果加载成功，BootLoader 引导下加载内核，完成后，把控制权转交给内核
+
+            功能: 提供一个菜单，允许用户选择要启动的系统和不同版本的内核，不用户的内核装载到
+                 特定的内存空间中，解压、展开，并把系统控制权转交给内核
+
+            MBR:
+                位置: 磁盘 0 磁道 0 扇区 总计 512 bytes
+                    446 bytes: BootLoader， 只有装了系统的盘才有
+                    64 bytes: file system allocation table，磁盘分区表，每个分区过的盘都有
+                    2 bytes: 55AA, 标记 MBR 是否有效
+
+            GRUB:
+                BootLoader: 1st stage
+                Disk: 2nd stage
+        kernel:
+            自身初始化
+                内核检查所有硬件
+                加载硬件驱动程序(有可能借助于ramdisk)
+                只读方式加载根文件系统
+                运行用户空间的第一个应用程序  /sbin/init
+
+
+                init 程序的类型
+                    SysV: init,  CentOS 5
+                        配置文件: /etc/inittab
+
+                        - 大量创建和销毁进程，速度非常慢
+                        - 进程间有依赖关系，需要依次启动，更慢
+                    Upstart:  init  CentOS 6
+                        配置文件: /etc/inittab, /etc/init/*.conf
+                        - 多线程，加快有依赖关系的进程的启动过程
+                    Systemd:    CentOS 7
+                        配置文件: /usr/lib/systemd/system, /etc/systemd/system
+                        不需要借助其他程序，自己即可启动程序
+
+                ramdisk:
+
+    系统初始化
+        POST --> BootSequence(BIOS) --> BootLoader(MBR) --> kernel(ramdisk)
+             --> rootfs(只读) --> init
+
+    /sbin/init
+        运行级别: 为了系统的运行或维护等应用的目的而设定的
+            0-6: 7个级别
+                0: 关机
+                1: 单用户模式(root, 无需登录)，single，维护模式
+                2: 多用户模式，需要登录，会启动网络功能，不会启动 NFS --> 维护
+                3: 多用户模式，正常模式: 文本界面
+                4: 预留级别， 类似于 3
+                5: 多用户模式，正常模式 --> 图形界面
+                6: 重启
+
+            默认级别: 3, 5
+            设置为 0: 一运行即关机
+            设置为 6: 一开机即重启
+
+            切换级别
+                init #
+            查看运行级别
+                $runlevel  ==> 显示 上次level  当前level
+                #who -r
+
+        CentOS 5:
+            配置文件: /etc/inittab
+                每一行定义一种 action
+                id:runlevel:action:process
+                    action:
+                        wait: 切换到该级别，启动一次
+                        respawn: 自动重启
+                        initdefault: 默认运行级别
+                        sysinit: 设定系统初始化方式，一般指定 /etc/rc.d/rc.sysinit
+            

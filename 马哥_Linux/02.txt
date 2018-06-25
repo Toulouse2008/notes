@@ -1,0 +1,321 @@
+程序运行模式
+    用户模式: user space | mode     运行普通指令-->Ring 3 指令环(0-->3)
+    内核模式: system space | mode   运行特权指令-->Ring 0
+
+POS: Portable Operating System  ==> POSIX   <==API
+
+程序的运行格式
+    windows: dll(dynamic link library), exe,
+    Linux:  so(shared object), ELF
+
+    程序: 指令(只读) + 数据(读写)  | 算法   +   数据结构
+
+    编程语言
+        汇编语言    微码编程    系统中与硬件相关的代码 驱动代码
+        高级语言    C/C++   可以直接操作硬件  系统及应用   对性能要求很高的应用(驱动等)
+                   java python php 不接触硬件    普通应用程序
+
+发行版 Linux
+    Slackware
+            二次发行    suse
+                    openSuse
+    Debian
+            二次发行    Ubuntu
+                三次发行    mint
+    RedHat
+        美国北卡
+            RHEL: RedHat Enterprise Linux
+                稳定第一    每18个月释放一个版本     长期支持版
+            CentOS: 兼容RHEL格式，改掉RHEL的商标和图片
+            个人版==>Federa    -->测试新的软硬件 更新快 每6个月
+
+    ArchLinux:
+    Gentoo:
+    LFS: Linux From Scratch
+
+程序包管理工具
+    rpm
+        RHEL, Fedora, SuSe, CentOS
+    dpkg:
+        Debian, Ubuntu
+
+开原协议
+    GPL | LGPL
+    Apache:  apache
+    BSD:  bsd
+
+自由软件    Free Software
+    自由使用
+    自由学习和修改
+    自由分发
+    自由创建衍生版
+
+Linux 思想
+    1 一切皆是文件    包括硬件设备
+    2 由众多单一目的的小程序组成，一个程序只实现一个功能，但要做好
+    3 尽量避免用户交互  实现脚本编程以自动完成复杂功能
+    4 使用纯文本文件保存配置信息
+
+
+问题
+    CentOS 和 Linux 是什么关系？ Centos和RHEL关系？
+    各种开源协定细节:
+        GPL, LGPL, Apache, BSD
+
+
+终端
+    用户与主机交互
+    物理终端    直接接入本届的显示器和键盘设备
+               /dev/console
+    虚拟终端    附加在物理终端之上的以软件方式虚拟实现的终端
+               CentOS默认 6 个终端， Ctrl+Alt+F{1-6}, 默认启动终端 1
+           图形终端    附加在物理终端上，软件方式虚拟实现的，额外提供图形界面
+           查看当前的终端设备    tty  ==> /dev/tty[1-6]
+    模拟终端   图形界面下打开的命令行接口 | 基于 SSH Telnet 等协议打开的界面
+           查看当前的终端设备   tty  ==> /dev/pts/[0, )
+
+交互接口
+    GUI
+        X protocol, window manager, desktop
+        Linux Desktop:
+            GNOME: C   图形库 gtk
+            KDE  : C++ 图形库 qt
+            XFCE : 嵌入式轻量级桌面
+    CLI
+        shell 程序
+            sh  :   Bourn 开发的 shell  unix
+            csh :   C 风格 shell  BSD Unix
+            tcsh:   csh的升级版
+            ksh :   korn shell, 商业程序
+            bash:   bourn again shell, shell 的基础开发, 开源的
+            zsh :
+
+        查看shell:
+            $echo $SHELL
+            $cat /etc/shells
+
+        命令提示符   $echo $PS1
+            [root@localhost ~]#
+            #: root
+            $: users
+
+shell命令分类
+    内建命令    builtins
+    外部命令    在当前系统的文件系统特定路径下，有与之对应的可执行文件
+               which | whereis  查看
+    type命令   区分内建命令和外部命令
+              $type your_command  ==>hashed
+
+    运行命令    命令 [可选项...] [参数...]
+                   选项: 启用或者关闭命令的特殊功能  -l -a -h
+                        短选项: - + 单个字母，多个短选项可以合并，或者空白隔开
+                        长选项: -- + 英文单词，不能合并
+                   参数: 命令作用的对象，可以多个，但需要用空白隔开
+
+               取消命令: Ctrl + C
+
+文件系统
+    根   /
+    路径
+        绝对路径    从根目录开始
+        相对路径    从当前位置开始 current directory | working directory
+                   $pwd
+                   ./
+                   ../      ../../
+
+    文件有两类数据
+        元数据: metadata
+        数据  : data
+
+    文件名规则
+        1 文件名严格区分大小写
+        2 文件名可以使用除了 \ 之外的任意字符， 根和路径分隔符
+        3 文件名最长不超过255
+        4 所有 . 开头的文件，均为隐藏文件
+
+        LSB: Linux Standard Base
+
+命令总结
+    ls  cd  type    tty     cat     which   whereis     pwd     echo
+
+    1. 文件系统
+        目录管理
+        文件管理
+        文件查看
+        文件编辑
+    2. 系统管理相关
+
+
+获取命令帮助
+        区分命令: type 区分内建命令和外部命令
+    内建命令: $help command_name
+        hash: 命令以键值对形式保存到缓存中，便于查找   hits    command
+            $help hash
+            $hash -d command_names...
+            $hash -r
+            -d command_name: 删除指定   -t command_name: 显示命令文件位置
+
+        history 命令
+            位置  .bash_history
+            选项
+                -a  追加  -d #  删除指定命令   -c:  清除所有命令
+            调用历史命令
+                !#: 重新执行历史中编号为#的命令
+                !str: 再次执行最近一次以 str 开头的命令
+                !?str: 再次执行最近一次含有 str 的命令
+                !!: 重新执行最近的一次命令
+                !$: 表示上一条命令参数
+    外部命令:
+        -1 help:  $command_name --help | -h
+            cat:
+                $cat --help
+        -2 man :  mannual   手册页   $man command_name
+            配置文件    /etc/man.config     MANPATH设置: MANPATH /path/to/file
+                       临时更改 $man -M /path/to/file command_name  到指定位置下找特定命令手册
+            压缩存放  位置: /usr/share/man
+                用户命令    系统调用    C库调用 特殊文件    文件格式    游戏  杂项
+                系统管理命令  内核常用
+            段落说明
+                NAME    SYNOPSIS    DESCRIPTION OPTIONS EXAMPLES    AUTHOR
+
+                SYNOPSIS:
+                    []: 可选内容
+                    <>: 必选内容
+                    a|b: 二选一
+                    ...: 同类的内容可以出现多次
+                    {} : 选项分组
+            移动
+                向后翻页: space, Ctrl+v|f
+                先后翻半页: d, Ctrl + D
+                向前翻页: Ctrl + B, b
+                向前翻半页: u, Ctrl + U
+                行移动: j(up), k(down)
+                #(行号): 跳到第#行
+                头 | 尾: 1G | G
+                退出: q
+                /str: 当前位置向尾部搜索 默认不区分大小写   n: 下一个  N: 上一个
+                ?str: 当前位置向头部搜做 默认不区分大小写   n: 下一个  N: 上一个
+
+            date:
+                显示今天周几？设定当前系统时间? 显示今天的日期(//)？显示当前的时间(::)？
+
+        -3 info:  信息页 支持超链接   $info command_name
+
+        -4 自身带有的帮助文档  README  INSTALL Changelog
+            /usr/share/doc/COMMAND-Version
+
+        -5 程序的官方文档: 官网-->Documentation
+            openstack --> Documentation
+
+        -6 发行版的官方文档
+            官方文档 RHEL --> RedHat Enterprise Linux
+            http://www.redhat.com/docs
+
+        -7 Google
+            openstack filetype:pdf
+            openstack site:openstack.com
+            google hacks: google高级用法
+
+        -8    www.slideshare.net
+
+
+    man 9 sections:
+        用户命令    系统调用    库调用 特殊文件    文件格式    游戏  杂项  系统管理命令
+        内核常用
+
+
+基础命令
+    时间
+        - date    显示日期时间 | 设定系统日期时间
+            显示日期时间 date [OPTION]... [+FORMAT]
+                +%  a A D d T H M S  m Y y
+            设定系统日期时间 date [MMDDhhmm[[CC]YY][.ss]]
+
+        - clock: 显示硬件时间
+
+        - hwclock:
+            - 显示硬件时间
+            - -s | --hctosys: 以硬件时间为基准设置系统时间
+            - -s | --systohc: 以系统时间为基准设置硬件时间
+
+        - cal:
+
+    目录相关命令
+        家目录     root: /root  普通用户 /home/user_name   简写为: ~   <==用户主目录
+
+        pwd:    当前目录 print working directory
+
+        cd:
+            cd | cd ~:    回家目录
+            cd ~user_name: 切到指定用户家目录，只有root可以
+            cd -: 回到上次访问的目录
+            .|..:
+            相关环境变量
+                $PWD: 保存当前目录，一旦cd执行，则更行
+                $OLDPWD: 保存上次访问的目录，一旦cd执行，则更行
+
+        ls: 列出文件    list    显示目录下的文件列表，如果给定的是文件，重复给定的内容
+            -a: all, 包括 ., ..   .: 当前目录 ..: 上级目录
+            -A: almost all, 不包括 ., ..
+            -l:
+                -rw-r--r--  1 frank  staff  0 Mar 20 22:28 Amex.csv
+                第一位: 文件类型
+                    -: 普通文件 d:目录  l:链接 c:字符  b: 块  p:     s: socket
+                九位: 访问权限
+                数字: 硬链接数
+                属主: 文件的 owner
+                属组: 文件的 group
+                数字: 文件大小
+                时间: 文件的最近一次被修改的时间
+                    stat: 显示文件或者目录的详细信息     $stat /path/to/file
+            -h: human readable 容易读的
+
+    文件命令
+        cat:   cat [options] [file]...
+            -E: 显示行结束符  $
+            -t: 制表符
+            -v: 非打印字符
+            -A: ==-vEt
+            -n: 显示时，添加行号
+
+            $cat    <==等待键盘输入
+
+        file: 查看文件类型    determine file type
+            $file /path/to/file
+            ascii   block special   directory   executable
+
+        echo:   $type echo  $help echo
+            '': 强引用，原样显示给定字符串
+            "": 弱引用，变量会展开
+            -n: 禁止自动换行
+        which: 显示命令对应的可执行文件路径
+            --skip-alias: 不显示别名
+        whereis:
+
+        whatis: 搜索 whatis 数据库， 显示响应的对应信息
+            - $make whatis  ==>生成系统上所有命令的关键字的数据库 然后可以用whatis查找
+
+        type:
+        tty:
+
+    系统管理命令
+        关机:
+            halt, poweroff, shutdown, init 0
+            -halt: 没选项直接用
+            -poweroff 没选项，直接用
+            -shutdown: 安全关机
+                shutdown [option]... TIME [message]
+                TIME:  now --> 立即   +m: m分钟之后执行  hh:mm: 指定何时关机，24小时制
+                -r: reboot      $sudo shutdown -r +5 'System going down in 5 min'
+                -h: 关机断电
+                -c: 取消设定过的关机命令  $sudo shutdown -c
+                -k:
+        重启:
+            reboot, shutdown, init 6
+            reboot: -f(强制,不调用shutdown), -p(断电) --verbose
+
+        用户登录:
+            who, whoami, w
+            whoami: 显示当前登录的id
+            who: 当前登录的所有的登录回话
+            w:   显示登录回话和正在做的事情

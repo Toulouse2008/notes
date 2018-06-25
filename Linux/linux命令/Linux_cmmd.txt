@@ -1,0 +1,65 @@
+文件管理
+cat     chattr  chgrp   chmod   chown   chsum   cmp     cp      cut     diff
+diffstat    file    find    git     gitview     indent  ln  locate  lsattr
+mattrib     mc  mcopy   mdel    mdir    mktemp  mmove   mread   mren
+mshowfat    mtool   mtooltest   mv  od  paste   patch   rcp     rhmask
+rm  slocate     split   tee tmpwatch    touch   umask   whereis     which
+
+文件传输
+bye   ftp   ftpcount    ftpshut    ftpwho   lpd   lpq   lpr   lprm   ncftp
+tftp    uucico    uucp      uupick    uuto
+
+文档编辑
+col     colrm   comm    csplit    ed    egrep   ex    expr   fgrep
+fmt     fold    grep    ispell    jed   joe     join    look    mtype
+pico    rgrep   sed     sort      spell     tr      uniq    wc
+
+系统管理
+adduser   useradd   userconf    userdel usermod   groupdel    groupmod  newgrp
+chfn    chsh    date    exit    finger  free    fwhois  gitps   halt    id
+kill    last    lastb   login   logname   logout    logrotate   nice    procinfo
+ps  pstree  reboot  renice  rlogin  rsh   rwho  screen  shutdown    skill
+sleep   sliplogin   su      sudo    suspend     swatch  tload   top     uname
+vlock   w   who     whoami      whois
+
+系统设置
+alias   unalias
+clock   hwclock     rdate   resize  rmmod
+chkconfig   kbdconfig   mouseconfig
+lilo    liloconfig  lsmod
+minfo   mkkickstart     modinfo     modprobe
+apmd    aumix   bind    chroot      clear   crontab     declare
+dircolors   dmesg   enable  eval    export  fbset   grpconv   grpunconv
+depmod  insmod
+ntsysv
+passwd  pwconv pwunconv
+rpm     set    reset   unset    setconsole      setenv      setup   sndconfig
+timeconfig  unlimit
+
+网络通讯
+apachectl       arpwatch        cu      dip     dnsconf     efax        getty
+httpd           ifconfig        mesg    mingetty            mnincom     nc
+netconf         netconfig       netstat
+ppp-off     pppsetup    pppstats
+tcpdump     telnet      tty     uulog       uuname      uustat      uux
+ping      tracetroute
+
+磁盘管理
+cd      df      dirs        du      edquota     eject       indir       ls
+mcd     mdeltree            mdu     mkdir       mlabel      mmd         mmount
+mount   mrd     mzip        pwd     quota       quotacheck  quotaoff    quotaon
+repquota        rmdir       rmt     stat        tree        umount
+
+磁盘维护
+badblocks   cfdisk      dd      e2fsck      ext2ed      fdformat    fdisk
+fsck.ext2   fsck        fsck.minix          fsconf      hdparm      losetup
+mbadblocks  mformat     mkbootdisk          mkdosfs     mke2fs      mkfs.ext2
+mkfs        mkfs.minix  mkfs.msdos          mkinitrd    mkisofs     mkswap
+mpartition  sfdisk      swapoff             swapon      symlinks    sync
+
+压缩
+bzip2       bunzip2     bzip2recover        compress    cpio    dump
+gzip        gunzip      zip     unzip   zipinfo     tar     restore
+
+设备管理
+dumpkeys    loadkeys    rdev    setleds

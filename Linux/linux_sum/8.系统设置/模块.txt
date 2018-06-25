@@ -1,0 +1,13 @@
+depmod
+insmod
+lsmod
+    list modules
+modprobe
+
+rmmod
+
+modinfo
+
+lilo
+    linux loader是个Linux系统核心载入程序
+liloconfig

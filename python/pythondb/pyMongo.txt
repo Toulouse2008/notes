@@ -1,0 +1,20 @@
+pyMongo
+
+1. 建立连接
+	-导入模块	
+		>>>from pymongo import MongoClient
+	-连接到mongodb
+		>>>client = pymongo.MongoClient() 		<== connect to the default host
+		>>>client = pymongo.MongoClient('localhost', 27017) 	
+						<== connect to localhost
+		>>>client = pymongo.MongoClient('mongodb://localhost:27017/')
+						<==== MongoDB URI format address
+
+2. 取得库和集合操作符
+	库
+	>>>db = client.db_name
+	>>>db = client['db_name']
+	集合
+	>>>collection = db.collection_name
+	>>>collection = db['collection_name']
+

@@ -1,0 +1,32 @@
+1.  第一个 Servlet
+    构建目录
+        tomcat/your_app_name/WEB-INF/{classes, lib, web.xml}
+        - classes: java 代码
+        - lib: jar 包
+        - web.xml: 配置
+    导入 servlet-api.jar 包到新建的 lib 目录下， jar 包位置 tomcat/lib/servlet-api.jar
+    实现servlet， 在 classes 目录中，实现java 代码
+
+
+    部署 Servlet，即配置 web.xml 文件
+        <web-app xmln---->
+            <!-- JSPC servlet mapping start  -->
+            <servlet>
+             <!-- name -->
+             <servlet-name>Hello</servlet-name>
+             <!-- path of the servlet, package name + class name -->
+             <servlet-class>com.Hello</servlet-class>
+            </servlet>
+
+            <servlet-mapping>
+             <!-- name your servlet -->
+             <servlet-name>Hello ni hao</servlet-name>
+             <!--the url used in browser-->
+             <url-pattern>frank</url-pattern>
+            </servlet-mapping>
+            <!-- JSPC servlet mapping end  -->
+        </webapp>
+
+    启动 tomcat
+
+    访问网址: http://127.0.0.1:8080/myapp/hello

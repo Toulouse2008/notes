@@ -1,0 +1,22 @@
+Struts2
+apache旗下的开源项目
+当前版本: 2.5.16
+版本历史: 2000年3月31日，宣布编写struts。Struts1.x是较早实现MVC模式中 'Model 2' 概念的web
+    开发框架
+    Opensymphony开源社区，2004年12月14日， webwork2.1.7发布。
+    2005年12月14日，apache的struts和opensymphony的webwork合并，退出Struts2.
+MVC 框架: Model   View    Controller
+JavaEE 三层架构: web层   service层    DAO层
+MVC 处理的是 web 层
+
+web层的 MVC 框架: Struts1   Struts2     JSF     SpringMVC
+
+Struts2
+    Struts1 和 webwork 结合，内核是 webwork
+    webwork的核心是xwork
+    xwork核心功能: 前端拦截，运行时表单验证，类型转换，强大的表达式语言 OGNL，IOC等
+
+与 Struts2 相关的术语:
+IoC: Inversion of Control
+OGNL: the Object Graph Navigation Language
+POJO: Plain Old Java Object

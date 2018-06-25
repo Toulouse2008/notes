@@ -1,0 +1,307 @@
+Shell 编程
+
+终端的类型
+    console:
+    pty  : 控制台
+    tty# : 物理终端
+    ttyS#: 虚拟终端
+    pts/#: 伪终端
+
+编程语言
+    分类
+        - 机器语言    汇编语言    高级语言
+        - 静态语言: 编译型语言   强类型(变量)   必须先编译，然后能运行，如 C/C++, Java, C#
+          动态语言: 解释型语言   弱类型 on the fly 边解释边执行
+                   Perl, Ruby, PHP, Python, Shell, Javascript
+        - 面向过程: shell, C
+          面向对象: Java, Python, Perl, C++
+        - 编程能力: 脚本编程
+    变量: 内存空间，命名
+        变量类型: 事先确定数据的存储格式和长度
+                 字符
+                 数值
+                    整数
+                    浮点
+    内存: 连续编址的存储单元
+    进程:
+
+bash 变量
+    环境变量
+    本地变量(局部变量)
+    位置变量
+    特殊变量
+
+本地变量: 属于一个进程, bash
+         VARNAME=VALUE  <====对脚本有用，或者整个SHELL进程
+局部变量
+         local VARNAME=VALUE    <====作用域相当于当前代码段
+环境变量: 作用域为当前shell进程及其子进程
+         直接导出: export VARNAME=VALUE
+         先定义再导出: VARNAME=VALUE
+                     export VARNAME
+位置变量:
+        $1, $2, ...
+        shift: 参数更替
+特殊变量:
+        $?: 保存上一个命令的执行状态返回值
+            程序执行结果有两类:
+                正确结果:  ==> 程序返回状态代码: 0
+                程序报错:  ==> 程序返回状态代码: 1~255,
+                                             1, 2, 127: 系统预留的状态码，其他的用户定义
+            注意:
+            如果只关心程序执行后的返回状态，而不需要运行结果，可将结果送入'黑洞'
+                &> /dev/null    bit bucket  数据黑洞
+            并通过 $? 来查看程序执行的返回状态码，判断程序执行成功与否
+        $#: 脚本执行时从命令行传入的参数的个数
+        $*: 参数列表
+        $@: 参数列表
+        $?: 上一条命令的退出状态码
+
+脚本在执行时会启动一个子shell进程:
+    命令行中启动的脚本会继承当前shell的环境变量
+    系统自动执行的脚本(非命令行启动)就需要自我定义需要的各环境变量
+
+变量定义:
+    - 变量名只能包含 字母 下划线 数字，不能数字开头
+    - 不能跟系统中已有的变量环境重名，否则，会覆盖掉环境变量，如果调用，则错误未知
+    - 见名知意
+
+    - set
+        $set VARNAME=value    <== set 可以省略
+    - let:  let VARNAME=value
+    - declare:  declare -i SUM  <== 声明 SUM 为整型变量
+                declare -x VARNAME  <== 声明 VARNAME 为环境变量，相当于 export
+
+引用变量: ${VARNAME}, $VARNAME
+    $ANIMAL=pig     $echo "There are some $ANIMALs."  ==>There are some .
+                    $echo "There are some ${ANIMAL}s."==>There are some pigs.
+                    $echo 'There are some ${ANIMAL}s.'==>There are some ${ANIMAL}s.
+    $ANIMAL=$ANINAL:sheep  | ANIMAL="$ANIMAL:sheep"
+    $export PATH=$PATH:/user/local/apache/bin
+    $export PATH=/user/local/mysql/bin:$PATH
+撤销变量: unset VARNAME   <==此处没有 $, 因为此处操作的变量本身，而非变量的值，同 export
+查看当前shell中的变量: $set   <==不需要任何参数，显示本地变量和环境变量
+查看当前shell中的环境变量: printenv   env     export   三个中的任何一个均可
+
+脚本: 含有一系列shell 命令的调用文档，一般以 .sh 结尾
+    首行: 魔数，shebang, 首行顶格  #!/bin/bash
+    注释: # 开始的行, 执行时跳过
+    权限: 脚本编写完毕，执行方式
+        需要执行权限，$ ./path/to/file
+        明确指明bash解释器 $bash script_name.sh
+
+
+
+bash 中的条件测试
+    整数测试
+    字符测试
+    文件测试
+
+    条件测试表达式
+        [ expression ]: 表达式前后必须各有一个空格，否则报错
+        [[ expression ]]: 表达式前后必须各有一个空格，否则报错, [[]] 是shell 关键字
+        test expression:
+
+    整数比较:   表达式结果为真，返回 0， 为假的， 返回 1
+        -eq: 测试两个整数是否相等，比如 $A -eq $B
+        -ne: 测试两个整数是否不相等，不等为真，相等为假
+        -gt: 测试一个数是否大于另一个数
+        -ge: 大于等于
+        -lt: 小于
+        -le: 小于等于
+
+    逻辑运算
+        &&:
+        ||:
+        ! :
+
+    文件测试
+        [ -e /etc/inittab ]
+        -e FILE: 测试文件是否存在
+        -f FILE: 测试文件是否是文件
+        -d FILE: 测试文件是否是目录
+        -r FILE: 测试当前用户对文件是否有 r w x 权限
+        -w FILE:
+        -x FILE:
+
+     字符测试
+        ==: 测试字符串是否相等，相等为真，不等为假
+        !=: 测试字符串是否不等，不等为真，等为假
+        > :
+        < :
+        -n STRING: 测试字符串是否为空，空为真，不空为假
+        -s STRING: 测试字符串是否不空，不空为真，空位假
+
+    组合条件测试
+        -a: 与关系
+        -o: 或关系
+        ! : 非关系
+
+shell 中的算数运算
+    - let: 几乎所有的算数运算表达式   man let
+         let c=$a+$b
+    - $[算数表达式]    没有空格
+          c=$[$a+$b]
+    - $((算数表达式))
+          c=$(($a+$b))
+    - expr 算数运算表达式，表达式各个操作数及其操作符要有空格，并使用命令引用
+        c=`expr $a + $b`
+
+
+
+shell 脚本停止执行并退出     exit
+    定义退出码:  exit #      #: 0~255  （除了 0， 1， 2， 127 外的整数)???
+
+测试脚本语法
+    bash -n script_file     <== 不执行脚本，只是检查语法
+    bash -x script_file     <== 一条一条执行脚本，用于脚本调试
+
+shell 中生成序列
+    seq:    seq [起始 [步进长度]] 结束
+    {1..100}
+    `ls /etc`: 文件列表
+
+
+流程控制
+    分支语句
+        if 语句
+            if 单分支
+                if 条件； then
+                    command list
+                fi
+            if 多分支
+                if 条件; then
+                    command list
+                else
+                    command list
+                fi
+            if 多分支
+                if 条件; then
+                    command list
+                elif 条件2; then
+                    command list
+                else
+                    command list
+                fi
+        case 语句
+            case SWITCH in  <== SWITCH 是一个变量的值
+                value1)
+                    statement
+                    ;;
+                value2)
+                    statement
+                    ;;
+                *)
+                    statement
+                    ;;
+            esac
+                #!/bin/bash
+                #
+                case $1 in
+                    [0-9])
+                        echo "A digit"
+                        ;;
+                    [a-z])
+                        echo "Lower"  ;;
+                    [A-Z])
+                        echo "UPPER"
+                        ;;
+                    *)
+                        echo "Special char"
+                        ;;
+                    esac
+    循环语句
+        for 语句
+            for i in 1 2 3 4 5; do
+                command list
+            done
+
+            c style
+            for((expr1; expr2; expr3)); do
+                statement
+            done
+                #!/bin/bash
+                #
+                declare -i sum=0
+                for I in {1..10}; do
+                    let sum+=$I
+                done
+                sum=0
+                for ((I=1; I<=100;i++)); do
+                    let sum+=$I
+                done
+
+        while 语句
+            while condition; do
+                statements
+            done
+
+            特殊用法一   死循环
+                while :; do
+                    statements
+                done
+            特殊用法二
+                while read LINE; do
+                    statement
+                done </path/to/file
+
+        util 语句
+            until condition; do
+                statement
+            done
+
+        continue 语句:  跳过本次循环后面的语句，进入下一个循环
+        break    语句:  提前终止循环，即终止该层循环语句，无论后面是否还有循环条件满足要求
+
+
+函数      function    结构化编程: 代码重用
+    定义格式
+        function FUNCNAME {
+            command
+            return #      <== 定义状态返回值
+        }
+        FUNCNAME(){
+            command
+        }
+        注意: 函数名称只能包含字母、数字和下划线，并且不能以字母开头
+
+    return 语句: 自定义执行状态的返回码  0-255
+    函数参数:
+        funcName para1  para2  para3  ...
+            #!/bin/bash
+            #
+            TWOSUM(){
+                echo $[$1+$2]
+            }
+            TWOSUM 3 4          ==> print 7 to screen
+
+
+数组     array
+    声明 | 定义:
+        declare -a AA
+    赋值:
+        方法一
+            AA[0]=jerry
+            AA[1]=tome
+            AA[6]=windy   <==前面的默认为 空
+        方法二
+            AA=(jerry tom wendy)
+
+            AA=([0]=jerry [1]=tome [6]=windy)
+            AA[2]=kira
+            AA[3]=mia
+
+            元素内部如果含有空格或者特殊字符，放到引号内即可
+
+    获取数组中非空元素的个数:
+        echo $(#arrayName[*])
+        echo $(#arrayName[@])
+
+    获取数组元素的字符数
+        第 0 个元素的字符个数
+            $echo $(#arrayName)
+            $echo $(#arrayName[0])
+        第 1 个元素的字符个数
+            $echo $(#arraName[1])
+
+    RANDOM

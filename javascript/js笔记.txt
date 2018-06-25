@@ -1,0 +1,624 @@
+ECMAScript: 标准、核心
+    HTML:  标签，block，inline，inline-block, table...
+    数据类型：数字、字符串、布尔、函数、对象（obj,[],{}, null, undefine)
+        数字: var i = 5;   typeof i; ==> number
+        字符串: var s='asda'; s.length ==>4   typeof s  ==>str
+               s.charAt(2)  ==>d
+        布尔: var b = true | false;  typeof b; ==>boolean
+                真:
+                    非零数字, 非空字符串, true, 函数,能找到的元素，数组(包括空组), jason(包括空对象)
+                假:
+                    0, NaN, ''(空字符), false, 不能找到的元素, null, 未定义
+        函数: fn = function(){};  alert(fn); ==> function def
+             function fn1(){}   alert(fn1)  ==> function def
+        对象:
+            - var obj = window; alert(typeof obj);  ==> object
+              var obj = document; obj.abc=123;
+                ==>alert(obj.abc);
+                ==>alert(document.abc);
+                obj.onOff = true;
+                obj.fn = fn1;
+            - 数组
+                var arr = [1,2,3,4]; arr.length; arr[1] =11; arr.push(3,4,5);
+                alert(typeof arr);  ==> object
+                arr.abc = 'asfsf'; alert(arr.abc);  ==>'asfsf'
+                arr.fn = fn1();
+            - JSON
+
+            - null;
+                var n = null; alert(typeof n);  ==> object
+                注意: null不能添加其他属性或者方法、函数、自定义属性
+
+        未定义:  undefined,表示程序出问题了， 变量未定义状态
+            - undefined
+                var u;   alert(typeof u);  ==>undefined
+                         alert(u);         ==>undefined
+
+类型转换
+    字符转数字
+        var a = '100'; alert(a+2); ==> '1002'
+        - Number
+            - 字符串
+                alert(Number(a) + 2);  ==>102
+                Number('+100')  ==>100
+                Number('0000100') ==>100
+                Number('')  ==> 0
+                Number('   ') ==>0
+            - 布尔
+                Number(true | false)  ==> 1 | 0
+            - 数组
+                Number([])   ==> 0
+                Number(['']) ==> 0
+                Number(['123']) ==>123
+                Number([2])  ==> 2
+                Number('1.01') ==> 1.01
+                Number(['d'])  ==> NaN
+                Number([1,2,3])  ==> NaN
+                Number('100px') ==>NaN
+            - 空 null
+                Number(null);  ==> 0
+            - 未定义 undefined
+                var a; Number(a)  ==> NaN
+            - obj
+                document, div window ==> NaN
+            - json
+                var json = {abc:123}; alert(Number(json));  ==> NaN
+            - 函数
+                Number(fn1)     ==> NaN
+
+        - parseInt  格式: parseInt(number, base)
+            从左到右转，遇到第一个非数字字符，包括小数点，即停止；
+            开头是 + |- | 空格 | 0000， 跳过
+
+        - parseFloat
+            可识别第一个小数点，截断之后的
+
+    隐市类型转换
+        - | * | / | % | ++ | --: 数字型字符串转为数字，进行计算
+            alert('200'-3)  ==>197
+            alert(9-'2')    ==>7
+            var a='9'; alert(a++) ==>10
+        < | >
+            ===其中一个是数字，则按数字整体比较
+            alert('10'>9) ==> true
+            ====>字符串比较，按位置依次比较
+            alert('10' > '9')  ==>false
+        +: 将数字作为字符串，进行拼接
+            alert('200'+3) ==> 2003
+            alert(3 + '200')==> 3200
+        !: 布尔值取反
+            !100, !'ok' ==>false
+            !'', !0 == true
+        ==:
+            '2' == 2  ==>值是否相等，true
+        ===:
+            '2' === 2  ===>false, 先比较类型，再比较直，不进行转换
+
+    alert('...'-9) ==> NaN
+
+    NaN: Not a Number
+        - alert(typeof Number('asf'))  ==> number
+        - 非法运算-->导致-->NaN
+        - NaN 的布尔值是： false
+        - NaN === NaN  ===>false
+
+    isNaN: is Not a Number
+
+
+JS解析器
+    1. 搜索整个代码，var, function，参数， 进行预解析
+        注册变量:
+            所有变量在正式运行代码之前，先注册为未定义
+            var a = 1 ==> a=undefined //提高效率，避免读入大量数据
+        函数注册:
+            所有的函数，注册为整个函数块
+
+    2. 逐行解读代码
+        每读一行，到注册库查看，是否存在以及值
+
+        表达式: +-=*/ ++ -- ! 参数
+        声明：定义函数
+
+    示例:
+        1. alert(a);  ==>undefined
+            var a = 1; ==> 赋值a=1
+            alert(a); ==> 1
+            过程:
+                预解析：发现var a，将其注册为 a=undefined
+                执行: 第一行，要用a，取注册值，注册区发现a=undefined
+                     第二行，执行赋值，a=1, 更新注册区的值
+                     第三行，再次用a, 去注册区取a，发现a=1
+
+        2.  alert(a)  ==>注册区是空的，没有找到a，报错
+            a=1
+            过程:
+                预解析：没有关键词，不进行任何注册，注册区是空的
+                执行: 第一行，要用a，注册区没有，报错
+        3. 预解析过程中，遇到重名变量，变量和函数重名，保留对函数的解析；都是函数，后面的则覆盖前面的
+           alert(a);    ==>function a(){alert(4);}
+           var a= 1;    ==> 表达式，修改预解析时注册区变量的值，a=1
+           alert(a);    ==> 1
+           function a(){alert(2);}  ==>此处是函数声明，并不改变注册区的变量的值
+           alert(a)     ==> a=1
+           var a=3;     ==> a=3
+           alert(a);    ==> 3
+           function a(){alert(4);}  ==> 此处是函数声明，并不改变注册区的变量的值
+           alert(a);    ==> 3
+           a();     ==>此时注册区的a为3，不是函数，此处调用导致浏览器报错
+    全局
+        每个<script></script>都是一个独立的全局域，预解析按域进行，完成后，执行。执行完毕后，
+        对下一个<script></script>进行同样的操作，预解析，执行。....
+            全局变量  --> 全局函数 --> 自上而下
+            例子:
+                1. <script>alert(a);</script>  ===>报错
+                   <script>var a = 1; </script>
+                2. <script>var a = 1; </script>
+                   <script>alert(a);</script>  ===>a=1
+    函数域:
+        从里到外
+        1.
+        var a = 1;
+        function fn1(){
+            alert(a);
+            var a= 2;
+        }
+        fn1();
+        alert(a);
+        过程:
+            预解析: 注册a，fn1；
+            执行:
+                - var a= 1;   ==>更新 a=1；
+                - 函数声明；
+                - 函数调用-->执行
+                    ==>函数内部局部预解析
+                        function fn1(){
+                            alert(a);
+                            var a= 2;   ==> 解析, 局部注册区注册 a=undefined
+                        }
+                    -->执行
+                        alert(a);  ==> 去局部注册区，找到a， 此时a=undefined
+                        var a = 2; ==> 更新局部注册区的a值为2
+                - alert(a);  ==>全局变量a
+        2.
+            var a = 1;
+            function fn1(){
+                alert(a);
+                a= 2;
+            }
+            fn1();  ==>1
+            alert(a);  ==>2
+
+        3.
+            var a = 1;
+            function fn1(a){    ==> a 相当于var a， 预解析时，a注册到局部注册区，
+                alert(a);
+                a= 2;
+            }
+            fn1();  ==> a 此时是undefined
+            alert(a);  ==> 1
+
+        4.
+            var a = 1;
+            function fn1(a){
+                alert(a);
+                a= 2;
+            }
+            fn1(a);  ==> 解析-->a相当于var a， 注册到局部注册区a=undefined
+                     ==> 执行，从function fn1(a)开始， 首先执行参数赋值，a = a | 1
+                     ==> 1
+            alert(a); ==>1
+
+数组
+    一维数组
+        var arr = [1,2,3,4];
+        arr.length ==> 4
+        arr.push(element);
+    二维数组
+        var arr =[[1,2,3],[4,5,6],[7,8,9]];
+
+this
+    <script>alert(this);</script>   //==> object window,  ===window.alert(this);
+    this指的是调用""当前""方法(函数)的那个对象
+    - fn1();   this===>window
+    - oDiv.onclick = function(){fn1};   fn1 this ===>div
+    - oDiv.onclick = fn1;   this ===>div
+    - <div onclick =" this; fn1();">    this==>div     fn()==>window
+
+    <script>
+        //alert(this);   // ==> object window
+        function fn1(){
+            alert(this);
+        }
+        //fn1();  // ==> object window
+        //window.fn1();   // ==> object window
+        window.onload = function(){
+            var oBtn1 = document.getElementById('btn1');
+            oBtn1.onclick = fn1;   // ==> oBtn1
+            oBtn1.onclick = function(){
+                fn1();   //==> object window
+            }
+        }
+
+    </script>
+    <input id="btn2" type="button" onclick="alert(this);fn1();" value="button" />
+        ==>first: window;  clicked: button
+
+if判断
+    if(条件){}
+    if(条件){} else {}
+    if(条件1){} else if (条件2) {}...else {}
+
+for循环
+    重复执行代码  一个数值在不停变化
+    for(var i = 0; i<20; i++){ }
+    过程: i=0 ==> i<20 ==> {} ==> i++ ==>i<20 ==> {} ==> i++ ......
+
+JS中如何获取元素
+    1. ID
+        document.getElementById('link | div1 | button1');
+    2. tag
+        document.getElementsByTagName()
+
+    区别:
+        id-->只能从document中获取元素  tagName-->document或其他元素
+            var oUI = document.getElementById('list')   //id="list"
+            var oLi = document.getElementsByTagName('li')
+            var aLi = oUI.getElementsByTagName('li')
+        - ById -->单一元素  ByTagName -->元素的集合，类似数组
+            aLi[0], aLi.length
+        - id-->静态方法, 只能获取静态内容，动态添加的内容找不到的 tagName-->动态方法，可以
+            用于获取后来添加的内容
+
+JS中的事件
+    鼠标事件
+        onclick | ondbclick | onmouseover | onmouseout | onmousedown | onmouseup
+
+    键盘事件
+        onkeydown | onkeyup | onkeypress
+        
+    窗口事件 onload
+        window.onload | img.onload | body.onload | onunload |onerror
+
+    表单事件
+        onfocus | onblur | onselect | onsubmit | onreset | onchange
+
+    添加事件: 元素.事件
+
+函数
+    function abc(){}  //不会主动执行
+    直接调用: abc(); //执行
+    事件调用: 元素.事件 = 函数名; oDiv.onclick = abc;  <==没有()
+
+    匿名函数: function(){}
+        元素.事件 = function(){};
+
+测试
+    alert(1); | alert('ok'); | alert(variable_name)
+
+HTML属性操作
+    属性名称=属性值
+    读:  获取或寻找, 元素.属性名
+    写:  替换或修改，元素.属性名=新值  <==不是添加，var1 += var2; //添加
+
+    innerHTML:
+        p1.innerHTML  ==>读取p标签内的内容
+        p1.innerHTML = new_value; ==>设置新值
+
+    firefox默认字体: 15px
+
+    注意:
+        - JS中不允许变量出现‘-’==>
+            font-size  --> fontSize
+            padding-top -->paddingTop
+            margin-left -->marginLeft
+        - class: 保留字
+            给元素添加class时会有问题，class ==> className
+        - 判断
+            - 所有的相对路径，都不能用作判断: img src | href
+            - 颜色值定义不能判断, color: red #f00 | rgb(250,0,0)
+            - innerHTML值不能拿来判断
+            - 绝对路径可以判断：img src='http://wwww.miaov.com/1.jpg'
+            - 背景不能用于判断
+
+        - IE6 IE7 IE8不支持修改button类型
+            NOT WORKING ==> oBtn1.type = 'checkbox';
+            Solution: 不让他们显示出来，只有点击的时候才显示即可
+        - 左浮动
+            IE(styleFloat), others(cssFloat)
+            oDiv.style.styleFloat = 'left'
+            oDiv.style.cssFloat = 'left'
+            也可通过定义style class来绕过该问题
+            .left{float:left}
+            .right{float:right}
+            <div class="right"></div>
+        - obj.value value的值不能是变量，如要用变量，[]
+            oDiv.style.[oAttr.attr] = oVal
+
+DOM: Document Object Model
+    Document: html 页面
+    Document Object: 页面中的元素
+    DOM: 为了能够让js操作页面中的元素
+    定义: DOM 树， 和操作节点的方法和属性
+
+节点 -->Node
+    1. 子节点 childNodes:
+            只搜索一级节点，不会递归搜索下级
+        元素.childNodes，只读，子节点的结合, ele.childNodes[i], ele.childNodes.length
+        元素.nodeType, 只读，返回元素类型, ele.childNodes[i].nodeType
+        元素.attributes: 元素的属性列表集合
+            ele.attributes.length, ele.attributes[i].name, ele.attributes[i].value
+        节点类型：
+            1. ELEMENT_NODE 元素 2. ATTRIBUTE_NODE 3. TEXT_NODE 文本
+            4. CDATA_SECTION_NODE 5. ENTITY_REFERENCE_NODE 6. ENTITY_NODE
+            7. PROCESSING_INSTRUCTION_NODE 8. COMMENT_NODE 9. DOCUMENT_NODE
+            10. DOCUMENT_TYPE_NODE 11. DOCUMENT_FRAGMENT_NODE 12. NOTATION_NODE
+        elem.{firstChild | lastChild | nextSibling | previousSibling}
+        elem.{firstElementChild | lastElementChild | nextElementSibling | previousElementSibling}
+
+        children: firstChildren, lastChildren
+
+    2. 兄弟节点  nextSibling, previousSibling, nextElementSibling, previousElementSibling
+
+    3. 父节点 parentNode
+        元素.parentNode
+        元素.offsetParent   ==>离当前元素最近的那个有定位属性的父节点
+
+        元素.offsetLeft | offsetTop: 当前元素到定位父节点的距离(px)
+
+        style.width: 样式宽
+        clientWidth: 可视区宽 ==样式宽 + padding
+        offsetWidth: 占位宽 ==样式宽 + padding + border | 可视区宽 + 边框
+
+        getPos(): 获取元素的绝对位置
+
+    创建元素
+        var newElem = document.createElement('elementName');
+        newElem.innerHTML = 'xxxxxx';
+        var oDest = document.getElementById('id');
+        1. 追加到父节点下的最后 ==> oDest.appendChild(newElem);
+        2. 插入到指定元素前面 ==> oDest.insertBefore(新元素, 指定元素=oDest[i])
+    更新节点:
+        replaceChild()
+    删除元素
+        必须在被删除的元素的父节点来操作
+        removeChild()
+
+    获取元素: getElementByClass()
+
+
+    操作表
+
+
+    操作表单
+        confirm()
+
+
+
+BOM  Browser Object Model
+    window 对象，可省略
+    方法:
+        window.open()=open(): url, mode
+            如果url为空: 打开一个空白页面
+            如果mode为空：打开一个新窗口
+                ==>open()  --> 打开一个空白新窗口
+                ==>open('www.baidu.com', '_self')  -->原窗口打开
+            返回值：新窗口对象
+
+        window.close()=close():
+            没有参数，关闭当前窗口  ==>浏览器有兼容问题
+
+    属性
+        window.navigator.userAgent
+            ===>用户的浏览器信息
+            判断当前浏览器的版本，执行不同代码
+            window.navigator.userAgent.indexOf('MSIE') != -1
+        window.location:
+            ==>地址栏内的信息
+            window.location ===
+            window.location.href (url)
+            window.location.search    ==>url问号后的内容，?as=asf&s=asf
+            window.location.hash      ==>url#后面的内容，#p=1
+    窗口尺寸与大小
+        可视区尺寸：
+            - document.documentElement.clientWidth
+            - document.documentElement.clientHeight
+        滚动距离
+            - document.body.scrollTop/scrollLeft
+            - document.documentElement.scrollTop/scrollLeft
+        内容高度:
+            - document.body.scrollHeight
+        文档高度
+            - document.documentElement.offsetHeight
+            -  document.body.offsetHeight
+
+事件
+    焦点事件：
+        onfocus
+            元素.onfocus = function: 当元素是焦点的时候触发
+            能响应用户操作的元素才有焦点
+        onblur:
+            元素.onblur = function: 当元素失去焦点的时候触发
+        设置焦点
+            obj.focus()
+        取消元素的焦点：
+            obj.blur()
+        选择指定元素的文本内容: 只能选定用户输入的内容，网页的静态内容则不能选中
+            obj.select()
+
+    event对象     ==> 事件对象
+        当一个事件发生时， 和当期对象发生的事件相关的信息，都保存在一个临时对象中，即-event对象
+
+        onmousemove:
+            当鼠标在一个元素上面移动时触发
+            触发频率不是像素，而是时间，即在指定时间内，如果鼠标位置和上一次的位置比较，发生了变化，
+            则触发事件
+
+        事件冒泡
+
+
+        绑定多个事件
+
+cookie
+    存储数据: 当用户访问了某个网站的时候，通过cookie来在访问者电脑上存储数据
+        - 不同浏览器存放的cookie，不能通用
+        - cookie的存储是以域名的形式进行区分的
+        - 单个域名下，cookie数量有限制，各个浏览器不同
+        - 每个cookie存放的内容大小也有限制，各个浏览器不同
+        - cookie的数据可以设置名字
+            document.cookie = 'key=value'
+                设置cookie值
+                ==>document.cookie='username=leo' | 'age=32'
+                获取cookie值
+                ==>alert(document.cookie);
+
+            如果想长时间存放cookie，需要在设置cookie时，设置过期时间,默认是临时存储的，当浏览器进程
+            关闭时，自动销毁
+                document.cookie = 'key=value; expires=' + 时间；
+                var oDate = new Date();
+                dcoument.cookie = 'user=leo;expires=' + oDate ==>过期立即清除
+                oDate.setDate(oDate.getDate() + 5); ==>有效期5天
+
+
+高级课程
+
+1. 运动
+
+2. 面向对象
+    认识对象
+        var obj = new Object();
+        obj.a = 12;
+        obj.show = function(){ alert(this.a);}  ==> 12
+        obj.name = 'blue', obj.gender = 'M';
+        obj.showName = function(){alert(this.name);}    ==>blue
+        obj.showGender = function(){alert(this.gender);}    ==>M
+
+    工厂方式创建对象
+        function createPerson(name, gender){    //构造函数
+            var obj = new Object();
+            obj.name = name, obj.gender = gender;
+            obj.showName = function(){ alert(this.name);};
+            obj.showGender = function(){alert(this.gender);};
+
+            return obj;
+        }
+        var p1 = createPerson('blue','m');
+        var p2 = createPerson('leo','f');
+        p1.showName();
+
+        工厂方式存在的问题
+            1. 没有new;
+            2. 每个具体的对象都有一套完全相同但是专属于自己的函数，浪费资源
+                alert(p1.showName == p2.showName)
+            3. this，当前方法属于谁，指的就是谁
+
+    原型方式 prototype
+        - 构造函数
+            属性放到构造函数中
+            构造函数首字母大写
+        - prototype
+            添加方法，所有对象是一样的
+
+        给一类元素添加方法 ==>扩展系统对象的功能，即属性和方法
+        Array.prototype.sum = function(){
+            var res = 0;
+            var i = 0;
+            for(i=0; i<this.length; i++){
+                res += this[i];
+            }
+            return res;
+        }
+        var arr1 = {23,4, 5}, arr2 = {1,2,3};
+        alert(arr1.sum == arr1.sum); ==>true
+
+
+        function Person(name, gender){    //构造函数
+            /*
+                假想的： 系统内部--> var this = new Object();
+            */
+            this.name = name;
+            this.gender = gender;
+        }
+        Person.prototype.showName = function(){ alert(this.name);};
+        Person.prototype.showGender = function(){alert(this.gender);};
+        var p1 = new Person('blue','m');
+        var p2 = new Person('leo','f');
+        alert(p1.showName == p2.showName); ==>true
+
+        alert(typeof Date) ==> function //js 中, 构造函数就是类
+
+3. 正则
+    转义字符
+        \0  The Null character \u0000   \t tab  \n  newline \v vertical tab
+    通配符
+        [...]   Anyone of the set   [^...]  none of the set
+        . Any character except for newline  \b: backspace
+        \w: 任意字母或数字     \d: 任意数字    \s: 任意空白
+        \W: 非字母和数字       \D: 任意非数字   \S: 非空白
+    数量
+        {n}: 匹配n次       {n,}: 至少匹配n次      {n,m}: 匹配n到m次
+        ?: 匹配0到1次       +: 匹配至少1次         *: 匹配0到多次
+        - 默认是贪婪的
+        - ?/+/* + ?: 非贪婪模式
+    分组
+        (...):      /(['"])[^'"*]\1/
+        (?:...):    /([Jj]ava(?:[Ss]cript)?)\sis\s(fun\*)/
+                    Group only, do not remember the charaters that match this pattern
+        |:          /\d{3}|[a-z]{4}/,  /(ab|cd)+|ef)/
+                    /([Jj]ava([Ss]cript)?)\sis\s)(fun\w*)/
+        \n:      n is integer, 引用前面的第几个分组
+
+    位置
+        ^: 头                $: 尾
+        \b: 单词边界          \B: 非单词边界
+        (?=p): A positive lookahead assertion. Require the following characters
+               match the pattern p, but do not include those characters in the match.
+        (!?p): A negative lookahead assertion. Require the following charaters do
+               not match the pattern p, but do not include those characters in the match.
+    标记 flag
+        i: case-insensitive match
+        g: global match
+        m: multiline mode. ^match beginning of line | string, and $ match end of
+            line | string
+
+    字符串正则
+        string.search:  Javascript.search(/script/i)
+        string.replace: "JavaScript".replace('/s/g', 'S')
+        string.match: "Javascript".match('pattern')
+        string.split: "java, s, cript".split('pattern')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+a

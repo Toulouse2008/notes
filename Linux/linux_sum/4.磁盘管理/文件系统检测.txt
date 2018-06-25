@@ -1,0 +1,62 @@
+fsck
+    检查与修复 Linux 档案系统，可以同时检查一个或多个 Linux 档案系统
+    fsck [-sACVRP] [-t fstype] [--] [fsck-options] filesys [...]
+    参数 ：
+        filesys ： device 名称(eg./dev/sda1)，mount 点 (eg. / 或 /usr)
+        -t : 给定档案系统的型式，若在 /etc/fstab 中已有定义或 kernel 本身已支援的则不需加上此参数
+        -s : 依序一个一个地执行 fsck 的指令来检查
+        -A : 对/etc/fstab 中所有列出来的 partition 做检查
+        -C : 显示完整的检查进度
+        -d : 列印 e2fsck 的 debug 结果
+        -p : 同时有 -A 条件时，同时有多个 fsck 的检查一起执行
+        -R : 同时有 -A 条件时，省略 / 不检查
+        -V : 详细显示模式
+        -a : 如果检查有错则自动修复
+        -r : 如果检查有错则由使用者回答是否修复
+    检查 msdos 档案系统的 /dev/hda5 是否正常，如果有异常便自动修复
+        $fsck -t msdos -a /dev/hda5
+
+fsck.minix
+    检查文件系统并尝试修复错误
+    fsck.minix [-aflmrsv][外围设备代号]
+    参数：
+        -a 自动修复文件系统，不询问任何问题。
+        -f 强制对该文件系统进行完整检查，纵然该文件系统在慨略检查下没有问题。
+        -l 列出所有文件名称。
+        -m 使用类似MINIX操作系统的警告信息。
+        -r 采用互动模式，在执行修复时询问问题，让用户得以确认并决定处理方式。
+        -s 显示该分区第一个磁区的相关信息。
+        -v 显示指令执行过程
+
+fsconf
+    Red Hat Linux发行版专门用来调整Linux各项设置的程序
+    fsconf [--check]
+    参数：
+        --chedk 检查特定文件的权限
+
+e2fsck
+    检查使用 Linux ext2 档案系统的 partition 是否正常工作
+    e2fsck [-pacnydfvFV] [-b superblock] [-B blocksize] [-l|-L bad_blocks_file]
+    [-C fd] device
+    参数说明：
+        device ： 预备检查的硬盘 partition，例如：/dev/sda1
+        -a : 对 partition 做检查，若有问题便自动修复，等同 -p 的功能
+        -b : 设定存放 superblock 的位置
+        -B : 设定单位 block 的大小
+        -c : 检查该partition 是否有坏轨
+        -C file : 将检查的结果存到 file 中以便查看
+        -d : 列印 e2fsck 的 debug 结果
+        -f : 强制检查
+        -F : 在开始检查前，将device 的 buffer cache 清空，避免有错误发生
+        -l bad_blocks_file : 将有坏轨的block资料加到 bad_blocks_file 里面
+        -L bad_blocks_file : 设定坏轨的block资料存到 bad_blocks_file 里面，若无该档则自动产生
+        -n : 将档案系统以[唯读]方式开启
+        -p : 对 partition 做检查，若有问题便自动修复
+        -v : 详细显示模式
+        -V : 显示出目前 e2fsck 的版本
+        -y : 预先设定所有检查时的问题均回答[是]
+    检查 /dev/hda5 是否正常，如果有异常便自动修复，并且设定若有问答，均回答[是]
+    $e2fsck -a -y /dev/hda5
+
+ext2ed
+    直接处理硬盘分区上的数据

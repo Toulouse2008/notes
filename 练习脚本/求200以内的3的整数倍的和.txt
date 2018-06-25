@@ -1,0 +1,8 @@
+#!/bin/bash
+sum=0
+for i in {1..200};do
+  if [ $[$i%3] -eq 0 ];then
+    let sum=$sum+$i;
+  fi
+done
+echo $sum

@@ -1,0 +1,73 @@
+马哥 运维初级 19
+
+DNS服务
+
+DNS: Domain Name Service
+	域名:
+		.com
+		.mageedu.com
+		===============
+		www.mageedu.com(主机名), FQDN: Full Qualified Domain Name
+
+	作用: name resolve
+		解析域名: ==>名称转换， FQDN<-->IP
+			10.0.0.2  www.xxx.yyy.com
+			10.2.3.10	www.aaa.bbb.net
+		
+		配置文件: /etc/nsswitch.conf
+					/etc/hosts
+				hosts
+					IPADDR		FQDN		Aliases
+					1.1.0.1		www.aa.com	  www
+				stub resolver:名称解析器
+				dns: DNS
+IANA:
+ICANN:管理顶级域，维护一个数据库，规范IP地址和FQDN的对应
+	TLD: Top Level Domain
+		国家: .cn, .tw, .hk, .jp
+		组织: .com .org  .net .cc
+		反向： 
+			IP-->FQDN
+		正向:
+			FQDN-->IP
+
+DNS服务器:
+	接受本地客户机的查询请求:递归
+	外部客户的请求:返回权威答案
+		肯定 或 否定答案
+		缓存: TTL
+
+	主、从
+		主DNS服务器：数据修改
+		辅助DNS服务器：请求数据同步
+			serial number
+			refresh
+			retry
+			expire
+			nagative answer TTL
+		缓存DNS服务器
+		转发器
+
+资源记录类型
+	SOA(Start Of Authority):
+	NS(Name Server): ZONE NAME --> FQDN
+	MX(Mail eXchanger): ZONE NAME -->FQDN
+	A(address): FQDN-->IPv4
+	AAAA: FQDN-->IPv6
+	PTR(poiner): IP-->FQDN
+	CNAME: FQDN-->FQDN    -->canonical NAME
+
+	TXT
+	CHAOS
+	SRV
+
+域: Domain， 逻辑概念
+区域: Zone, 物理概念
+
+
+
+
+
+
+
+

@@ -1,0 +1,78 @@
+马哥 运维初级
+
+
+位置参数轮替
+
+bash的知识点：位置参数轮替(shift)
+
+#!/bin/bash
+#
+
+declare -i sum=0
+
+for i in `seq 1 $#`; do
+  let sum+=$1
+  shift
+done
+
+echo $sum
+
+
+写一个脚本：使用形式如下
+	userinfo.sh -u username [-v {1|2}]
+	-u选项用于指定用户；而后脚本显示用户的UID和GID；
+	如果同时使用了-v选项：
+		-v后面的值如果是1, 则额外显示用户的家目录路径;
+		-v后面的值如果是2, 则额外显示用户的家目录路径和shell；
+
+#!/bin/bash
+#
+[ $# -lt 2 ] && echo "Too less argements, quit" && exit 3
+
+if [[ "$1" == "-u" ]];then
+  userName="$2"
+  shift 2
+fi
+
+if [ $# -ge 2 ] && [ "$1" == "-v" ]; then
+  verFlag=$2
+fi
+
+verFlag=${verFlag:-0}
+
+if [ -n $verFlag ];then
+  if ! [[ $verFlag =~ [012] ]];then
+    echo "Wrong parameter."
+    echo "Usage: `basename $0` -u UserName -v {1|2}"
+    exit 4
+  fi  
+fi
+
+# echo $userName $verFlag
+
+if [ $verFlag -eq 1 ]; then
+  grep "^$userName" /etc/passwd | cut -d: -f1,3,4,6
+elif [ $verFlag -eq 2 ];then 
+  grep "^$userName" /etc/passwd | cut -d: -f1,3,4,6,7
+else
+  grep "^$userName" /etc/passwd | cut -d: -f1,3,4
+fi	
+
+
+
+
+
+
+
+
+^$, .*
+.,$-1
+.,+9
+
+:set ai
+u, 3u
+Ctrl+r
+
+s///
+&
+w, b, W, B, e

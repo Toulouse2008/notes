@@ -1,0 +1,235 @@
+vi编辑器
+
+Linux: 使用文本文件来保存配置文件
+
+文本编辑器：ASCII文件
+	emacs, vi
+
+	vi: Visual Interface
+
+	全屏文本编辑器, nano
+	模式化的编辑器
+
+	moduler
+
+	vim: vi improved
+	vi的模式：
+		编辑模式：键盘操作通常被解析为编辑命令；
+		输入模式：输入模式；
+		末行模式：vim的内置的命令行接口，执行vim内置命令
+
+	编辑模式-->输入模式
+		i: 在当前光标所在处输入；
+		I: 在当前光标所在行的行首输入；
+
+		a: 在当前光标所在处后面输入；
+		A：在当前光标所在行的行尾输入；
+
+		o: 在光标所在行的下方新增一个空白行输入；
+		O：              上方
+
+	输入模式-->编辑模式：
+		ESC
+
+	编辑模式-->末行模式：
+		:
+	末行模式-->编辑模式：
+		ESC, ESC	
+
+
+	打开文件：
+		vim +#: 单开文件，并定位光标到#行
+		vim +: 打开文件，并定位到最后一行
+		vim +/Pattern: 打开文件，并定位到第一次匹配pattern的行首	
+
+
+
+	vim命令的使用格式：
+		vim [options] /path/to/file...
+
+	退出
+	:q!, 不保存并退出
+	:wq, 保存并退出
+	:x, 保存并退出
+	编辑模式：zz, 保存退出
+	
+	打开：
+		vim file_list
+
+		多文件跳转：
+			:next
+			:prev
+			:first
+			:last
+
+		退出所有文件：qa
+
+		分割窗口打开多个文件：
+			格式：vim file_list
+				要分屏显示：
+					-水平分割
+						Ctrl+w, 松开，s，水平拆分
+						-Ctrl+w:切换窗口
+					-垂直分割	
+						Ctrl+w, 松开， v，垂直拆分
+						上下箭头键
+			格式：
+				vim -o file_list:水平分割，同时显示多个文件
+				vim -O file_list:垂直分割，同时显示多个文件
+				Ctrl+w：切换窗口
+
+		保存：
+			-w: 保存修改内容
+			-w /path/newfileName: 保存问新文件
+			-Addres1,address2w /path/file_name:
+								保存指定行为新文件,如果文件存在需要用2,3w! filename强制执行
+			
+			-r file_name: 把文件内容放入当前光标处
+
+
+			-qa:退出所有窗口
+
+			+[#]: 打开文件后直接让光标处于第#行的行首；
+
+		vim下和shell交互:
+			! command  ==>enter 执行CLI命令
+					   ==>enter again, 返回vim
+
+		显示行号：
+			-set nu
+			-set nonu
+				==>nu ==== number
+
+		大小写：
+			-set ignorecase === set ic
+			-set noignorecase === set noic
+
+		自动缩进:
+			-set ai === set autoindent
+			-set noai
+
+	光标移动：
+		单字符移到：
+			h: 左
+			l: 右
+			j: 下
+			k: 上
+
+		单词间移动：
+			w: 下个单词的词首；
+			b: 当前或前一个词的词首
+			e: 当前或下一个词的词尾
+
+			W/B/E:
+			#b/e/w===>
+			#W/B/E:===>
+
+
+		行内移动：
+			0: 绝对行首
+			^: 第一个非空白字符
+			$: 绝对行尾
+
+		句子间移动：
+			)
+			(
+
+		段落间移动：
+			}
+			{
+
+		行间移动：
+			#G
+			G：最后一行
+			1G: 第一行
+
+			末行模式：
+				:# ===>直接跳转到#行
+
+		翻屏：
+			Ctrl+f: 向文件尾部翻一屏
+			Ctrl+b:       首
+			Ctrl+d:       尾    半
+			Ctrl+u:       首    半
+			Enter:
+			k:
+
+	编辑操作：
+		x: 删除光标所在处的字符
+		#x: 删除光标所在处开始向后的#个字符；
+
+		r: 替换光标所在处的字符 ==>s
+
+		d: 删除命令
+			结合各光标跳转命令使用
+		dd: 删除一行
+		#dd: 
+
+	末行模式：范围定界
+		start,end: 
+		10,19
+		10,+9
+		.:表示当前行
+		$:最后一行
+			.,$-2
+		/pat1/,/pat2/: 起始处为光标所在行，
+		:% 
+
+
+		c: 改变
+		cc:
+		#cc:
+
+		y: yank, 复制
+		yy
+		#yy
+
+		p: paste, 粘贴
+			复制或删除的是整行
+				p: 粘贴在光标所在行的下方
+				P:                   上方
+
+			复制或删除的为非整行
+				p: 粘贴在光标所在字符的后面
+				P：                    前面
+
+		撤消编辑：
+			u: undo
+			#u: 
+
+		撤消此前的撤消：
+			Ctrl+r
+
+		重复执行此前的命令：
+			.
+
+	查找：
+		/keyword
+		?keyword
+		n:
+		N:
+
+	查找替换：
+	:地址定界s/查找模式/替换为的内容/gi
+		g: global
+		i: ignore-case
+
+	:地址定界s@查找模式@替换为的内容@gi
+
+	&: 用于在替换为的内容部分中引用前面匹配到的所有内容；
+
+练习：
+	1、复制/etc/grub.conf至/tmp目录，删除/tmp/grub.conf文件中行首的空白符；
+	%s@^[[:space:]]\{1,\}@@g
+
+	2、复制/etc/rc.d/rc.sysinit至/tmp目录，将/tmp/rc.sysinit文件中的以至少一个空白字符开头的行，行首加#号
+	:%s@^[[:space:]]\{1,\}.*@#&@
+
+	3、删除/tmp/rc.sysinit文件中以#开头且后面跟了至少一个空白字符的行的行首的#号和空白符；
+	:%s@^#[[:space:]]\{1,\}@@g
+
+	4、为/tmp/grub.conf文件中前三行的行首加#号; 
+	1,3s@^@#@g
+
+	5、将/etc/yum.repos.d/CentOS-Media.repo中enable=0一行最后的0改为1；
+	%s@\(enabled=\)[0-9]@\11@g

@@ -1,0 +1,67 @@
+字符测试
+bash编程之：字符测试
+	双目：
+		>: 大于
+		<: 小于
+		==: 等于，等值比较
+		=~：左侧是字符串，右侧是一个模式，判定左侧的字符串能否被右侧的模式所匹配；通常只在[[]]中使用；
+			模式中可以使用行首、行尾锚定符；但模式不要加引号；
+	单目：
+		-n $stringVar: 字符串是否不空，不空为真，空则为假；
+		-z $stringVar: 字符串是否为空，空则为真，不空则假；
+
+
+
+判定所有用户是否拥有可登录shell
+#!/bin/bash
+for userName in `cut -d: -f1 /etc/passwd`; do
+	if [[ `grep "^$userName\>" /etc/passwd | cut -d: -f7` =~ sh$ ]]; then
+		echo "login user: $userName"
+	else
+		echo "nologin user: $userName"
+	fi
+done
+
+
+
+
+练习：写一个脚本
+	1、让用户交互式输入一个用户名，先判定用户是否存在；不存在，则以7为退出码；
+    2、判断用户的shell是否为/bin/bash；如果是，则显示为“Bash User.”，退出码为0; 否则，则显示为“Not Bash User.”，退出码为1;
+
+练习：写一个脚本
+	1、显示如下菜单：
+		cpu) show cpu info;
+		mem) show memory info;
+		quit) quit
+		Enter your option: 
+	2、如果用户选择cpu，则显示文件/proc/cpuinfo的信息；
+	3、如果用户选择mem，则显示文件/proc/meminfo的信息；
+	4、如果用户选择quit，则退出，且退出码为5;
+	5、如果用户键入其它字符，则显示未知选项，请重新执行脚本；退出码为6;
+
+
+正则表达式，grep, egrep；diff, patch
+
+
+
+
+grep, egrep
+
+grep [options] 'pattern' file...
+
+基本：
+	字符匹配：., [], [^]
+	次数匹配：*, \?, \{m\}, \{m,n\}
+				.*
+	位置锚定：\<, \b, \>, ^, $
+	分组：\(\)
+	前向引用：\1, \2
+
+扩展:
+	字符匹配：., [], [^]	
+	次数匹配：*, ?, {m}, {m,n}, +
+	位置锚定：\<, \b, \>, ^, $
+	分组：()	
+	前向引用：\1, \2
+	或：a|b

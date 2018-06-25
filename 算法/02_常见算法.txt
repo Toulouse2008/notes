@@ -1,0 +1,62 @@
+迭代和递归
+    sum
+    factorial
+    fib     return (2>n)? n:fib(n-1)+fib(n-2)
+    hanoi
+    上楼梯的走法
+二分法
+    merge sort
+    binary search
+动态规划
+    fib
+        f = 0, g = 1;
+        while(--n>0){
+            g = g + f;
+            f = g - f;
+        }
+    最长公共子序列
+        最坏情况，O(2^n)
+
+        By Problems
+        Data Structures
+        Dictionaries, Priority Queues, Suffix Trees and Arrays, Graph Data Structures, Set Data Structures, Kd-Trees
+
+http://algorist.com/algorist.html
+Numerical Problems
+    Solving Linear Equations, Bandwidth Reduction, Matrix Multiplication,
+    Determinants and Permanents, Constrained and Unconstrained Optimization,
+    Linear Programming, Random Number Generation, Factoring and Primality Testing,
+    Arbitrary-Precision Arithmetic, Knapsack Problem, Discrete Fourier Transform
+
+
+Combinatorial Problems
+    Sorting, Searching, Median and Selection, Generating Permutations,
+    Generating Subsets, Generating Partitions, Generating Graphs,
+    Calendrical Calculations, Job Scheduling, Satisfiability
+
+
+Graph: Polynomial-time Problems
+    Connected Components, Topological Sorting, Minimum Spanning Tree,
+    Shortest Path, Transitive Closure and Reduction, Matching,
+    Eulerian Cycle/Chinese Postman, Edge and Vertex Connectivity, Network Flow,
+    Drawing Graphs Nicely, Drawing Trees, Planarity Detection and Embedding
+
+
+Graph: Hard Problems
+    Clique, Independent Set, Vertex Cover, Traveling Salesman Problem,
+    Hamiltonian Cycle, Graph Partition, Vertex Coloring, Edge Coloring,
+    Graph Isomorphism, Steiner Tree, Feedback Edge/Vertex Set
+
+Computational Geometry
+    Robust Geometric Primitives, Convex Hull, Triangulation, Voronoi Diagrams,
+    Nearest Neighbor Search, Range Search, Point Location, Intersection Detection,
+    Bin Packing, Medial-Axis Transform, Polygon Partitioning, Simplifying Polygons,
+    Shape Similarity, Motion Planning, Maintaining Line Arrangements, Minkowski Sum
+
+Set and String Problems
+    Set Cover, Set Packing, String Matching, Approximate String Matching,
+    Text Compression, Cryptography, Finite State Machine Minimization,
+    Longest Common Substring/Subsequence, Shortest Common Superstring
+
+By Language
+    C, C++, Java, JavaScript, Python

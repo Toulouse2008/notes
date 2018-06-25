@@ -1,0 +1,46 @@
+马哥 运维中级 36_01
+
+集群linux
+
+	LB: Load Balancing 负载均衡集群
+		目的：增加服务器处理能力
+		Round Robin
+		Weight Round Robin
+
+		Heath Check 前端主机定时查看后台服务器，连续三次每反应，踢出，不再给
+		其分派访问；后端服务器恢复后，通知前端主机
+
+	HA: High Availability, 高可用集群
+		目的：增加可用性，保证一直在线
+
+		可用性=在线时间/(在线时间 + 故障处理时间)
+
+		99%：一年有3天不在线
+		99.9%：一年只有0.3天不在线，
+		99.99%：0.03天
+		99.999%:0.003天
+
+		主服务器(Primary)、辅助服务器(standby/secondary)
+		主从切换时间:主服务器把heartbeat信息随时向外传递，
+
+		Split Brain:
+			主机还活着，但太忙了，没有时间发心跳信息，另一个机子抢班夺权，但是两台机子同时写的状态
+			解决方案：直接干掉还活着的主机，自己正位-->向电源交换机发型信号，断 掉另一台假死的电源。
+
+			STONITH: Shoot The Other Node In The Head
+
+	HPC: High Performance 高性能集群
+		解决复杂问题，进行科学计算
+		向上扩展: 向量机  I/O 瓶颈
+		并行处理集群：
+			分布式文件系统
+			将大任务切割为小任务，分别进行处理的机制
+
+NAS
+	100Mbps ethernet
+		12.5MB
+	1000Mbps
+		125MB
+DAS
+	SAS	6Gbps
+	UltraSCSI: 320Mbps

@@ -1,0 +1,106 @@
+adduser
+    新增使用者帐号或更新预设的使用者资料。adduser 与 useradd 指令为同一指令, 经由符号连结
+    symbolic link
+    使用权限：系统管理员。
+    adduser [-c comment] [-d home_dir] [-e expire_date] [-f inactive_time]
+    [-g initial_group] [-G group[,...]] [-m [-k skeleton_dir] | -M] [-p passwd]
+    [-s shell] [-u uid [ -o]] [-n] [-r] loginid
+    或者
+    adduser -D [-g default_group] [-b default_home] [-f default_inactive]
+    [-e default_expire_date] [-s default_shell]
+
+    参数说明：
+        -c comment 新使用者位于密码档（通常是 /etc/passwd）的注解资料
+        -d home_dir 设定使用者的家目录为 home_dir ，预设值为预设的 home 后面加上使用者帐号 loginid
+        -e expire_date 设定此帐号的使用期限（格式为 YYYY-MM-DD），预设值为永久有效
+        -f inactive_time
+
+    添加一个一般用户
+        # useradd kk //添加用户kk
+    为添加的用户指定相应的用户组
+        # useradd ?g root kk //添加用户kk，并指定用户所在的组为root用户组
+    创建一个系统用户
+        # useradd ?r kk //创建一个系统用户kk
+    为新添加的用户指定/home目录
+        # useradd-d /home/myf kk //新添加用户kk，其home目录为/home/myf
+        //当用户名kk登录主机时，系统进入的默认目录为/home/myf
+
+useradd
+    建立用户帐号之后，再用passwd设定帐号的密码．而可用userdel删除帐号。使用useradd指令所建立
+    的帐号，实际上是保存在/etc/passwd文本文件中
+    useradd [-mMnr][-c <备注>][-d <登入目录>][-e <有效期限>][-f <缓冲天数>][-g <群组>]
+    [-G <群组>][-s <shell>][-u <uid>][用户帐号]
+    或者
+    useradd -D [-b][-e <有效期限>][-f <缓冲天数>][-g <群组>][-G <群组>][-s <shell>]
+
+    参数说明：
+        -c<备注> 　加上备注文字。备注文字会保存在passwd的备注栏位中。
+        -d<登入目录> 　指定用户登入时的启始目录。
+        -D 　变更预设值．
+        -e<有效期限> 　指定帐号的有效期限。
+        -f<缓冲天数> 　指定在密码过期后多少天即关闭该帐号。
+        -g<群组> 　指定用户所属的群组。
+        -G<群组> 　指定用户所属的附加群组。
+        -m 　自动建立用户的登入目录。
+        -M 　不要自动建立用户的登入目录。
+        -n 　取消建立以用户名称为名的群组．
+        -r 　建立系统帐号。
+        -s<shell>　 　指定用户登入后所使用的shell。
+        -u<uid> 　指定用户ID。
+
+    添加一般用户
+        # useradd tt
+    为添加的用户指定相应的用户组
+        # useradd -g root tt
+    创建一个系统用户
+        # useradd -r tt
+    为新添加的用户指定home目录
+        # useradd -d /home/myd tt
+    建立用户且制定ID
+        # useradd caojh -u 544
+
+usermod
+    修改用户帐号的各项设定
+    usermod [-LU][-c <备注>][-d <登入目录>][-e <有效期限>][-f <缓冲天数>][-g <群组>]
+    [-G <群组>][-l <帐号名称>][-s <shell>][-u <uid>][用户帐号]
+    参数说明：
+        -c<备注> 　修改用户帐号的备注文字。
+        -d登入目录> 　修改用户登入时的目录。
+        -e<有效期限> 　修改帐号的有效期限。
+        -f<缓冲天数> 　修改在密码过期后多少天即关闭该帐号。
+        -g<群组> 　修改用户所属的群组。
+        -G<群组> 　修改用户所属的附加群组。
+        -l<帐号名称> 　修改用户帐号名称。
+        -L 　锁定用户密码，使密码无效。
+        -s<shell> 　修改用户登入后所使用的shell。
+        -u<uid> 　修改用户ID。
+        -U 　解除密码锁定。
+        实例
+        更改登录目录
+            # usermod -d /home/hnlinux root
+        改变用户的uid
+            # usermod -u 777 root
+
+userconf
+    linuxconf的符号连接，提供图形界面的操作方式，供管理员建立与管理各类帐号。若不加任何参数，
+    即进入图形界面
+    userconf [--addgroup <群组>][--adduser <用户ID><群组><用户名称><shell>]
+    [--delgroup <群组>][--deluser <用户ID>][--help]
+    参数说明：
+        --addgroup<群组> 　新增群组。
+        --adduser<用户ID><群组><用户名称><shell> 　新增用户帐号。
+        --delgroup<群组> 　删除群组。
+        --deluser<用户ID> 　删除用户帐号。
+        --help 　显示帮助。
+
+    新增用户
+        # userconf --adduser 666 tt lord /bin/bash //新增用户账号
+
+userdel
+    删除用户帐号与相关的文件。若不加参数，则仅删除用户帐号，而不删除相关文件
+    userdel [-r][用户帐号]
+
+    参数说明：
+        -r 　删除用户登入目录以及目录中所有文件
+    删除用户账号
+        # userdel hnlinux

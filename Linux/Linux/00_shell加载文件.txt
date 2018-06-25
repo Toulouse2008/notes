@@ -1,0 +1,83 @@
+系统级启动文件
+====================================
+1、/etc/rc  主启动文件，不要修改它
+2、/etc/rc.conf  决定启动哪些系统自带的守护进程，不要修改它
+3、/etc/rc.conf.local 如果你想干涉系统启动时启动的守护进程，请编辑本文件，本文件的内容会覆盖
+    /etc/rc.conf中的内容。
+4、/etc/rc.local  重点，你想让Nginx,MySQL,Tomcat自启动，请修改这个文件。
+5、/etc/rc.shutdown 重点，在操作系统关机时执行，可关闭Nginx,MySQL,Tomcat
+
+1、 /etc/rc.local
+    系统启动需要加载的守护进程（服务）和执行的程序。该文件只有一条“exit 0”语句，用户可加入自己
+    的启动程序，但需要保证最后的返回是0。
+    注意:
+        该文件中不能加入用户shell下的脚本，例如加入 alias ll="ls -l" 无效，因为该文件的执
+        行环境是在系统shell下，系统尚未进入用户shell环境。
+
+        可配置环境变量，可做开机自启动，因为开机自启动程序需要使用环境变量。
+
+linux下环境配置文件
+    用户的bash配置文件：
+        在用户宿主目录下：
+        .bash_profile       用户登录shell时要执行的命令，一般放PATH环境变量。
+        .bashrc      每次打开新的shell时要执行的命令，一般放alias别名，函数。
+        .bash_logout    用户退出shell时要执行的命令
+        .bash_history   记录了用户以前输入的命令
+
+    系统的bash配置文件：
+        /etc/profile
+        /etc/bashrc
+        /etc/profile.d/*.*文件
+
+
+bash(用户级)启动文件 - [Ubuntu]  （/etc/profile 、/etc/bashrc 、 ~/.profile 、 ~/bashrc 文件）
+====================================
+1）进入系统时，先执行/etc/rc.local文件，再/etc/profile文件，再执行/etc/bashrc文件；结束后，
+    进入bash（假如登陆用户为user）,先执行/etc/profile文件，再执行/home/user/.bash_profile
+    文件，根据该文件，执行/home/user/.bashrc文件，再根据该文件，执行/etc/bashrc文件，执行
+    完毕后，整个执行过程结束。
+2）切换用户（如从root用户切换至wxc用户）时，使用"su"命令，系统先执行/home/wxc/.bashrc文件，
+    再根据该文件，执行/etc/bashrc文件，执行完毕后，整个执行过程结束；当使用"su -"命令时，先执
+    行/etc/profile文件，再执行/etc/profile.d/*.sh和/home/wxc/.bash_profile文件，根据
+    该文件，执行/home/wxc/.bashrc文件，再根据该文件，执行/etc/bashrc文件，执行完毕后，整个
+    执行过程结束。
+
+（1）/etc/profile
+    全局（公有）配置，不管是哪个用户，登录时都会读取该文件。可配置环境变量，如JAVA_HOME
+（2）/etc/bashrc
+    全局（公有）配置，bash shell执行时，不管是何种方式，都会读取此文件。
+（3）~/.bashrc
+    当bash shell是以non-login形式执行时，读取此文件。若是以login形式执行，则不会读取此文件。
+    当登录时以及每次打开新的shell时,该该文件被读取.
+    ~/.bash_profile 与 ~/.bashrc  设置大致相同，所以通常前者会调用后者。
+（4）~/.bash_profile
+    若bash shell是以login方式执行时，才会读取此文件。该文件仅仅执行一次!默认情况下,他设置一
+    些环境变量,执行用户的~/.bashrc文件.
+    ~/.bash_profile 与 ~/.bashrc  设置大致相同，所以通常前者会调用后者。
+（5）~/.bash_login
+    若bash shell是以login方式执行时，读取~/.bash_profile，若它不存在，则读取~/.bash_login，
+    若前两者不存在，读取~/.profile。
+（6）~/.profile
+    若bash shell是以login方式执行时，读取~/.bash_profile，若它不存在，则读取~/.bash_login，
+    若前两者不存在，读取~/.profile。
+    另外，图形模式登录时，此文件将被读取，即使存在~/.bash_profile和~/.bash_login。
+（7）~/.bash_logout
+    注销时，且是longin形式，此文件才会读取。也就是说，在文本模式注销时，此文件会被读取，图形模
+    式注销时，此文件不会被读取。
+
+
+下面是在本机(Ubuntu)的几个例子
+    ====================================
+    1. 图形模式登录时，顺序读取：/etc/profile和~/.profile
+    2. 图形模式登录后，打开终端时，顺序读取：/etc/bash.bashrc和~/.bashrc
+    3. 文本模式登录时，顺序读取：/etc/bash.bashrc，/etc/profile和~/.bash_profile
+    4. 从其它用户su到该用户，则分两种情况：
+    （1）如果带-l参数（或-参数，--login参数），如：su -l username，则bash是lonin的，它将
+        顺序读取以下配置文件：/etc/bash.bashrc，/etc/profile和~ /.bash_profile。
+    （2）如果没有带-l参数，则bash是non-login的，它将顺序读取：/etc/bash.bashrc和~/.bashrc
+    5. 注销时，或退出su登录的用户，如果是longin方式，那么bash会读取：~/.bash_logout
+    6. 执行自定义的shell文件时，若使用“bash -l a.sh”的方式，则bash会读取行：/etc/profile
+        和~/.bash_profile，若使用其它方式，如：bash a.sh， ./a.sh，sh a.sh（这个不属于
+        bash shell），则不会读取上面的任何文件。
+    7. 上面的例子凡是读取到~/.bash_profile的，若该文件不存在，则读取~/.bash_login，若前两
+        者不存在，读取~/.profile。

@@ -1,0 +1,133 @@
+加密
+
+SSL:secure socket layer
+TLS:Transport Layer Secrurity
+
+对称加密
+	DES: IBM, Data Encryption Standard, 56 bits
+	3DES:
+	AES: Advanced Encryption Standard
+		 AES192, AES256, AES512
+	Slowfish
+
+	openssl
+	gpg
+
+单向加密：
+	MD4:
+	MD5:
+	SHA1:
+	SHA192, SHA256, SHA384
+	CRC-32
+
+公钥加密: 加密/签名
+	身份认证(数字签名)
+	数据加密
+	密钥加密
+	密钥交换
+
+	RSA:加密、签名
+	DSA:签名
+
+openSSL: SSL的开源实现，几乎实现了几乎所有的加密算法
+	软件: 三部分
+		libcrypto: 通用加密库，提供各种加密函数
+		libssl: TLS/SSL 的实现，基于会话、身份认证、数据加密和会话完整的库
+		openssl: 多用途命令行工具，单向、多向、私有证书颁发机构
+			- openssl ? ==>提示错误，但是现实相关命令列表
+			- openssl speed   ==>检测所有加密算法在本机的速度
+			- openssl speed des  ==>检测des算法在本机的速度
+			- openssl enc -cybername -in s_file -out o_file
+				-k password
+
+			- openssl genrsa  ==>生成private key
+	- (umask 077; openssl genrsa -out /path/server1024.key 1024)
+				==>()内的命令只在一个子shell中运行，完毕即退出，不会影响其
+					他shell的umask，生成密码的文件权限600
+	- openssl rsa -n /path/server1024.key -pubout 
+				==>从私钥中提取对应的公钥
+
+	- openssl req -new -x509 -key /path/s1024.key -out 
+		server.crt -days 365
+			=>name:  state:  city:  Org: Org: hostname: email:
+				hostname:至关重要，必须要他才能用，否则提示证书不可信
+	- openssl x509 -text -in /path/server.crt
+			==>显示证书的详细信息，持有者，有效期等等
+
+/etc/pki/tls/openssl.cnf
+	==>甚至证书生成时的默认值
+
+
+telnet: TCP/23,远程登录协议
+	- 明文认证
+	- 明文数据传输
+	==>不安全
+
+ssh: Secure SHell, TCP/22
+	c/s: 需要客户端和服务器端
+
+	协议: 
+		v1: 严重设计缺陷，无法有效拒绝中间人攻击
+		v2:
+
+openSSH: ssh的开源实现版
+	 
+
+客户端:
+	Linux: ssh
+	Windows: 
+		- putty
+			汉化-->汉化者在程序中植入木马病毒，很多管理员丢密码
+		- SecureCRT(),
+		- SSHSecureSheelClient
+服务器端:
+	windows很难实现
+	linux:
+		ssh
+		sshd
+
+	口令的传输机制:
+		- 基于口令的认证登录，默认
+		- 基于密钥: 一对密码，公钥放入用户信息，登录时只输入用户名(
+			不是很清楚)
+
+netstat:
+	-r:
+	-t:
+	-u
+	-n: 显示端口号为number
+	-l: 监听状态
+	-p: process 
+
+	==>service sshd status
+
+ssh:
+	配置文件 /etc/ssh_config
+
+
+sshd:
+	配置文件 /etc/sshd_config
+
+登录
+	- ssh -l username remoteHost
+		==> ssh -l root 10.0.0.1
+		==> ssh username@remotehost
+		==> ssh root@remote 'command_to_be execute'
+			==>不登录远程主机，运行命令返回结果
+			
+		==> -X: X11 forwarding
+			-Y: X11 forwarding
+
+
+
+
+
+
+
+
+
+
+
+
+
+

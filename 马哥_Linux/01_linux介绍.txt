@@ -1,0 +1,125 @@
+中级:
+    初级: 系统基础
+    中级: 系统管理、服务安全和服务管理、shell脚本
+高级:
+    MySQL数据库: cache&storage
+    集群:
+        cluster
+        lb:     4 layer     7 layer
+        HA
+    分布式:
+        zookeeper
+        分布式文件系统
+    虚拟化技术:
+        xen
+        kvm
+
+    Openstack:  IAAS 云
+
+    运维工具
+        ansible
+        puppet(ruby), saltstack(python)
+    监控工具:
+        zabbix
+    大数据处理:
+        hadoop: 批处理，google的上一代技术，有点过时了
+        spark, storm: 流式大数据，
+
+        elk: elasticsearch, logstash(日志收集), kibana(前端展示)
+
+    docker:
+
+    Python:
+
+    一万小时定律:  10000 / (8 * 20)  ===   约 5 年
+
+红帽子认证
+    RedHat:
+            RHCSA  --> RHCE --> RHCA
+
+
+计算机组成
+    运算器 控制器 存储器 输入设备    输出设备
+    CPU: Central Processing Unit    运算器 控制器
+        CPU指令集: Instruction Set Architecture(ISA)
+            RISC: Reduced Instruction Set Computer 精简指令集
+            CISC: Complex Instruction Set Computer 复杂指令集
+            EPIC: Explicitly Parallel Instruction 显示并发指令
+            VLIW: 超长指令集
+
+            指令分类
+                特权指令    root    admin
+                普通指令
+
+    bus: 总线， 地址总线  控制总线  数据总线
+    RAM: Random Access Memory
+
+    IO: 与外部部件交互
+        磁盘
+        网卡
+        键盘
+        鼠标
+
+    OS: Operating Syste
+        软件程序
+        通用目的
+            提供硬件驱动
+            管理进程
+            管理内存
+            管理网络
+            安全管理
+
+        System Call: 系统调用
+            Syscall
+
+        编程层次
+            硬件规格    hardware specification
+            系统调用
+            库调用      library call, 对系统调用进一步封装， 通常指c库s
+
+UI    user interface
+    GUI: Graphic User Interface
+    CLI: Command Line Interface
+
+ABI   Application Binary Interface
+API   Application Programming Interface
+
+
+CPU架构
+    x86  32位系统
+    x64  64位系统
+    arm  只设计CPU, 三星 高通生产    手持操作系统-->接电
+
+    m68000  m68k  摩托罗拉
+    power   第一个多核(4，8)   IBM     超过频  4GHz   功耗大  生产工艺不如INTEL
+            powerpc 简装版的 power
+    ultrasparc  SUN
+    alpha   HP
+    安腾-->NEC-->Compaq-->hp-->Intel
+
+操作系统
+    Windows
+
+    Linux
+        Andrew      Minix ==> 1991年 Linux   Linus Torvalds  GPL
+        MIT: Richard Stallman   GPL ==> General Public License  通用公共许可证
+                GNU: GUN is Not Unix    80年代中期
+                     GPL v1/2/3  LGPL
+    Unix
+        嫡系  --> 贝尔实验室提供
+            SystemV
+            AIX     IBM
+            Solaris SUN | Oracle
+            HP-UX   HP
+        非嫡系
+            BSD --> Berkeley System Distribution
+                    ==>BSRG Berkeley System Research Group
+                NetBSD
+                OpenBSD
+                FreeBSD: 唯一能在pc机上跑的unix
+
+
+    苹果-->BSD Linux
+
+    图形界面系统
+        Xerox --> Jobs --> Bill Gates

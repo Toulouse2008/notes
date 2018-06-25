@@ -1,0 +1,41 @@
+Tomcat
+Run by Apache community - Open source and has two flavors Tomcat - Web profile
+- light weight which is only servlet container and does not support Java EE
+features like EJB, JMS etc. Tomcat EE - This is a certified Java EE container,
+this supports all Java EE technologies. No commercial support available (only
+community support)
+
+JBoss
+Run by RedHat This is a full stack support for JavaEE and it is a certified
+Java EE container. This includes Tomcat as web container internally. This also
+has two flavors Community version called Application Server (AS) - this will have
+only community support Enterprise Application Server ( EAP) - For this, you can
+have subscription based license (It's based on number of Cores you have on your
+servers.)
+
+Glassfish
+Run by Oracle This is also a full stack certified Java EE Container. This has
+its own web container (not Tomcat). This comes from Oracle itself,so all new
+specs will be tested and implemented with Glassfish first. So, always it would
+support the latest spec. I am not aware of its support models.
+
+
+Tomcat is merely an HTTP server and Java servlet container. JBoss and GlassFish
+are full-blown Java EE application servers, including an EJB container and all
+the other features of that stack. On the other hand, Tomcat has a lighter memory
+footprint (~60-70 MB), while those Java EE servers weigh in at hundreds of megs.
+Tomcat is very popular for simple web applications, or applications using
+frameworks such as Spring that do not require a full Java EE server. Administration
+of a Tomcat server is arguably easier, as there are fewer moving parts.
+
+However, for applications that do require a full Java EE stack (or at least more
+pieces that could easily be bolted-on to Tomcat)... JBoss and GlassFish are two
+of the most popular open source offerings (the third one is Apache Geronimo, upon
+which the free version of IBM WebSphere is built). JBoss has a larger and deeper
+user community, and a more mature codebase. However, JBoss lags significantly
+behind GlassFish in implementing the current Java EE specs. Also, for those who
+prefer a GUI-based admin system... GlassFish's admin console is extremely slick,
+whereas most administration in JBoss is done with a command-line and text editor.
+GlassFish comes straight from Sun/Oracle, with all the advantages that can offer.
+JBoss is NOT under the control of Sun/Oracle, with all the advantages THAT can
+offer.

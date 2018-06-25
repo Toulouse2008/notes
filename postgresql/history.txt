@@ -1,0 +1,7 @@
+History of Postgresql
+
+1977-1985  UC Berkeley  -->Ingres
+1986-1994  Michael Stonebraker UCB Postgres -->Object-relational database
+    Illustra took the Postgres code and developed it into a commercial product
+    Jolly Chen and Andrew Yu, graduate student, added SQL capabilities to Postgres
+        --->Postgres95(1994-1995)

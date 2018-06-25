@@ -1,0 +1,44 @@
+条件判断
+	if CONDITION; then
+		statement1
+		...
+	fi
+
+	if CONDITION; then
+		分支1;
+	else
+		分支2;
+	fi
+
+	if CONDITION1; then
+		分支1
+	elif CONDITION2; then
+		分支2
+	...
+	else
+		分支n
+	fi
+
+条件测试：
+	bash: 每个命令，执行状态返回值：
+		成功：0
+		失败：非0
+		$?: 
+
+		脚本的状态返回值：脚本执行的最后一条命令；
+		自定义脚本状态返回值：exit [n]
+
+		引用命令的执行结果：使用`COMMAND`或$(COMMAND)
+		引用命令执行成功与否的状态结果：一定是直接执行命令，此时，通常需要将执行结果重定向至/dev/null；
+
+if id $userName &> /dev/null
+
+if [ `id -u $userName` -eq 0 ]
+
+	条件测试：
+		test 测试表达式
+		[ 测试表达式 ]
+		[[  ]]
+
+	整数测试：
+		-eq, -ne, -le, -gt, -lt, -ge

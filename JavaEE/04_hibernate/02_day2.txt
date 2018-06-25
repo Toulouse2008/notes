@@ -1,0 +1,15 @@
+持久化类
+    要求
+    - 提供无参构造方法: hibernate 底层需要使用反射生成类的实例
+    - 属性需要私有，并对私有属性提供 get 和 set 方法，hibernate底层会将查询到的数据进行封装
+    - 属性尽量使用包装类，sql 中的 null
+    - 要有一个唯一标识 OID 与表的主键对应，hibernate不允许内存中出现两个相同的OID持久化对象
+    - 尽量不要用final修饰
+
+主键生成策略
+    increment: 主键自增，由数据库维护，每次插入先查询表中id最大值，+1作为新记录的主键
+    identity: 主键自增，由数据库维护主键值，录入时不需要指定主键
+    sequence: Oracle 中的主键生成策略
+    native: hilow + sequence + identity 自动三选一的策略
+    uuid: 产生随机字符串作为主键，主键类型必须为String 
+    assigned:

@@ -1,0 +1,22 @@
+CentOS 6.8 yum 安装 MySQL 5.7
+
+1. 配置 yum 源
+    MySQL 官网下载 yum 的 RPM 安装包
+    $wget http://dev.mysql.com/get/mysql57-community-release-el6-9.noarch.rpm
+    $yum repolist enabled | grep mysql
+    $yum install mysql-community-server
+    $yum list installed | grep mysql-community
+
+2. 启动 MySQL 服务器
+    $service mysqld start
+
+3. 进入 MySQL 客户端
+    获取默认安装密码
+    $grep 'temporary password' /var/log/mysqld.log
+    登录
+    $mysql -uroot -p
+    更改 root 账号的密码
+    mysql>ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass4!';
+
+4. 添加用户
+    mysql>GRANT ALL ON *.* TO 'frank'@'localhost' IDENTIFIED BY 'my_pass';

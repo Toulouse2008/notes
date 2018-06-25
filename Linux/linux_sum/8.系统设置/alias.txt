@@ -1,0 +1,13 @@
+alias
+    设置指令的别名
+    alias[别名]=[指令名称]
+
+    给命令设置别名
+    # alias lx=ls
+
+unalias
+    删除别名
+    unalias [-a][别名]
+
+    参数：
+        -a 　删除全部的别名。

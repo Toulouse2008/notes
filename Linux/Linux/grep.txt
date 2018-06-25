@@ -1,0 +1,157 @@
+马哥 运维初级
+
+文本过滤器grep
+
+文本处理工具之grep、egrep和fgrep：
+
+grep: （global search regular expression(RE) and print out the line
+
+文本搜索工具，根据用户指定的文本模式对目标文件进行逐行搜索，显示能够被模式所匹配到的行
+
+格式：grep [options] 'PATTERN' file,...
+	--color=auto
+	"PATTERN":
+		==>若不含变量，单双引号均可以
+		==>若不含元字符，不加引号也可以
+
+正则表达式：是一类字符所书写出的模式(pattern)
+	元字符：不表示字符本身的意义，用于额外功能性的描述
+
+	基本正则表达式和扩展正则表达式
+
+	基本正则表式的元字符：grep -E
+		字符匹配：
+			.: 任意单个字符
+			[]: 指定范围内的任意单个字符
+				[0-9], [[:digit:]]
+				[a-z], [[:lower:]]
+				[A-Z], [[:upper:]]
+				[[:alpha:]]
+				[[:alnum:]]
+				[[:space:]]
+				[[:punct:]]
+			[^]：指定范围外的任意单个字符
+		次数匹配：用来指定匹配其前面的字符的次数
+			*: 任意次
+				例子：x*y==>xxy, xy, y, 
+				x.*y==>
+				.*: 匹配任意长度的任意字符
+			\?: 0次或1次
+				x\?y, xy, y, xxy
+
+				贪婪模式：尽可能的长的去匹配字符；
+			\{m\}: 匹配m次
+			\{m,n\}: [m,n]次
+			\{m,\}: 至少m次;
+			\{0,n\}:至多n次;
+		位置锚定：用于指定字符出现的位置
+			^: 锚定行首
+				^Char
+			$: 锚定行尾
+				char$
+			^$: 空白行
+
+			\<char: 锚定词首，\bchar
+			char\>: 锚定词尾，char\b
+		分组：
+			\(\)
+				\(ab\)*xy
+		引用：
+			\1: 后向引用，引用前面的第一个左括号以及与之对应的右括号中的模式所匹配到的内容
+			\2
+			...
+				\(a.b\)xy\1: a6bxya6b, 
+
+
+				He like his lover.
+				She love her liker.
+				He love his lover.
+				She like her liker.
+
+grep 常用选项：
+	-v: 反向，显示不能被模式所匹配到的行；
+	-o: 仅显示被模式匹配到的字串，而非整行；
+	-i: 不区分字符大小写, ignore-case
+	-E: 支持扩展的正则表达式
+	-A #：
+	-B #
+	-C #
+
+练习：
+	1、显示/proc/meminfo文件中以大小写s开头的行；
+	# grep "^[sS]" /proc/meminfo
+	# grep -i "^s" /proc/meminfo
+	2、取出默认shell为非bash的用户；
+	# grep -v "bash$" /etc/passwd | cut -d: -f1
+	3、取出默认shell为bash的且其ID号最大的用户；
+	# grep "bash$" /etc/passwd | sort -n -t: -k3 | tail -1 | cut -d: -f1
+	4、显示/etc/rc.d/rc.sysinit文件中，以#开头，后面跟至少一个空白字符，而后又有至少一个非空白字符的行；
+	# grep "^#[[:space:]]\{1,\}[^[:space:]]\{1,\}" /etc/rc.d/rc.sysinit
+	5、显示/boot/grub/grub.conf中以至少一个空白字符开头的行；
+	# grep "^[[:space:]]\{1,\}[^[:space:]]\{1,\}" /boot/grub/grub.conf 
+	6、找出/etc/passwd文件中一位数或两位数；
+	# grep --color=auto "\<[0-9]\{1,2\}\>" /etc/passwd
+	7、找出ifconfig命令结果中的1到255之间的整数；
+	# ifconfig | grep -E --color=auto "\<([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\>"
+	8、查看当前系统上root用户的所有信息;
+	# grep "^root\>" /etc/passwd
+	9、添加用户bash和testbash、basher，而后找出当前系统上其用户名和默认shell相同的用户；
+	# grep --color=auto "^\([[:alnum:]]\{1,\}\)\>.*\1$" /etc/passwd
+	10、找出netstat -tan命令执行的结果中以“LISTEN”或“ESTABLISHED”结尾的行；
+	11、取出当前系统上所有用户的shell，要求：每种shell只显示一次，且按升序显示；
+	# cut -d: -f7 /etc/passwd | sort -u
+	挑战题：写一个模式，能匹配真正意义上的IP地址；（1.0.0.1--223.255.255.254）
+
+grep, egrep, fgrep
+egrep: 使用扩展正则表达来构建模式，相当于grep -E 
+	元字符：
+		字符匹配：
+			.: 任意单个字符
+			[]: 指定范围内的任意单个字符
+			[^]: 指定范围外的任意单个字符
+		次数匹配：
+			*：匹配其前面的字符任意次；
+			?: 匹配其前面的字符0或1次；
+			+: 匹配其前面的字符至少1次
+			{m}: 匹配其前面的字符m次；
+			{m,n}: 至少m次，至多n次
+			{m,}: 至少m次；
+			{0,n}：至多n次；
+		锚定：
+			^: 行首
+			$: 行尾
+			\<, \b: 词首
+			\>, \b：词尾
+		分组：
+			(): 分组
+			\1, \2, \3 ...
+
+			|: 或者, 'ac|bc' ==> ac, bc
+					 'C|cat' ==>C, cat
+				grep -E "con(C|c)at" 
+					not conC或cat
+					==>conCat或concat
+
+fgrep: 
+	fast, 不支持正则， 即不解析正则表达式， 直接搜索给定的pattern
+	也就是grep，egrep中的元字符不再有特殊含义，当做字符本身处理
+
+
+
+练习：写一个脚本，分别统计/etc/rc.d/rc.sysinit、/etc/init.d/functions和/etc/fstab文件中各自以#开头的行的行数，以及空白行的行数；
+
+练习：写一个脚本，分别复制/etc/rc.d/rc.sysinit、/etc/init.d/functions和/etc/fstab文件至/tmp目录中，文件名为原名后跟上当前的日期组成；
+	例如第一个文件复制后的名称为/tmp/rc.sysinit-2-14-02-16；
+
+练习：写一个脚本
+	显示当前系统上所有默认shell为bash的用户的用户名、UID以及其在/etc/passwd文件中的行号；
+
+IPv4:
+	A, B, C, D, E
+	A: 1-127
+	B: 128-191
+	C: 192-223
+
+	练习通过egrep找文档中的IP
+
+第一篇博客：讲清楚grep和egrep的使用

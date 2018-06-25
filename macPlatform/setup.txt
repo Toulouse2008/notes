@@ -1,0 +1,7 @@
+Mac Platform setup
+
+1. Install Homebrew
+    $mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+
+2. Install git
+    $brew install git

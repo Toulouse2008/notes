@@ -1,0 +1,115 @@
+数据库-韩中康
+
+SHOW
+	show databases;
+	show create database db_name;
+	drop database dt_name;
+	alter database db_name character set set_name;
+
+	show tables [like 'pattern'];  ==> %
+	show create table tb_name;
+	drop table tb_name;
+
+	\G: 列式显示
+
+USE
+	use db_name;
+
+CREATE
+	create table db_name.tb_name(col_def_list);
+
+表
+	MyISAM: 		==>ISAM: Indexed Sequential Access Method
+		.frm, .MYD, .MYI
+	InnoDB: ibdata, .frm
+
+ALTER TABLE tb_name
+	add
+	drop
+	modify
+	change
+
+	列
+		REFERENCES
+			ON UPDATE
+			ON DELETE
+
+			CASCADE
+				SET NULL
+				RESTRICT
+
+			ALTER TABLE tb_name DROP FOREIGN KEY key_name;  ==>drop fk
+			ALTER TBALE tb_name ADD FOREIGN KEY (key_name) references tb_2(col_name) ON DELETE SET NULL;
+
+
+			ALTER TBALE tb_name ADD FOREIGN KEY (key_name) references tb_2(col_name) 
+				ON DELETE CASCADE
+				ON UPDATE RESTRICT  ==>禁止更新关联主表的主键字段
+
+
+
+		DEFAULT
+		PRIMARY KEY | UNIQUE KEY
+		AUTO_INCREMENT
+		NULL | NOT NULL
+		COMMENT
+	表选项
+		engine, characterset, collation
+
+
+操作数据
+	INSERT INTO tb_name values(value_list);
+	SELECT col_list FROM tb_name WHERE condition_list;
+		ORDER BY col_name ... [ ASC | DESC ]
+		LIMIT [OFFSET,] number		==>返回 (offset, offset+number], 默认0.
+
+
+		DISTINCT | ALL:位置在 SELECT 的后面
+
+		where:
+			关系：
+				=, <,> !=
+			集合
+			in | not in
+			ANY | ALL
+			!=ALL
+
+	DELETE FROM tb_name WHERE condition_list;
+	UPDATE tb_name SET col=value, col=value,... WHERE conditions
+
+
+
+	UNION
+
+
+	子查询:
+		exists
+		where
+		from
+
+		标量子查询
+		列子查询
+		行子查询
+		表子查询
+
+	JOIN
+		外连接：
+			LEFT JOIN
+			RIGHT JOIN
+			FULL JOIN
+
+			条件
+				on
+				using
+				where
+		内连接
+			CROSS JOIN
+			INNER JOIN
+
+		自然连接
+			NATURAL JOIN
+
+
+
+
+

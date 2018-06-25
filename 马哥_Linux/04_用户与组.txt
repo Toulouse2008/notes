@@ -1,0 +1,428 @@
+
+cp
+    cp SRC DEST
+        SRC是文件
+            - 如果 DEST 不存在，则新建 DEST，并将 SRC 中的内容填充到 DEST 中
+            - 如果 DEST 存在
+                  - DEST 是文件， 则用 SRC 中的内容覆盖 DEST 的内容
+                    此时，建议使用 -i
+                  - DEST 是目录， 则在 DEST 下新建与 SRC 同名的文件， 并将 SRC 内容填充新文件
+    cp SRC... DEST
+        SRC...: 多个文件
+            DEST 必须存在，而且必须是目录， 否则报错
+
+    cp SRC DEST
+        SRC 是目录： 默认不支持复制目录，跳过，cp: omitting directory
+                    -r: 递归复制目录及其子文件和子目录
+            如果 DEST 不存在，创建目标目录 DEST， 复制所有子文件及其子目录到 DEST
+            若果 DEST 存在
+                    若是文件，报错
+                    若果是目录，复制所有文件到 DEST
+
+    -i: 提示是否覆盖目标文件
+    -r: -R recursive 递归复制
+    -a: --archive   归档==>保留原来的样子，一模一样， 等同于 -dR --preserver=all
+        all ==> 默认： mode, ownership, timestamp; if possible additional: context, links,xattr, all
+    -d: 同 --no-dereference --preserve=links
+    -P, --no-dereference, never follow symbolic links in SOURCES, 遇到软链接，不要追踪
+        复制，只复制符号链接，
+    -p: === --preserve=node,ownership,timestamps
+    -v: --verbose
+
+mv: 移动文件
+    mv [option]... [-T] SRC  DEST
+    mv [option]... SRC... DIRECTORY
+    mv [option]... -T DEST SRC...
+
+    -i: 询问是否覆盖
+    -f: 强制覆盖
+
+rm  remove 删除
+    -i: 交互式
+    -f: 强制删除
+    -r: 递归删除
+
+    rm -rf
+
+
+bash 的基础特性
+    1. 命令别名 alias
+        显示当前别名列表: alias
+        定义别名: alias name='你常用的一个命令'
+            - 只对当前shell进程起作用，想要永久生效，必须写到配置文件中
+            配置文件:
+                对当前用户: ~/.bashrc
+                对所有用户: /etc/bashrc
+
+                配置文件修改后不会立即生效
+                    $source /path/to/targetfile
+                    $. /path/to/targetfile
+        撤销别名: unalias
+            $unalias alias_name
+            -a: 撤销所有别名
+
+        注意：
+            如果别名同原命令同名，命令前加 \command_name，执行原命令而非别名
+            $\ls   执行的是 ls 而非 ll
+
+    2. glob: globbing  bash 中实现文件名通配 globbing pathname
+        -*:
+            a*b, a开头b结尾， aab, asdfsdb
+        -?:
+            a?b, a开头，b结尾，中间一个或0个任意字符
+        []: 指明匹配范围
+            [0-9] 0~9 一次  a[0-9]c
+            [a-z](不区分大小写)
+            [A-Z] 只匹配大写
+        [^]: 范围取反
+            [^0-9a_z]: 匹配特殊字符
+        \:  转义
+        专用字符集合表示
+            [:digit:]: 任意数字
+            [:lower:]: 小写字母
+            [:upper:]: 大写字母
+            [:alpha:]: 任意大小写字母
+            [:alnum:]: 任意数字或者字母
+            [:space:]: 空格
+            [:punct:]: 标点符号
+            [:blank:]: 空白
+            [:cntrl:]:
+            [:graph:]: 图形
+            [:xdigit:]:
+
+        练习
+        1. 显示 /var 目录下所有 l 开头， 小写字母结尾，且中间至少出现一个数字的文件或者目录
+            Solution: $ls -d /var/l*[[:digit:]]* [[:lower:]]
+        2. 显示 /etc 目录下，以任意多数字开头，且以非数字结尾的文件或目录？
+            Solution: $ls -d /etc/[[:digit:]]*[^[:digit:]]
+        3. 显示 /etc 目录下， 以非字母开头，后面跟了一个字母及其它任意长度任意字符的文件和目录
+            Solution: $ls -d /etc/[^[:alpha:]][[:alpha:]]*
+        4. 复制 /etc 目录下， 所有以 m 开头， 以非数字结尾的文件或目录到 /tmp/mageedu 下
+            Solution: $cp -a /etc/m*[^[:digit:]] /tmp/mageedu
+        5. 复制 /etc 目录下，所有以 .d 结尾文件或目录到 /tmp/mageedu.com 目录
+            Solution: $cp -a /etc/*.d /tmp/mageedu.com
+        6. 复制 /tec 目录下， 所有 .conf 结尾，且以n,n,r,p开头的文件，到/tmp/mageedu.com下
+            Solution: $cp -rp /etc/[mnpr]*.conf /tmp/mageedu.com
+
+    3. bash 的快捷键
+        Ctrl + l: 清屏，等同于 clear
+        Ctrl + A | E: 光标跳转到行头 | 行尾
+        Ctrl + c: 终止命令执行
+        Ctrl + u | k: 从光标位置删除至 行头 | 行尾
+
+    4. I/O重定向 管道
+        标准输入: 键盘  stdin 0 | 标准输出: 显示器 stdout 1 | 标准错误: 显示器 stderr 2
+                keyboard, monitor, monitor <==标准输入流，标准输出流，标准错误流
+        文件描述符: fd, file descriptor  stdin 0 | stdout 1 | stderr 2
+
+        输入重定向: <
+                    没有追加输入冲定向!!!! <<结束符: HERE DOCUMENTATION
+                        EOF: End Of File
+                        $cat >>/path/to/file<<EOF | END
+                        >your_input
+                        >EOF | END
+
+                    tr      translate
+                        $tr abc ABC
+                        -d: 删除字符
+                        $tr -d abc
+
+        输出重定向: 覆盖重定向 > | 追加重定向 >>   $command_name > | >> newPosition
+            $set -C     如果文件存在，禁止对覆盖重定向覆盖已有文件内容
+            $set +C     开启允许覆盖重定向到已有文件
+
+            如果要强行覆盖
+            $ls /var/ >| out.txt
+        错误重定向:  2> | 2>>
+        同时重定向标准输出和标准错误到不同文件:
+            $COMMAND > /path/to/file 2>/path/to/err.out
+        合并向标准输出流和标准错误流到同一个文件:
+            $COMMAND &> /path/to/file
+            $COMMAND &>> /path/to/file
+
+            $COMMAND >|>> /path/to/file 2> |>>&1
+
+        管道:   |, 把第一个名的执行结果，作为输入送给下一个命令
+            $COMMAND1 | COMMAND2 | COMMAND3 ...
+            tee
+                在处理之前保存一份数据
+                $COMMAND1 | tee /path/to/file | COMMAND2 | COMMAND3 ...
+            注意
+                最后一个命令是在当前命令的子 shell 中执行的
+
+        练习
+            1. 将 /etc/passwd 中前 5 行内容 转换为大写后保存到 /tmp/passwd.out中
+                Solution: $head -n 5 | tr 'a-z' 'A-Z' > /tmp/passwd.out
+            2. 将登录到当前系统上的用户信息中的后三位的信息转换为大写后保存到 /tmp/who.out中
+                $who | tail -n 3 | tr 'a-z' 'A-Z' > /tmp/test.out
+
+文本处理工具
+    tr, tee, cat
+    cut
+        -d: 指定分隔符   默认空格    --delimiter=DELIM
+        -f: 指定字段列表  --fileds=LIST
+            3: 指定 3 字段
+            1,3: 指定 1 和 3 个字段
+            1-4: 1 到 4 字段
+            1, 4-6: 取字段 1， 4到6字段
+
+        $cut -d':' -f1,3 | -f1-3  /etc/passwd
+        $cut -d':' -f1,4 --output-delimiter=$ /etc/passwd   指明输出分隔符为 $
+
+    sort
+        -r: 逆序排列
+        -f: 忽略大小写，--ignore-case
+        -k: 按指定字段排序
+        -t: 指定分隔符
+        -n: 按数值大小排序，默认以字符排序
+        -u: 去重显示，相同行只显示一次
+        -b: 忽略行首的空白
+        -d: 字典排序    --dictionary-order
+
+    uniq
+        -c: 统计行的重复次数
+        -d: 只显示重复行
+        -u: 只显示不重复的行
+
+    练习
+        取出 /etc/passwd 中 6 到 10 行，按第三字段数值大小排序，仅显示第一个字段
+            Solution: $sort -n -t':' -k3 /etc/passwd | cut -d':' -f3
+
+
+
+用户和组管理
+    资源分配
+        Authentication: 认证
+        Authorization: 授权
+        Accounting: 审计  Audition
+
+        token: 只有密码，没有用户名
+        identity: 用户名和密码
+
+    Linux 用户    username/UID
+        管理员:    root
+        普通用户:   1-65535 (2 bytes) 企业级 4 billion(4 bytes)
+            系统用户: 1-499, 守护进程，权限分配
+            登录用户: [500, ]， 交互式登录使用
+
+    Linux 组:
+        组名 groupname     组ID  groupID
+        管理员组: root  0
+        普通组:
+            系统组: 1-499
+            登录组: [500, ]
+
+        类别
+            基本组: 主组  用户创建文件时，默认属组
+                    组名和用户名相同，且不含其它用户 ==> 私有组
+
+            附加组: 额外组
+
+    用户和组的配置文件
+        /etc/passwd: 用户及其属性信息(名称 UID，基本组ID等)
+            name:password:UID:GID:GECOS:directory:shell
+            用户名 密码(占位符) 组ID 用户信息(姓名 邮箱 电话等，逗号分开) 家目录 登录shell
+
+        /etc/group:  组及其属性
+            group_name:password:GID:user_list
+            组名:组密码:组ID:以当前组为附加组的列表
+
+        /etc/shadow: 用户密码及其相关属性, 冒号分开的 9 个字段
+            登录名 加密后的密码  最近一次更改密码的日期 密码最短使用期限 最大使用期限 密码到期警告期限
+            密码禁用期(登录后必须先改密码) 账号的过期日期(过期后账号锁定) 保留字段(没有使用)
+            !!: 表示密码还没有设定，linux不允许没有密码的用户登录，所有该类账号处于禁用状态
+            loginname:encrypted password:
+            root:$6$ap1xz5SM5RIYpv/T$iGy0CD8BnmpP.Iqy6JopKnSs1vbSOqtX8ww7igVws7L
+            4KdXtMfaXTftYmiiDKGVxD33dXVfz/FJO07/rY46k20::0:99999:7:::
+            $:分隔符  6:表示加密算法， sha512 杂质:ap1xz5SM5RIYpv/T
+
+            最近一次更改密码的日期: 相对于Unix远点（1970.01.01 00:00:00)所经历的完整天数
+        /etc/gshadow: 组及其密码
+
+    Linux 安全上下文:
+        linux 命令执行时 以进程发起者的身份，进程的安全上下文
+        进程能访问的资源的权限，取决于发起者的身份
+
+    加密机制
+        加密: 明文 --> 密文   解密: 密文 --> 明文
+        单向加密: 提取数据指纹 | 特征码      collision: 撞库   不同的数据，指纹相同
+                 枚举攻击   2^255
+                 md5: message digests, 128 bits
+                 sha1: secure hash algorithm, 160 bits
+                 sha224 | 256 | 384 | 512
+
+                 雪崩效应 | 蝴蝶效应: 数据微小改变，结果改变巨大
+
+        密码的复杂性策略
+            1. 使用数字、大写字母、 小写字母和特殊字符中至少三种
+            2. 足够长:
+            3. 不要使用易于猜测的密码
+            4. 定期更换，不使用最近用过的密码
+
+    创建用户    useradd [options] user_anme
+        $useradd user_name
+        -u UID: 指定UID, UID_MIN ~ UID_MAX    /etc/login.defs
+                默认使用最近一添加的 UID + 1
+        -g groupName | GID: 指定组(可以用GID 或者组名)， 但是组必须已经存在，否则需要先建立组
+        -c: 用户的详细信息，"注释 信息"
+        -d /path/to/home: 指定家目录，默认在 /home/user_name; 如果指定目录存在，目录存在，
+                不从 /etc/skel 目录下复制任何文件
+        -s: 指定shell， 配置文件 /etc/default/useradd 中 SHELL  /etc/shells
+        -G G1,G3,G5...: 指定用户附加组, 可以多个但组必须事先存在
+        -r: 创建系统用户 id<500(centos 6) |1000 (centos 7)
+
+        -D: 更改 默认值， 等同于修改 /etc/default/useradd
+            -s: shell
+            -f: inactive time
+            -b: base dir
+
+        练习
+            创建用户 gentoo, 附加组 distro 和 linux， 默认shell /bin/bash 注释信息 gentoo distro
+
+
+    创建组     groupadd
+        groupadd [option]...    group_name
+            -g GID: 指明GID号
+            -r: 创建系统组   id<500(centos 6) |1000 (centos 7)
+
+    id user_name: 显示用户真实有效的 UID 和 GID 信息
+        id [option]... user_name
+        -u: uid
+        -g: 基本组 gid
+        -G: 所有数组的 gid
+        -n: 显示名字而不再是 id 号
+
+        /etc/log.defaults
+
+    su  substitute user
+        切换用户 或者 以其他用户身份执行命令
+        $su - user_name | $su user_name
+            登录式切换(完全切换): 读取目标用户的配置文件
+            非登录式切换(不完全切换):不读取目标用户配置文件
+        -c
+            $su [-] user_name -c 'COMMAND'
+        -l
+            $su -l user_name   === $su - user_name
+        -g
+            指定登录基本组
+
+    用户属性修改
+        usermod [option] login
+        -u: uid
+        -g: gid
+        -G: 附加组,原有附加组被覆盖，如果要添加新租，-a
+        -s: 新默认登录 shell
+        -l: username
+        -c 'comment':
+        -d HOME: 新家目录，新目录不会自动创建且原有家目录文件不会跟随，若想跟随，-m 选项
+        -e yyyy-mm-dd: 指定账号过期日期
+        -f: 设定非活动期限
+        -L: 锁定用户
+        -U: 解锁用户
+
+    修改密码    passwd
+        $passwd user_name   设定密码 root设定别人密码
+        $passwd     改自己密码
+        -l: 锁定用户
+        -u: 解锁
+        -n mindays: 密码最短使用期限
+        -x maxdays: 最大使用期限
+        -w warndays: 警告期限
+        -i inactviedays: 非活动期限
+        -e: 让密码过期
+        -d: 删除密码
+        --stdin: 从标准输入接受用户密码
+            $echo "Password" | passwd --stdin user_name
+
+            note:
+                /dev/null,  bit buckets 黑洞
+                /dev/zero,  zeros  泡泡机
+
+    删除用户        usedel
+        -r: 删除用户家目录
+
+    组属性修稿   groupmod
+        -g GID: 新GID
+        -n group_name:
+
+    组删除  groupdel
+        groupdel group_name
+
+    组密码     gpasswd
+         $gpasswd g_name    /etc/gshadow
+         -a username: 添加username到指定组
+         -d username: 删除组中的用户
+         -A user1,user2... root: 设置为有管理权限
+
+         临时切换基本组
+            newgrp groupname   临时切换基本组为groupname
+
+    pwck: 检查密码文件的完整性
+
+    chage:  更改用户密码过期信息
+        chage [option] username
+        -d last_day:
+        -E expire_date:
+        -m mindays:
+        -M maxdays:
+        -W warningdays:
+        -I inactivedays:
+
+    chfn:
+        change finger info
+        -f: fullname
+        -o: office
+        -h: home phone
+        -p: office phone
+
+    finger:
+        查看用户的 finger 信息
+    chsh
+
+    总结
+        useradd     groupadd   usermod  groupmod    userdel  groupdel
+        su  id  newgrp  pwck    gpasswd     chage   chsh    chfn    finger
+
+
+权限管理
+    owner: u  user    group: g   other: o
+    r: Readable     w: Writable     x: Executable
+
+    文件
+        r: 查看内容     w:修改内容      x: 把文件提交到内核执行
+    目录
+        r: ls 查看文件列表     4
+        w: 该目录下可以创建和删除文件  2
+        x: 可以ls查看文件列表并进入该目录   1
+
+    改变权限
+        chmod mode filename
+            八进制: 000 - 777
+            赋值  : u | g | o | ug | a= r|w|x|rw|rx|rwx
+            加减号: u | g | o +/- r|w|x
+
+    改变文件所有者和组   只有管理员可用
+    chown
+        chown username filename
+        chown :groupname filename
+        chown username:groupname filename
+
+        -R:递归
+        --reference=FILE:
+
+        note
+            : 可以替换为 .
+    chgrp
+        -R:
+        --reference=FILE
+
+    文件或者目录的遮罩码  umask
+        文件  666-umask
+            注意: 如果计算值有执行权限，则将计算值+1
+        目录  777-umask
+
+        $umask  查看umask
+        $umask number   设置umask值
+
+    总结：
+        chmod   chown    chgrp   umask

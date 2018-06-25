@@ -1,0 +1,74 @@
+数据备份
+mysqldump
+    $mysqldump --user=root --password=pass --result-file=/path/to/out.sql music
+        ==> 这种方式备份，没有 CREATE DATABASE 和 USE 语句
+
+- mysqldump 选项
+    - add-drop-table: 加入 DROP TABLE 语句，保证恢复时，先删除表，再重构
+    - add-locks:    加入 lock tables, 恢复时先锁表，再插入数据，最后解锁，unlock tables
+    - all-databases: 备份服务器上的所有数据
+    - create-options: 加入 MySQL 的特殊信息，如 ENGINE, CHARSET, 等.
+    - databases: 备份指定数据库. 备份时，会加入 CREATE DATABASE 和 USE 语句
+    - disable-keys: 在对 MyISAM 表插入时， 不逐条构建 INDEX， 而是等数据插入完毕，统一构建索引
+    - extended-insert: 结合多条 INSERT 语句为一条，即一次插入多条记录，加快数据恢复进程
+    - flush-logs: 备份数据前，强制执行 logs 中的所有日志
+    - lock-tables: 备份时锁表，从而保证数据一致性
+    - no-data: 只备份库和表的结构信息，不备份表中的任何记录，即结果只能重构库和表的结构
+    - quick: 备份时禁止缓冲到内存，直接写入文件，加快备份速度
+    - result-file: 指定备份保存的文件名
+    - set-charset: 指定字符集，如 latin1, utf8
+    - tables: 备份指定表
+    - where: 只备份符合 WHERE 条件的数据
+    $mysqldump --user=root --password=your_pass --result-file=/path/to/out.sql
+    --all-databases     //备份所有库
+    --databases music   //备份 music 库
+    --databases music wedding  //备份 music 和 wedding 库
+    db_name tb_name     //备份指定库中指定表，如: music artist,备份 music 中的 artist 表
+    db_name tb_name WHERE='condition';  //备份指定库指定表中符合条件的数据
+        ==> --WHERE="artist_name LIKE 'N%'" music artist
+
+恢复数据
+    - 从 MySQL client 恢复
+        mysql> SOURCE /path/to/out.sql
+
+    - 从 terminal 恢复数据
+        $mysql --user=root --password=your_pass < out.sql
+
+热备份     mysqlhotcopy
+    - 服务器必须正则运行
+    - 用户必须要有权限 或者是 root
+    如果使用的是 MyISAM, 可以使用 mysqlhotcopy
+    $mysqlhotcopy --user=root --password=your_pass music /path/to/out.sql
+
+定时备份
+    $crontab -e
+    crontab 文件格式
+        MINUTE  HOUR    DAY     MONTH   DAYOFTHEWEEK    COMMAND
+        45      4       *       *       sun
+    COMMAND:
+    /usr/local/mysql/bin/mysqldump --user=root --password=your_pass
+    --result-file=/path/to/out.sql db_to_dump
+    /usr/local/mysql/bin/mysqldump --user=root --password=your_pass db_to_dump
+    | gzip --best --to-stdout > /path/to/`date +"%Y.%m.%d.%H.%.M"`.MySQL_Backup.sql.gz
+
+二进制记录   mysqlbinlog
+    - 查看二进制文件内容
+    $mysqlbinlog /usr/lib/mysql/data/eden-bin.000002
+    - 根据二进制记录中的 sql 命令，执行数据重写
+    $mysqlbinlog hostname-bin.* | mysql
+
+检查和修复表
+    - 在 mysql 客户端中执行, CHECK TABLE 和 REPAIR TABLE
+    mysql>CHECK TABLE music.artist;
+    mysql>REPAIR TABLE music.artist;
+
+    - 在 terminal 中执行, mysqlcheck
+        选项
+            - all-databases: perform on all tables in all databases on the server
+            - repair: repair any corrupted tables
+            - extended: try harder to repair any corrupted tables(slower than just repair)
+    $mysqlcheck --user=root --password=your_pass --repair music
+
+    - 如果是 MyISAM, 可以使用 myisamchk
+    $myisamchk --check /var/lib/mysql/music/artist.MYI
+    $myisamchk --recover /var/lib/mysql/music/artist.MYI

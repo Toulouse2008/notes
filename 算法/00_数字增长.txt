@@ -1,0 +1,9 @@
+感受一下幂增长
+    10^2     seconds to solve rubix cube
+    10^7     Seconds in a year
+    10^15    Grains of sands on a beach or ants in the world
+    10^17    Seconds since big bang
+    10^21    Seconds till universe goes dark
+    10^22    Stars in the universe
+    10^26    Diameter of the universe in meters
+    10^47    Seconds till all protons decays

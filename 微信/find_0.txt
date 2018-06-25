@@ -1,0 +1,81 @@
+
+find
+	find . -name f_name
+	find . -type f f_name
+	find . -type d dir_name
+	find . -atime -5/+5  //-amin
+	find . -ctime -5/+5  //-cmin
+	find . -mtime -10/+10 //-mmin
+	find . -user user_name
+	find . -group g_name
+	find . -perm 755
+	find . -size +1M
+	find . --max-depth=2 -name x.y
+	find . -regex '.*b.3'
+	find . -type f -name x.y -exec cat {}\;
+
+du
+	du -h .
+	du -ch abc | tail -n 1
+	du -sh abc
+	du -h --max-depth=0 abc
+	du -ah abc
+	du -h --exclude="a" abc
+	du -0h abc
+
+chkconfig
+	chkconfig --list
+	chkconfig --list mysqld
+	chkconfig --level 3 5 mysqld on
+	chkconfig mysqld on
+
+	如何增加一个服务：
+		首先，服务脚本必须存放在/etc/ini.d/目录下；
+		其次，需要用chkconfig –add servicename来在chkconfig工具服务列表中增加此服务，此时服务会被在/etc/rc.d/rcN.d中赋予K/S入口了。
+		最后，你就可以上面教的方法修改服务的默认启动等级了。
+
+	删除一个服务：
+		# chkconfig –del servicename
+
+uname
+	-a 所有系统信息
+	-s 内核名称
+	-n 网络节点主机名
+	-r 内核发信版本号
+
+sed
+	stream editor, good at rows
+	sed command file
+	sed '/2/d' f_name  //do not show second line
+	cat /etc/passwd|sed 's/:.*$//'
+		===cut -d : -f 1 /etc/passwd
+	sed -n '/4/p' f_name ==> sed '/4/p' f_name
+	sed -n -e '1,2p' -e '4p' f_name
+
+sort
+
+
+wc
+	-c 
+	-m
+	-l
+	-L
+	-w
+
+cut
+	-b
+		cut -b 2 f_name
+		cut -b 2-5,10 f_name
+	-c
+	-d
+		cut -d : -f 1,4-6 f_name  ==>sed -n l f_name
+		cut -d ' ' -f 2 f_name
+
+paste
+	
+
+
+
+
+
+

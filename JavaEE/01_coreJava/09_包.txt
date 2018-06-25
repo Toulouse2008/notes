@@ -1,0 +1,90 @@
+包(理解)
+	(1)其实就是文件夹
+	(2)作用：
+		A:区分同名的类
+		B:对类进行分类管理
+			a:按照功能分
+			b:按照模块分
+	(3)包的定义(掌握)
+		package 包名;
+
+		多级包用.分开。
+	(4)注意事项：(掌握)
+		A:package语句必须在文件中的第一条有效语句
+		B:在一个java文件中，只能有一个package
+		C:如果没有package，默认就是无包名
+	(5)带包的编译和运行
+    		A:手动式
+            a:编写一个带包的java文件。
+            b:通过javac命令编译该java文件。
+            c:手动创建包名。
+            d:把b步骤的class文件放到c步骤的最底层包
+            e:回到和包根目录在同一目录的地方，然后运行
+                带包运行。
+		B:自动式(掌握)
+            a:编写一个带包的java文件。
+            b:javac编译的时候带上-d即可
+                javac -d . HelloWorld.java
+            c:回到和包根目录在同一目录的地方，然后运行
+            带包运行。
+			javac -d . HelloWorld.java
+
+导包(掌握)
+	(1)我们多次使用一个带包的类，非常的麻烦，这个时候，Java就提供了一个关键字import。
+	(2)格式：
+		import 包名...类名;
+		另一种：
+			import 包名...*;(不建议)
+	(3)package,import,class的顺序
+		package > import > class
+
+访问修饰符
+    private关键字(掌握)
+    	(1)私有的意义，可以修饰成员变量和成员方法
+    	(2)特点：
+    		被private修饰的后的成员只能在本类中被访问
+    	(3)private的应用：
+    		以后再写一个类的时候：
+    			把所有的成员变量给private了
+    			提供对应的getXxx()/setXxx()方法
+    权限修饰符
+    	(1)权限修饰符
+    					本类	同一个包下	不同包下的子类	不同包下的无关类
+    		private		Y
+    		默认		Y		Y
+    		protected	Y		Y			Y
+    		public		Y		Y			Y				Y
+    	(2)这四种权限修饰符在任意时刻只能出现一种。
+    		public class Demo {}
+
+
+常见修饰符
+	(1)分类：
+		权限修饰符：private,默认,protected,public
+		状态修饰符：static,final
+		抽象修饰符：abstract
+	(2)常见的类及其组成的修饰
+		类：
+			默认,public,final,abstract
+
+			常用的：public
+
+		成员变量：
+			private,默认,protected,public,static,final
+
+			常用的：private
+
+		构造方法：
+			private,默认,protected,public
+
+			常用的：public
+
+		成员方法：
+			private,默认,protected,public,static,final,abstract
+
+			常用的：public
+	(3)另外比较常见的：
+		public static final int X = 10;
+		public static void show() {}
+		public final void show() {}
+		public abstract void show();

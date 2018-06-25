@@ -1,0 +1,4 @@
+云平台
+    IaaS: Infrastructure as a Service (OS, middleare, runtime, data, application)
+    PaaS: Platform as a Service (Data Application)
+    SaaS: Software as a Service (Nothing to worry)

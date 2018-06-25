@@ -1,0 +1,78 @@
+递归和迭代
+
+求和
+求阶乘
+求n次幂
+GCD
+斐波那契
+
+八皇后问题
+Sierpinski gasket
+Hanoi Towers
+
+
+
+求和
+    int sum(int n){
+        if (n == 0)
+            return 1;
+        else
+            return n * (n - 1);
+    }
+求阶乘
+求n次幂
+GCD
+    int gcd(int a, int b){
+        if (a == 0)
+            return b;
+        return gcd(b % a, a);
+    }
+二分查找
+    int search(int arr[], int value, int start, int stop){
+        if(start > stop)
+            return -1;
+        int mid = (start + stop) / 2;
+        if(value == arr[mid])
+            return mid;
+        if(value < arr[mid])
+            return search(arr, value, start, mid - 1);
+        else
+            return search(arr, value, mid + 1, stop);
+    }
+斐波那契
+    f = 0, g = 1;
+    while(--n>0){
+        g = g + f;
+        f = g - f;
+    }
+    int fibonacci(int n){
+        if(n == 0)
+            return 0;
+        if(n == 1)
+            return 1;
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+    dynamic
+    int fibonacci(int n){
+        int fib[Large_Number], j;
+        fib[0] = 0; fib[1] = 0;
+        for(j = 2; j <= n; j++)
+            fib[j] = fib[j - 1] + fib[j - 2];
+        return fib[n];
+    }
+    int fibonacci(int n){
+        int * fib, j;
+        if(i < 2)
+            return n;
+        fib = malloc(sizeof(int) * (n + 1));
+        fib[0] = 0;
+        fib[1] = 1;
+        for(j = 2; j <= n; j++)
+            fib[j] = fib[j - 1] + fib[j - 2];
+        return fib[n];
+        free(fib);
+    }
+
+八皇后问题
+Sierpinski gasket
+Hanoi Towers

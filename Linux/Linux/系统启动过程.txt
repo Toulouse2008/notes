@@ -1,0 +1,88 @@
+马哥 运维初级 14
+
+系统启动过程
+
+ROM: Read-only Memory
+
+主引导记录/主引导扇区 MBR(Master Boot Record):
+	在硬盘上的三维地址为（柱面，磁头，扇区）＝（0，0，1）
+	- 开头的446字节内容特指为“主引导记录”（MBR 引导程序，负责整个系统启动）
+	- 其后是4个16字节(64个字节)的“磁盘分区表”(DPT), 在MBR分区表中最多4个主分区
+		或者3个主分区＋1个扩展分区，也就是说扩展分区只能有一个，然后可以再细分为多个逻辑分区
+	- 以及2字节的结束标志(55AA: 是检验主引导记录是否有效的标志)
+
+
+开机，ROM内的程序映射到RAM低位地址空间
+-->CPU读取ROM储存的配置信息，检查硬件
+-->BIOS(Boot-Sequence)依次寻找各个硬件上的MBR(Master Boot Record)，Boot Loader
+	(446 bytes), 按照分区表，查找内核。损坏即报错，不会找其他的。
+
+POST-->BOIS(Boot-Sequence)-->MBR--Bootloader
+-->按分区表找内核，加载内核和initrd，解压内核 -->Bootloader 退出，kernel或得控制权
+--> 探测硬件，并加载驱动 -->initrd
+-->init(/sbin/init) 用户空间的鼻祖(/etc/inittab==>默认级别)
+-->完成启动
+
+运行级别：
+	级别不同，启动服务不同
+	0: halt 关机
+	1: 单用户模式，single user mode，直接以管理员身份切入，不需
+		要密码，类似安全模式
+	2: multiuser mode，多用户模式，不启用NFS， 无网络文件系统3
+	3: multiuser mode, 多用户文本界面模式
+	4: reserved mode, 保留模式，目前尚未启用
+	5: multiuser mode, 多用户图形界面模式
+	6: reboot
+	默认级别: 5/3
+
+	runlevel
+	who -r
+
+	uname -r
+
+	重装GRUB
+		$grub
+			grub>root (hd1,0)  ==>指定root
+			grub>setup (hd1)   ==>重装grub
+
+
+详解bootloader
+MBR -->Bootloader
+	Windows: win8 锁定MBR，不允许引导其他系统
+
+	LILO: LInux LOader   硬盘不大于8G
+	GRUB: GRand Unified Bootloader
+		stage 1: 在MBR内，负责引导stage2
+		stage 1.5: 识别不同的文件系统  ==>xxx1_5
+		stage 2: /boot/grub/  ==>stage2
+
+		GRUB配置文件:
+			default=0  ==>默认启动内核 title 0
+			timeout=5  ==>等待用户选择的时间，5秒钟
+			splashimage=(hd0,0)/grub/splash.xpm.gz
+			 ==>背景图片
+			hidenmenu=# 隐藏菜单
+			title Red Hat... ==>内核或系统标题，字符串，可改
+				root(hd0,0)  ==>内核文件所在设备，硬盘一律hd，
+							0：第几个设备，第二个0：对应磁盘分区的
+			kenerl... ==>内核文件路径及传递给内核的参数==/proc/cmdline
+			initrd /.... # ramdisk文件路径，安装系统中最后生成的
+
+内核功能：
+	文件系统
+	进程管理
+	内存管理
+	网络管理
+	安全功能
+	驱动程序
+
+MBR硬盘不能大于2T
+
+内核设计风格
+	单内核：linux (LWP: Light Weight Process)
+			核心: ko(kernel object)
+				/lib/modules/
+				核心相对应的各种应用程序，需要时内核自动寻找并加载
+			so:
+
+	微内核：Windows， Solaris， 支持多线程

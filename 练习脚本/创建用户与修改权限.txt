@@ -1,0 +1,21 @@
+1、创建/tmp/scripttest目录，用变量保存目录名；
+2、在目录里创建测试文件tfile1-tfile20;
+3、创建用户testuser1和testuser2; 
+4、将tfile1-tfile10的属主和属组改为testuser1；
+5、将tfile11-tfile20的属主和属组改为testuser2；
+#!/bin/bash
+dir=/tmp/scripttest
+mkdir $dir
+cd $dir
+for tfile in {1..20};do
+  touch tfile$tfile
+done
+user1=testuser1
+user2=testuser2
+useradd $user1 $user2
+for tfile in `seq 1 10`;do
+ chown $user1:$user1 tfile$tfile
+done
+for tfile in {11..20};do
+ chown $user2:$user2 tfile$tfile
+done

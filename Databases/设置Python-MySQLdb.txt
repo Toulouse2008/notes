@@ -1,0 +1,44 @@
+Python-MySQLdb
+
+ubuntu server
+
+Install pip
+$sudo apt-get install python-pip
+
+
+Problem--
+$sudo pip install MySQL-Python
+	==>EnvironmentError: mysql_config not found
+
+	SOLUTION
+		$sudo apt-get install libmysqld-dev
+		====
+		$ sudo pip install MySQL-Python
+
+python操作MySQL
+	$python
+	>conn = MySQLdb.connect(host='127.0.0.1', user='root', passwd='xxx', db='db_name')
+	>cur = conn.cursor()
+	>iRow = cur.execute("INSERT INTO db_name(col_lists) values(value_list);")
+	>tRecords = cur.execute("SELECT * FROM user;")
+	>oneRecord = cur.execute("SELECT * FROM user WHERE id=5;")
+	>mRecords = [(7,'as'),(8,'qw'),(9,'jk')]
+	>mInsert = cur.executemany("INSERT INTO user(id, name) values(%s,%s)", mRecords)
+	>conn.commit()
+	>conn.close()
+
+
+
+事务的属性:必须满足ACID
+
+（Atomic）（Atomicity)原子性
+（Consistent）(Consistency)一致性
+（Insulation）(Isolation)隔离性
+（Duration）(Durability） 持久性
+顺便提一下mysql的隔离级别吧! **
+
+Read Uncommitted（读取未提交内容）
+Read Committed（读取提交内容）
+Repeatable Read（可重读）
+Serializable（可串行化）
+

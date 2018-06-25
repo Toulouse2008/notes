@@ -1,0 +1,9 @@
+
+SELinux: Security Enhanced Linux
+	1990s, NSA, 最小权限集合, Linux
+	安全级别： A1, B1, B2, B3, C1, C2, D
+	Linux和Windows，都是C2级别
+
+	MAC: Mandatory Access Control 	最小权限集
+
+	DAC: Discretionary Access Control

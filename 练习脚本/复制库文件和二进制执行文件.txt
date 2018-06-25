@@ -1,0 +1,27 @@
+
+练习：写一个脚本，完成如下功能(使用函数)：
+1、提示用户输入一个可执行命令；
+2、获取这个命令所依赖的所有库文件(使用ldd命令)；
+3、复制命令至/mnt/sysroot/对应的目录中
+	解释：假设，如果复制的是cat命令，其可执行程序的路径是/bin/cat，那么就要将/bin/cat复制到/mnt/sysroot/bin/目录中，如果复制的是useradd命令，而useradd的可执行文件路径为/usr/sbin/useradd，那么就要将其复制到/mnt/sysroot/usr/sbin/目录中；
+4、复制各库文件至/mnt/sysroot/对应的目录中，其要求命令；
+
+#!/bin/bash
+options(){
+ for i in $*;do
+   dirname=`dirname $i`
+   [ -d /mnt/sysroot$dirname ] || mkdir -p /mnt/sysroot$dirname
+   [ -f /mnt/sysroot$i ]|| cp $i /mnt/sysroot$dirname/
+ done
+}
+while true;do
+read -p "Enter a exec command : " pidname
+  [[ "$pidname" == "quit" ]] && echo "Quit " && exit 0
+  bash=`which --skip-alias $pidname &> /dev/null`
+  if [[ -x $bash ]];then
+    options `/usr/bin/ldd $bash |grep -o "/[^[:space:]]\{1,\}"`
+    options $bash
+  else
+    echo "No such command!"
+   fi
+done

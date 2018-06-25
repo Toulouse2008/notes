@@ -1,0 +1,69 @@
+马哥 运维初级
+
+流编辑器
+sed -->流编辑器， stream editor, 行编辑器
+
+sed机制：
+	逐行读取入内存（模式空间），符合条件的行进行处理，处理完毕后模式空间内容输出到显示器，处理的是副本，不针对源文件
+	内存空间称为模式空间
+
+语法：
+	sed [OPTION]... {script-only-if-no-other-script} input_file
+
+	选项：
+		-n: 静默模式，不显示模式空间的内容，只输出命令处理结果
+		-i: 直接修改源文件，！！！===>慎用
+		-e script: 可以执行多个脚本处理
+		-f filename: 读取文件内容，按需求处理
+			sed -f /path/to/scripts file_to_be_processed 
+		-r: 表示使用扩展正则表达式
+
+		$history| sed 's/^[[:space:]]*//'
+			==>删除行首空格
+
+	格式：
+		sed 'AddressCommand' file_name/file_names
+			-Address:
+				-Startline,Endline ==>2,100
+				-/RegExp/   ==>/^root/
+				-/pattern1/,/pattern2/	==>starting: line(pattern1)
+										==>ending: line(pattern2)
+				-/SpecifiedLineNumber/  ==>精确指定行
+										==> $-->最后一行，
+											$-1-->倒数第二行？？不确定
+				-startLine, +N ==>从startLine开始，向后再数N行
+
+			-Command：
+				-d: 删除符合条件的行，即不显示了，不改变源文件内容 
+				-p: 打印，print，显示符合条件的行
+				-a \string: append在指定行后添加新行,内容为string，\不显示
+							可结合\n，插入多行
+				-i \string: insert, 在指定行前添加新行，内容string
+				-r filename: 将指定文件的内容，添加到符合条件的行处
+							==>$sed '2r /etc/issue' /etc/fstab
+							==>$sed '1,2r /etc/issue' /etc/fstab
+							==>$sed '$r /etc/issue' /etc/fstab -->cat
+				-w filename: 将符合条件的行内容保存到指定指定文件中
+							==>$sed '/oot/w /tmp/oot.txt' /etc/fstab
+				-s/pattern/newString/: 查找并替换，第一个匹配的
+							加修饰符：
+								-g: 全局替换
+								-i: 忽略大小写
+							分隔符：
+								可以用#，%，@，etc来代替/, /则不需要\转义
+							反向引用：
+								同grep命令
+								\(\) \1 \2 ...
+								sed 's#\(l..e\)'#\1r#g' sed.txt
+									==>like love -->liker lover
+								sed 's#l\(..e\)#L\1/g' sed.txt
+									==>like love -->Liker Lover
+								或者：
+								sed 's#l..e#&r#g' sed.txt 
+									==>like love -->liker lover
+
+
+
+
+
+

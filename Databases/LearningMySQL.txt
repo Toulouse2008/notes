@@ -1,0 +1,1459 @@
+Learning MySQL
+
+chapter 3 客户端		chapter 5 SQL 基础	chapter 6 数据库结构 	chapter 7 Advanced Querying
+chapter 8 更多操作 	chapter 9 用户和权限管理
+
+Advanced Topics
+chapter 10 备份|恢复 		chapter 11 使用可选文件 	chapter 12 服务器配置|调优
+
+
+chapter 3 客户端
+
+启动客户端
+	$mysql --host=server_host_name --port=server_port --user=root --password=root_password
+		$ mysql --user=root --password=the_mysql_root_password --database=music
+		$ mysql --host=zahra.learningmysql.com --port=57777 --user=moodleuser --password=moodlepass --database=Moodle
+	$mysql -h host_name -P port_number -u root_name -p password
+查看版本和时间
+	>SELECT NOW() | VERSION();
+	>USE db_name;
+SERVER端帮助
+	>HELP 	| 	HELP contents;
+	List of all MySQL commands:
+		Note that all text commands must be first on line and end with ';'
+		? (\?) Synonym for `help'.
+		clear (\c) Clear command.
+		connect (\r) Reconnect to the server. Optional arguments are db and host.
+		delimiter (\d) Set statement delimiter. NOTE: Takes the rest of the line as new delimiter.
+		edit (\e) Edit command with $EDITOR.
+		ego (\G) Send command to mysql server, display result vertically.
+		exit (\q) Exit mysql. Same as quit.
+		go (\g) Send command to mysql server.
+		help (\h) Display this help.
+		nopager (\n) Disable pager, print to stdout.
+		notee (\t) Don't write into outfile.
+		pager (\P) Set PAGER [to_pager]. Print the query results via PAGER.
+		print (\p) Print current command.
+		prompt (\R) Change your mysql prompt.
+		quit (\q) Quit mysql.
+		rehash (\#) Rebuild completion hash.
+		source (\.) Execute an SQL script file. Takes a file name as an argument.
+		status (\s) Get status information from the server.
+		system (\!) Execute a system shell command.
+		tee (\T) Set outfile [to_outfile]. Append everything into given outfile.
+		use (\u) Use another database. Takes database name as argument.
+		charset (\C) Switch to another charset. Might be needed for processing binlog with
+		multi-byte charsets.
+		warnings (\W) Show warnings after every statement.
+		nowarning (\w) Don't show warnings after every statement.
+		For server side help, type 'help contents'
+
+	>HELP contents;
+		You asked for help about help category: "Contents"
+		For more information, type 'help <item>', where <item> is one of the following
+		categories:
+		Account Management
+		Administration
+		Data Definition
+		Data Manipulation
+		Data Types
+		Functions
+		Functions and Modifiers for Use with GROUP BY
+		Geographic Features
+		Language Structure
+		Storage Engines
+		Stored Routines
+		Table Maintenance
+		Transactions
+		Triggers
+
+恢复数据
+	mysql> SOURCE path_to_music.sql_file;
+
+
+
+chapter 4 数据库设计
+
+
+
+chapter 5 SQL 基础
+	基础
+		mysql> USE music;
+		mysql> SELECT DATABASE();
+		mysql> SHOW TABLES;
+		mysql> SHOW COLUMNS FROM artist;	|	mysql> DESC artist;
+	单表简单查询
+		mysql> SELECT * FROM artist;
+		mysql> SELECT artist_name FROM artist;
+		mysql> SELECT artist_name,artist_id FROM artist;
+		mysql> SELECT artist_id, artist_id FROM artist;		<==重复显示一列
+		mysql> SELECT album_name FROM music.album;		<==操作其他库的表
+
+		WHERE语句
+				=|<|>|<>|!=|>+|<=|LIKE "%xx"|AND|OR|XOR|NOT
+			mysql> SELECT * FROM artist WHERE artist_name = "New Order";
+			mysql> SELECT artist_name FROM artist WHERE artist_id = 4;
+			mysql> SELECT track_name FROM track WHERE track_id = 13;
+			mysql> SELECT artist_name FROM artist WHERE artist_id < 5;
+			mysql> SELECT album_name FROM album WHERE album_id <> 2;
+			mysql> SELECT artist_name FROM artist WHERE artist_name < 'M';
+			LIKE
+			mysql> SELECT album_name FROM album WHERE album_name LIKE "Retro%";
+			mysql> SELECT * FROM track WHERE track_name LIKE "R__ %";
+			AND|OR|XOR|NOT
+			mysql> SELECT album_name FROM album WHERE album_name > "C" AND album_name < "M";
+			mysql> SELECT album_name FROM album WHERE album_name LIKE "L%" OR album_name
+				LIKE "S%" OR album_name LIKE "P%";
+			mysql> SELECT album_name FROM album WHERE album_name LIKE "L%" OR album_name
+				LIKE "S%" AND album_name LIKE "%g";
+			mysql> SELECT album_name FROM album WHERE album_name LIKE "L%" OR
+				(album_name LIKE "S%" AND album_name LIKE "%g");
+			mysql> SELECT album_name FROM album WHERE (album_name LIKE "L%" OR album_name
+				LIKE "S%") AND album_name LIKE "%g";
+			mysql> SELECT * FROM album WHERE NOT (album_id = 1 OR album_id = 3);
+			mysql> SELECT * FROM album WHERE album_id > 2 AND NOT (album_id = 4 OR album_id
+				= 6);
+			mysql> SELECT * FROM album WHERE album_id > 2 AND (NOT album_id) = 4 OR
+				album_id = 6;
+			mysql> SELECT * FROM album WHERE (NOT album_id) = 4;
+			mysql> SELECT * FROM album WHERE (NOT album_id) != 4;
+			mysql> SELECT album_name FROM album WHERE album_name NOT LIKE "L%";
+
+		ORDER BY语句
+				DESC|ASC(默认升序)	|BINARY(区分大小写) |CAST(x AS y)(转换数据格式)
+
+			mysql> SELECT * FROM artist ORDER BY artist_name;
+			mysql> SELECT time, track_name FROM track ORDER BY time, track_name;
+
+			DESC|ASC(默认升序)
+			mysql> SELECT artist_name FROM artist ORDER BY artist_name DESC;
+			mysql> SELECT time, track_name FROM track WHERE time < 3.6 ORDER BY time DESC,
+				track_name ASC;
+
+			BINARY(区分大小写)
+			mysql> SELECT * FROM artist ORDER BY BINARY artist_name;
+			mysql> SELECT track_name FROM track WHERE track_name < 'b';
+			mysql> SELECT track_name FROM track WHERE track_name < BINARY 'b';
+
+			CAST(x AS y)(转换数据格式)
+				AS BINARY | AS SIGNED | AS UNSIGNED | AS CHAR |AS DATE |AS DATETIME |AS TIME
+			mysql> SELECT time, track_name FROM track ORDER BY CAST(time AS CHAR);
+
+		LIMIT语句
+			LIMIT number, offset_num ==> LIMIT 10 OFFSET 5
+			mysql> SELECT track_name FROM track LIMIT 10;
+			mysql> SELECT track_name FROM track LIMIT 2, 4; ==> records 3, 4, 5, 6
+			mysql> SELECT track_name FROM track LIMIT 150,999999999; ==>skip first 150 record
+
+		JOIN语句
+			mysql> SELECT artist_name, album_name FROM artist INNER JOIN album USING (artist_id);
+			mysql> SELECT album_name, track_name FROM album INNER JOIN track USING (artist_id, album_id) LIMIT 15;
+			mysql> SELECT album_name, track_name FROM album INNER JOIN track USING (artist_id, album_id) ORDER BY album_name, track_id LIMIT 15;
+			mysql> SELECT SUM(time) FROM album INNER JOIN track USING (artist_id, album_id) WHERE album.artist_id = 1 AND album.album_id = 7;
+
+	INSERT 语句
+		mysql> SHOW COLUMNS FROM artist;
+		mysql> SELECT MAX(artist_id) FROM artist;
+		mysql> INSERT INTO artist VALUES (7, "Barry Adamson");
+		mysql> INSERT INTO artist VALUES((SELECT 1+MAX(artist_id) FROM artist), "Barry Adamson");
+
+		多行插入
+		mysql> INSERT INTO track VALUES (1, "Diamonds", 7, 1, 4.10), (2, "Boppin Out / Eternal Morning", 7, 1, 3.22),(3, "Splat Goes the Cat", 7, 1, 1.39), (4, "From Rusholme With Love", 7, 1, 3.59);
+
+		遇到重复key即停止, IGNORE
+		mysql> INSERT INTO track VALUES (1, "Diamonds", 7, 1, 4.10),
+		-> (2, "Boppin Out / Eternal Morning", 7, 1, 3.22),
+		-> (3, "Splat Goes the Cat", 7, 1, 1.39),
+		-> (4, "From Rusholme With Love", 7, 1, 3.59);
+		ERROR 1062 (23000): Duplicate entry '7-1-1' for key 1ERROR 1062 (23000): Duplicate entry '7-1-1' for key 1
+		The INSERT operation stops on the first duplicate key. You can add an IGNORE clause to prevent the error if you want。 However, in most cases, you want to know about possible problems (after all, primary keys are supposed to be unique), and so this IGNORE syntax is rarely used.
+
+		插入时指定列名
+		mysql> INSERT INTO album (artist_id, album_id, album_name) VALUES (7, 2, "Oedipus Schmoedipus");
+		mysql> INSERT INTO played (artist_id, album_id, track_id) VALUES (7,1,2),(7,1,3), (7,1,4);
+
+		插入时，使用默认值
+		mysql> INSERT INTO played () VALUES ();   <==全默认值
+		mysql> INSERT INTO played VALUES (7, 1, 2, DEFAULT);
+
+	DELETE 语句
+	mysql> DELETE FROM played; 	<==删除所有的行记录
+		应用 + 限制条件
+		mysql> DELETE FROM played WHERE played < "2006-08-15";
+		mysql> SELECT artist_id FROM artist WHERE artist_name = "Miles Davis";
+		mysql> DELETE FROM artist WHERE artist_id = 3;
+
+	TRUNCATE 语句 -->清空表，只保留表结构，清除所有内容:
+			removing the table structures and then recreating them
+		mysql> TRUNCATE TABLE played;
+
+	UPDATE 语句
+		mysql> UPDATE artist SET artist_name = UPPER(artist_name);
+		mysql> UPDATE artist SET artist_name = UPPER(artist_name);
+		mysql> UPDATE played SET played = NULL;
+
+		+WHERE
+		mysql> UPDATE album SET album_name = "Substance 1987 (Disc 2)" WHERE artist_id = 1 AND album_id = 2;
+		mysql> UPDATE played SET played = NULL ORDER BY played DESC LIMIT 10;
+
+	SHOW 语句
+		mysql> SHOW DATABASES | TABLES;
+		mysql> SHOW DATABASES LIKE "m%";
+		mysql> SHOW CREATE DATABASE music;
+		mysql> SHOW TABLES FROM music;
+		mysql> SHOW CREATE TABLES tb_name;
+		mysql> SHOW COLUMNS FROM track;
+
+		mysql> SHOW WARNINGS;
+
+		显示MySQL本身的属性
+		mysql> SHOW CHARACTER SET;
+		mysql> SHOW COLLATION;
+		mysql> SHOW VARIABLES LIKE 'c%';
+
+
+
+chapter 6 数据库结构
+
+CREATE语句
+	mysql> DROP DATABASE music;
+	mysql> CREATE DATABASE music;
+	mysql> CREATE DATABASE IF NOT EXISTS lucy;
+	mysql> CREATE TABLE artist (
+			-> artist_id SMALLINT(5) NOT NULL DEFAULT 0,
+			-> artist_name CHAR(128) DEFAULT NULL,
+			-> PRIMARY KEY (artist_id)
+			-> );
+	mysql> CREATE DATABASE rose DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_cs;
+
+	IF NOT EXISTS
+	mysql> CREATE TABLE IF NOT EXISTS artist (
+			-> artist_id SMALLINT(5) NOT NULL DEFAULT 0,
+			-> artist_name CHAR(128) DEFAULT NULL,
+			-> PRIMARY KEY (artist_id)
+			-> );
+
+	CREATE TABLE `artist` (
+	`artist_id` smallint(5) NOT NULL default '0',
+	`artist_name` char(128) default NULL, PRIMARY KEY (`artist_id`)
+	) ENGINE=MyISAM DEFAULT CHARSET=latin1
+
+	诡异的INSERT用法
+		mysql> INSERT INTO artist SET artist_name = "Duran Duran";
+
+	AUTO_INCREMENT	ENGINE
+
+列类型
+	INT[(width)] [UNSIGNED] [ZEROFILL]
+		The width parameter has no effect on what is stored. If you store a value wider than the width, the width value is ignored.
+		mysql> CREATE TABLE numbers (my_number INT(4) ZEROFILL );
+		mysql> INSERT INTO numbers VALUES(3),(33),(333),(3333),(33333),(333333);
+
+		BOOLEAN
+			The BOOLEAN type has the synonyms BOOL and BIT. It is equivalent to TINYINT(1), and so requires one byte of storage space; you can achieve more compact, one-bit Boolean values by using CHAR(0).
+
+		TINYINT[(width)] [UNSIGNED] [ZEROFILL]
+			Stores integer (whole number) values in the range –128 to 127.
+
+		SMALLINT[(width)] [UNSIGNED] [ZEROFILL]
+			Range –32,768 to 32,767. A SMALLINT column requires two bytes of storage space.
+
+		MEDIUMINT[(width)] [UNSIGNED] [ZEROFILL]: 3 bytes
+		BIGINT[(width)] [UNSIGNED] [ZEROFILL]: 4 bytes
+
+	DECIMAL[(width[,decimals])] [UNSIGNED] [ZEROFILL]
+		width: affect the range. If you try to store a value that’s outside this range, it
+			will be stored as the closest value in the allowed range. For example, 100 would be
+			stored as 99.99, and –100 would be stored as –99.99.
+		Space: four bytes for every nine digits
+
+	FLOAT[(width, decimals)] [UNSIGNED] [ZEROFILL] | [(precision)] [UNSIGNED] [ZEROFILL]
+		four-byte, single-precision floating-point values
+
+	DOUBLE[(width, decimals)] [UNSIGNED] [ZEROFILL]
+		the type stores normal, eight-byte, double-precision floating point values
+
+	DATE
+		format: YYYY-MM-DD for the range 1000-01-01 to 9999-12-31
+
+		mysql> CREATE TABLE testdate (mydate DATE);
+		mysql> INSERT INTO testdate VALUES ('2007/02/0');
+		mysql> INSERT INTO testdate VALUES ('2007/02/1');
+		mysql> INSERT INTO testdate VALUES ('2007/02/31');
+		mysql> INSERT INTO testdate VALUES ('2007/02/100');
+		mysql> SELECT * FROM testdate;
+
+	TIME
+		format HHH:MM:SS for the range -838:59:59 to 838:59:59. Up to 34 days, 22 hours, 59 minutes, and 59 seconds
+		DD HH:MM:SS, HH:MM:SS, DD HH:MM, HH:MM, DD HH, or SS
+		mysql> CREATE TABLE test_time(id SMALLINT, mytime TIME);
+		mysql> INSERT INTO test_time VALUES(1, "2 13:25:59");
+		mysql> INSERT INTO test_time VALUES(2, "35 13:25:59");
+		mysql> INSERT INTO test_time VALUES(3, "-35 13:25:59");
+		mysql> INSERT INTO test_time VALUES(4, "35 13:25:69");
+		mysql> SHOW WARNINGS;
+		mysql> SELECT * FROM test_time;
+
+		If an input date is invalid or out of range, the zero time 00:00:00 is stored. The TIME type has an additional fraction component for storing fractions of seconds,
+		but, while a time value can be input with a fractional component, it is presently
+		truncated before storage by MySQL
+
+	TIMESTAMP
+		DEFAULT CURRENT_TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP |
+		DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+		format YYYY-MM-DD HH:MM:SS for the range 1970-01-01 00:00:00 to sometime in 2037.
+		First, if you assign NULL to it, it’s set to the current date and time. Second, a developer-selected TIMESTAMP column in a table can be automatically updated to the current date and time when a row is inserted or updated.
+		YYYY-MM-DD HH:MM:SS or YY-MM-DD HH:MM:SS | YYYYMMDDHHMMSS or YYMMDDHHMMSS
+
+		mysql> CREATE TABLE mytime(id INT NOT NULL, changetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP);
+		mysql> INSERT INTO mytime VALUES(1,''),(2,'2006-07-16 1:2:3'),(3,NULL);
+		mysql> SELECT * FROM mytime;
+		mysql> UPDATE mytime SET id=4 WHERE id=1;
+		mysql> SELECT * FROM mytime;
+
+	YEAR[(digits)]
+		Stores a two- or four-digit year, depending on whether 2 or 4 is passed as the optional digits parameter.
+		The YEAR type requires one byte of storage space.
+		The twodigit version stores values from 70 to 69, representing 1970 to 2069; again, we caution against using two-digit dates.
+		The four-digit version stores values in the range 1901 to 2155, as well as the zero year, 0000. Illegal values are converted to the zero date.
+
+	DATETIME
+		format YYYY-MM-DD HH:MM:SS for the range 1000-01-01 00:00:00 to 9999-12-31 23:59:59.
+		If you assign only a date to a DATETIME column, the zero time 00:00:00 is assumed. If you assign only a time to a DATETIME column, the zero date 0000-00-00 is assumed. This type does not have the automatic update features oTf IMESTAMP.
+
+	CHAR[(width)]
+		CHAR stores a fixed-length string of length width. If a width is not provided, CHAR(1) is assumed. Max-->255.
+		You can in fact define a special CHAR(0) NULL column that takes up only one bit of
+		storage. First, it allows you to include a dummy column in a table that doesn’t do anything (which might be useful as a placeholder for a future feature, or to be backward-compatible with an old application). Second, it allows you to store one of two values: NULL or the empty string '', giving you very compact storage of binary (Boolean) values.
+		mysql> CREATE TABLE bool(id INT, bit CHAR(0) NULL);
+		mysql> INSERT INTO bool VALUES (1,''), (2,NULL), (3,'1');
+		mysql> SELECT * FROM bool;
+		mysql> SELECT * FROM bool WHERE bit IS NULL;
+		mysql> SELECT * FROM bool WHERE bit IS NOT NULL;
+
+		padding-->trailing spaces are ignored
+		the strings " " and " " are considered to be the same thing.
+		mysql> CREATE TABLE show_padding(mystring CHAR(10));
+		mysql> INSERT INTO show_padding VALUES ('a'),('abc'),('abcde'),('abcdefg ');
+		mysql> SELECT * FROM show_padding;  <==空格不显示
+		mysql> SELECT * FROM show_padding WHERE mystring LIKE '% ';	<==empty, 空格没有保存
+
+	VARCHAR(width)
+		Stores variable-length strings up to a maximum width. The maximum value of width is 65,535 characters.
+		A VARCHAR type incurs one or two extra bytes of overhead to store the length of the string, depending on whether the string is shorter than or longer than 255 characters.
+
+	BINARY(width) and VARBINARY(width)
+		Binary strings have no character set, and sorting them is case-sensitive.
+
+	BLOB
+		Storing large data up to 65,535 bytes in length. The data is treated as binary—that is, no character set is assumed, and comparisons and sorts are case-sensitive. There is no trailing-space-removal behavior as for the CHAR or VARCHAR types. In addition, a DEFAULT clause is not permitted, and you must take a prefix of the value when using it in an index.
+
+	TEXT
+		Stores a variable amount of data (such as a document or other text file) up to 65,535 bytes in length. It is identical to BLOB, except that the data is treated as belonging to a character set. Comparisons and sorts are case-insensitive.
+
+	TINYBLOB and TINYTEXT
+		Identical to BLOB and TEXT, respectively, except that a maximum of 255 bytes can be stored.
+
+	MEDIUMBLOB and MEDIUMTEXT
+		Identical to BLOB and TEXT, respectively, except that a maximum of 16,777,215 bytes
+		can be stored.
+
+	LONGBLOB and LONGTEXT
+		Identical to BLOB and TEXT, respectively, except that a maximum of four gigabytes of data can be stored. The effective maximum can vary depending on the memory available on the server and its configuration.
+
+	ENUM('value1'[,'value2'[, ...]]
+		up to a maximum of 65,535 different values. The enumerated column can contain NULL (stored as NULL), the empty string '' (stored as 0), or any of the valid elements (stored as 1, 2, 3, and so on). You can prevent NULL values from being accepted by declaring the column as NOT NULL when creating the table.
+
+		mysql> CREATE TABLE fruits_enum ( fruit_name ENUM('Apple', 'Orange', 'Pear') );
+		mysql> INSERT INTO fruits_enum VALUES ('Apple');
+		mysql> INSERT INTO fruits_enum VALUES ('Banana');
+		mysql> SHOW WARNINGS;
+		mysql> INSERT INTO fruits_enum VALUES ('Apple,Orange');
+		mysql> SHOW WARNINGS;
+
+		mysql> CREATE TABLE new_fruits_enum ( fruit_name ENUM('Apple', 'Orange', 'Pear')
+				DEFAULT 'Pear');
+		mysql> INSERT INTO new_fruits_enum VALUES();
+
+	SET('value1'[,'value2'[, ...]])
+		A column of type SET can be set to zero or more values from the list value1, value2, and so on, up to a maximum of 64 different values.
+		mysql> CREATE TABLE fruits_set ( fruit_name SET('Apple', 'Orange', 'Pear') );
+		mysql> INSERT INTO fruits_set VALUES ('Apple');
+		mysql> INSERT INTO fruits_set VALUES ('Banana');
+		mysql> INSERT INTO fruits_set VALUES ('Apple,Orange');
+		mysql> SELECT * FROM fruits_set;
+
+键 | 索引  ==> KEY | INDEX
+	1. The leftmost column listed in the KEY (or PRIMARY KEY) clause must be in the query.
+	2. The query must contain no OR clauses for columns that aren’t indexed.
+
+自动增长 | AUTO_INCREMENT
+	1. The column it is used on must be indexed.
+	2. The column that is it used on cannot haveD aE FAULT value.
+	3. There can be only oneA UTO_INCREMENT column per table
+
+	Dropping or truncating a table will reset the counter, but deleting selected rows (with a WHERE clause) doesn’t reset the counter.
+
+列操作
+	CHNAGE
+		mysql> ALTER TABLE played CHANGE played last_played TIMESTAMP;
+				>>DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+				>>ALTER TABLE artist CHANGE artist_name artist-name CHAR(128) DEFAULT NULL;
+		mysql> ALTER TABLE artist CHANGE artist_name artist_name CHAR(64) DEFAULT "Unknown";
+
+	MODIFY
+	mysql> ALTER TABLE artist MODIFY artist_name CHAR(64) DEFAULT "Unknown";
+
+	ADD   FIRST | AFTER
+		mysql> ALTER TABLE artist ADD formed YEAR;
+		mysql> ALTER TABLE artist ADD formed YEAR FIRST;
+		mysql> ALTER TABLE artist ADD formed YEAR AFTER artist_id;
+
+		mysql> ALTER TABLE artist ADD formed YEAR, MODIFY artist_name char(256);
+
+	DROP
+		mysql> ALTER TABLE artist DROP formed;
+
+索引操作
+	ADD
+		mysql> ALTER TABLE artist ADD INDEX by_name (artist_name);
+		mysql> ALTER TABLE artist ADD PRIMARY KEY (artist_id);
+		mysql> ALTER TABLE artist DROP INDEX by_name;
+		mysql> ALTER TABLE artist ADD INDEX by_name (artist_name(10));
+	DROP
+		mysql> ALTER TABLE artist DROP INDEX by_name;
+		mysql> ALTER TABLE artist DROP PRIMARY KEY;
+
+表重命名
+	mysql> ALTER TABLE played RENAME TO playlist;
+	mysql> RENAME DATABASE old_database_name new_database_name;
+
+删除表、库
+	mysql> DROP DATABASE IF EXISTS music;
+	mysql> CREATE TABLE temp (temp INT(3), PRIMARY KEY (temp));
+	mysql> DROP TABLE temp;
+	mysql> DROP TABLE IF EXISTS temp;
+
+
+
+chapter 7 Advanced Querying
+
+别名 Aliases
+
+	列别名 Colunm Alias
+		mysql> SELECT artist_name AS artists FROM artist;
+		CONCAT()  <===
+		mysql> SELECT CONCAT(artist_name, " recorded ", album_name) AS recording FROM artist INNER JOIN album USING (artist_id) ORDER BY recording;
+		mysql> SELECT CONCAT(artist_name, " recorded ", album_name) FROM artist INNER JOIN album USING (artist_id) ORDER BY CONCAT(artist_name, " recorded ", album_name);
+
+		mysql> SELECT artist_name AS a FROM artist WHERE a = "New Order";
+			ERROR 1054 (42S22): Unknown column 'a' in 'where clause'
+		mysql> SELECT artist_id AS id FROM artist WHERE artist_name = "New Order";
+			ATTENTION:
+			You can’t do this because MySQL doesn’t always know the column values before it executes the WHERE clause. However, you can use column aliases in the ORDER BY clause, and in the GROUP BY and HAVING clauses
+		mysql> SELECT artist_id id FROM artist WHERE artist_name = "New Order";
+				<== AS 可以省略，但是，不建议这么做
+
+	表别名 Table Aliases
+		mysql> SELECT ar.artist_id, al.album_name, ar.artist_name FROM album AS al INNER JOIN artist AS ar USING (artist_id) WHERE al.album_name = "Brotherhood";
+			<==AS 可省略, album AS al INNER JOIN artist AS ar == album al INNER JOIN artist ar
+
+		mysql> SELECT * FROM album WHERE album_name = album_name;
+		mysql> SELECT a1.artist_id, a2.album_id FROM album AS a1, album AS a2 WHERE a1.album_name = a2.album_name;
+		mysql> SELECT a1.artist_id, a2.album_id FROM album AS a1, album AS a2 WHERE a1.album_name = a2.album_name AND a1.artist_id != a2.artist_id;
+
+聚合 Aggregating Data
+	去重操作 DISTINCT
+		mysql> SELECT DISTINCT artist_name FROM artist INNER JOIN album USING (artist_id);
+		mysql> SELECT artist_name FROM artist INNER JOIN album USING (artist_id);
+		mysql> SELECT DISTINCT artist_name, album_name FROM artist INNER JOIN album USING (artist_id);
+
+	分组 GROUP BY
+		Sort and cluster data
+		GROUP BY is used to organize the data before other clauses—such as WHERE, ORDER BY, and functions—are applied. In contrast, ORDER BY is applied last—after the query has been resolved—to reorganize the query output for display.
+
+		mysql> SELECT * FROM track GROUP BY artist_id;
+		mysql> SELECT artist_name FROM artist INNER JOIN album USING (artist_id) ORDER BY artist_name;
+
+		COUNT()
+			The COUNT( ) function tells us about the properties of the group. More specifically, it tells us the number of rows that form each group; you can count any column in a group, and you’ll get the same answer, so COUNT(artist_name) is the same as COUNT(*) or COUNT(artist_id). Of course, you can use a column alias for the COUNT( ) column.
+		mysql> SELECT artist_name, COUNT(artist_name) FROM artist INNER JOIN album USING (artist_id) GROUP BY artist_name;
+		mysql> SELECT artist_name, album_name, COUNT(*) FROM artist INNER JOIN album USING (artist_id) INNER JOIN track USING (artist_id, album_id) GROUP BY artist.artist_id, album.album_id;
+		mysql> SELECT artist_name, album_name, COUNT(*) FROM artist INNER JOIN album USING (artist_id) INNER JOIN track USING (artist_id, album_id) INNER JOIN played USING (artist_id, album_id, track_id) GROUP BY album.artist_id, album.album_id;
+
+
+		取平均 AVG()
+			mysql> SELECT AVG(cost) FROM house_prices GROUP BY city;
+		取最大 MAX()
+		取最小 MIN()
+		取方差 STD() | SEDDEV()
+		取和 SUM()
+
+	HAVING Clause
+		HAVING clause --> add additional control to the aggregation of rows in a GROUP BY operation.
+		The HAVING clause must contain an expression or column that’s listed in the SELECT
+		clause.
+		Typically, the expression in the HAVING clause uses an aggregate function such as COUNT( ), SUM( ), MIN( ), or MAX( ). If you find yourself wanting to write a HAVING clause that uses a column or expression that isn’t in the SELECT clause, chances are you should be using a WHERE clause instead. The HAVING clause is only for deciding how to form each group or cluster, not for choosing rows in the output.
+
+		mysql> SELECT artist_name, album_name, COUNT(*) FROM
+				-> artist INNER JOIN album USING (artist_id)
+				-> INNER JOIN track USING (artist_id, album_id)
+				-> INNER JOIN played USING (artist_id, album_id, track_id)
+				-> GROUP BY album.artist_id, album.album_id
+				-> HAVING COUNT(*) >= 5;
+		mysql> SELECT artist_name, album_name, COUNT(*) FROM
+				-> artist INNER JOIN album USING (artist_id)
+				-> INNER JOIN track USING (artist_id, album_id)
+				-> GROUP BY artist.artist_id, album.album_id
+				-> HAVING COUNT(*) > 10;
+
+		不要这样用HAVING:
+			mysql> SELECT artist_name, album_name, COUNT(*) FROM
+					-> artist INNER JOIN album USING (artist_id)
+					-> INNER JOIN track USING (artist_id, album_id)
+					-> GROUP BY artist.artist_id, album.album_id
+					-> HAVING artist_name = "New Order";
+			换成Where
+				mysql> SELECT artist_name, album_name, COUNT(*) FROM
+					-> artist INNER JOIN album USING (artist_id)
+					-> INNER JOIN track USING (artist_id, album_id)
+					-> WHERE artist_name = "New Order"
+					-> GROUP BY artist.artist_id, album.album_id;
+
+连接	Advanced Joins
+	内连接 INNER JOIN
+		The INNER JOIN clause matches rows between two tables based on the criteria you provide in the USING clause.
+
+		mysql> SELECT artist_name, album_name FROM artist INNER JOIN album USING (artist_id);
+		--->可以用WHERE重写 Rewrite it with where
+		mysql> SELECT artist_name, album_name FROM artist, album WHERE artist.artist_id = album.artist_id;
+		----> 用ON重写 ON
+		mysql> SELECT artist_name, album_name FROM artist INNER JOIN album ON artist.artist_id = album.artist_id;
+
+		INNER JOIN can be replaced with JOIN or STRAIGHT JOIN; they all do thesame thing. However, STRAIGHT JOIN forces MySQL to always read the table on the left before it reads the table on the right. INNER JOIN is the one you’ll see most commonly used
+
+	左连接 LEFT JOIN
+		each row in the left table—the one that’s doing the driving—is processed and output, with the matching data from the second table if it exists and NULL values if there is no matching data in the second table.
+		e.g
+		mysql> SELECT track_name, played FROM
+			-> track LEFT JOIN played USING (artist_id, album_id, track_id)
+			-> ORDER BY played DESC;
+		mysql> SELECT track_name, played FROM
+			-> played LEFT JOIN track USING (artist_id, album_id, track_id)
+			-> ORDER BY played DESC;
+		mysql> SELECT artist_name, album_name, COUNT(*) FROM
+			-> artist INNER JOIN album USING (artist_id)
+			-> INNER JOIN track USING (artist_id, album_id)
+			-> INNER JOIN played USING (artist_id, album_id, track_id)
+			-> GROUP BY album.artist_id, album.album_id;
+		mysql> SELECT artist_name, album_name, COUNT(played) FROM
+			-> artist INNER JOIN album USING (artist_id)
+			-> INNER JOIN track USING (artist_id, album_id)
+			-> LEFT JOIN played USING (artist_id, album_id, track_id)
+			-> GROUP BY album.artist_id, album.album_id;
+
+	右连接 RIGHT JOIN
+
+		mysql> SELECT track_name, played FROM played RIGHT JOIN track USING (artist_id, album_id, track_id) ORDER BY played DESC;
+
+		Both the LEFT JOIN and RIGHT JOIN can use either the USING or ON clauses discussed for the INNER JOIN earlier in this chapter in “The Inner Join.” You should use one or the other: without them, you’ll get the Cartesian product.
+		There’s an extra OUTER keyword that you can optionally use in left and right joins, to make them read as LEFT OUTER JOIN and RIGHT OUTER JOIN. It’s just an alternative syntax that doesn’t do anything different, and you won’t often see it used.
+
+	自然连接 Natural Join
+		you tell MySQL what tables you want to join, and it figures out how to do it and gives you an INNER JOIN result set.
+		mysql> SELECT artist_name, album_name FROM artist NATURAL JOIN album;
+		mysql> SELECT artist_name, album_name FROM artist INNER JOIN album USING (artist_id);
+
+		The following are valid join syntaxes: NATURAL LEFT JOIN, NATURAL LEFT OUTER JOIN, NATURAL RIGHT JOIN, and NATURAL RIGHT OUTER JOIN. The former two are left joins without ON or USING clauses, and the latter two are right joins. Again, avoid writing them when you can, but you should understand what they mean if you see them used.
+
+
+联合 UNION
+	combine the output of more than one SELECT statement to give a consolidated result set。
+	produce a single list from more than one source, or you want to create lists from a single source that are difficult to express in a single query.
+		mysql> SELECT artist_name FROM artist
+			-> UNION
+			-> SELECT album_name FROM album
+			-> UNION
+			-> SELECT track_name FROM track;
+		mysql> (SELECT track_name FROM
+			-> track INNER JOIN played USING (artist_id, album_id, track_id)
+			-> ORDER BY played ASC LIMIT 5)
+			-> UNION
+			-> (SELECT track_name FROM
+			-> track INNER JOIN played USING (artist_id, album_id, track_id)
+			-> ORDER BY played DESC LIMIT 5);
+
+	局限
+		- The output is labeled with the names of the columns or expressions from the first
+		query. Use column aliases to change this behavior.
+		- The queries should output the same number of columns. If you try using different
+		numbers of columns, MySQL will report an error.
+		- All matching columns should have the same type. So, for example, if the first column output from the first query is a date, the first column output from any other
+		query must be a date.
+		- The results returned are unique, as if you’d applied a DISTINCT to the overall result set.
+			mysql> INSERT INTO played SET
+				-> artist_id = 1,
+				-> album_id = 3,
+				-> track_id = 0,
+				-> played='2006-08-14 10:27:03';
+			mysql> (SELECT track_name FROM
+				-> track INNER JOIN played USING (artist_id, album_id, track_id)
+				-> ORDER BY played ASC LIMIT 5)
+				-> UNION
+				-> (SELECT track_name FROM
+				-> track INNER JOIN played USING (artist_id, album_id, track_id)
+				-> ORDER BY played DESC LIMIT 5);
+
+		UNION ALL 包括重复行
+		mysql> (SELECT track_name FROM
+			-> track INNER JOIN played USING (artist_id, album_id, track_id)
+			-> ORDER BY played ASC LIMIT 5)
+			-> UNION ALL
+			-> (SELECT track_name FROM
+			-> track INNER JOIN played USING (artist_id, album_id, track_id)
+			-> ORDER BY played DESC LIMIT 5);
+
+		The UNION operation simply concatenates the results of the component queries with
+		no attention to order, so there’s not much point in using ORDER BY within one of
+		the subqueries. The only time that it makes sense to order a subquery in a UNION
+		operation is when you want to select a subset of results.
+		For efficiency, MySQL will actually ignore an ORDER BY clause within a subquery if
+		it’s used without LIMIT.
+			mysql> (SELECT track_name, played
+				-> FROM track INNER JOIN played USING (artist_id, album_id, track_id)
+				-> );
+			mysql> (SELECT track_name, played
+				-> FROM track INNER JOIN played USING (artist_id, album_id, track_id)
+				-> ORDER BY played ASC);
+			mysql> (SELECT track_name, played
+				-> FROM track INNER JOIN played USING (artist_id, album_id, track_id)
+				-> ORDER BY played ASC LIMIT 5);
+			mysql> (SELECT track_name, played
+				-> FROM track INNER JOIN played USING (artist_id, album_id, track_id)
+				-> ORDER BY played ASC)
+				-> UNION ALL
+				-> (SELECT track_name,played
+				-> FROM track INNER JOIN played USING (artist_id, album_id, track_id)
+				-> ORDER BY played DESC LIMIT 5);
+			mysql> (SELECT track_name, played
+				-> FROM track INNER JOIN played USING (artist_id, album_id, track_id)
+				-> ORDER BY played ASC)
+				-> UNION ALL
+				-> (SELECT track_name, played
+				-> FROM track INNER JOIN played USING (artist_id, album_id, track_id)
+				-> ORDER BY played DESC LIMIT 5)
+				-> ORDER BY played;
+			mysql> (SELECT artist_name FROM artist WHERE artist_id < 5)
+				-> UNION
+				-> (SELECT artist_name FROM artist WHERE artist_id > 7)
+				-> ORDER BY artist_name LIMIT 4;
+			mysql> SELECT artist_name FROM artist WHERE
+				-> artist_id < 3 OR artist_id > 5
+				-> ORDER BY artist_name LIMIT 4;
+
+嵌套查询 Nested Queries
+	mysql> SELECT artist_name FROM artist INNER JOIN album USING (artist_id) WHERE album_name = "In A Silent Way";
+	mysql> SELECT artist_name FROM artist WHERE artist_id = (SELECT artist_id FROM album WHERE album_name = "In A Silent Way");
+	mysql> SELECT MAX(played) FROM played;
+	mysql> SELECT track_name FROM track INNER JOIN played
+		-> USING (artist_id, album_id, track_id)
+		-> WHERE played = "2006-08-15 14:33:57";
+	mysql> SELECT track_name FROM track INNER JOIN played
+		-> USING (artist_id, album_id, track_id)
+		-> WHERE played = (SELECT MAX(played) FROM played);
+
+集合判断语句 ANY, SOME, ALL, IN, and NOT IN Clauses
+	ANY 	ANY has the alias SOME, 任何一个都可以 ===> MIN
+	mysql> SELECT engineer_name, years
+		-> FROM engineer WHERE years > ANY
+		-> (SELECT years FROM producer);
+	ANY  the same as IN
+	mysql> SELECT producer_name FROM producer WHERE
+		-> producer_name = ANY
+		-> (SELECT engineer_name FROM engineer);
+	mysql> SELECT producer_name FROM producer WHERE producer_name
+		-> IN (SELECT engineer_name FROM engineer);
+	ALL
+	mysql> SELECT engineer_name, years FROM engineer WHERE years > ALL (SELECT years FROM producer);
+	NOT IN in place of <> ANY or != ANY
+	mysql> SELECT engineer_name FROM engineer WHERE
+		-> engineer_name NOT IN
+		-> (SELECT producer_name FROM producer);
+
+		ALL 注意事项：
+			- If it’s false for any value, it’s false.
+			- If it isn’t false for any value, it isn’t true unless it’s true for all
+				values. table a again contains 14, and suppose b contains 1 and NULL. If you check whether the value in a is greater than ALL values in b, you’ll get UNKNOWN (neither true or false) because it can’t be determined whether NULL is greater than or less than 14.
+			- If the table in the subquery is empty, the result is always true. Hence, if a
+				contains 14 and b is empty, you’ll get true when you check if the value in a is greater than ALL values in b.
+
+			When using the ALL keyword, be very careful with tables that can have NULL values in columns; consider disallowing NULL values in such cases. Also, be careful with empty tables.
+
+Row subqueries
+	mysql> SELECT producer_name, producer.years FROM
+		-> producer, engineer WHERE producer_name = engineer_name AND
+		-> producer.years = engineer.years;
+	mysql> SELECT producer_name, years FROM producer WHERE
+		-> (producer_name, years) IN
+		-> (SELECT engineer_name, years FROM engineer);
+		(producer_name, years) IN (SELECT engineer_name, years FROM engineer)
+	mysql> SELECT artist_name, album_name FROM artist, album WHERE
+		-> (artist.artist_id, artist_name, album_name) =
+		-> (album.artist_id, "New Order", "Brotherhood");
+
+EXISTS and NOT EXISTS Clauses
+	mysql> SELECT * FROM artist WHERE EXISTS (SELECT * FROM played);
+	mysql> SELECT album_name FROM album WHERE EXISTS (SELECT * FROM artist WHERE artist_name = "John Coltrane");
+	mysql> SELECT * FROM producer WHERE NOT EXISTS (SELECT * FROM artist WHERE artist_name = "New Order");
+
+	Correlated subqueries
+		mysql> SELECT artist_name FROM artist WHERE EXISTS (SELECT * FROM album WHERE album_name = artist_name);
+		mysql> SELECT artist_name FROM artist WHERE EXISTS (SELECT * FROM album WHERE album_name = artist_name);
+		mysql> SELECT artist_name FROM artist WHERE EXISTS
+			-> (SELECT * FROM album WHERE artist.artist_id = album.artist_id
+			-> GROUP BY artist.artist_id HAVING COUNT(*) >= 2);
+		mysql> SELECT producer_name FROM producer WHERE producer_name IN (SELECT engineer_name FROM engineer);
+		mysql> SELECT producer_name FROM producer WHERE EXISTS (SELECT * FROM engineer WHERE producer_name = engineer_name);
+		mysql> SELECT producer_name FROM producer WHERE producer_name
+			-> IN (SELECT engineer_name FROM engineer WHERE
+			-> engineer_name = producer_name);
+		mysql> SELECT producer_name FROM producer WHERE producer_name
+			-> = (SELECT engineer_name FROM engineer WHERE
+			-> engineer_name = producer_name);
+
+Nested Queries in the FROM Clause
+	mysql> SELECT producer_name, months FROM (SELECT producer_name, years*12 AS months FROM producer) AS prod;
+	mysql> SELECT producer_name, months FROM (SELECT producer_name, years*12 AS months FROM producer);
+		ERROR 1248 (42000): Every derived table must have its own alias
+
+	mysql> SELECT AVG(albums) FROM
+		-> (SELECT COUNT(*) AS albums FROM artist INNER JOIN album
+		-> USING (artist_id) GROUP BY artist.artist_id) AS alb;
+	mysql> SELECT COUNT(*) AS albums FROM artist INNER JOIN album USING (artist_id) GROUP BY artist.artist_id;
+
+	mysql> SELECT AVG(COUNT(*)) FROM album INNER JOIN artist USING (artist_id) GROUP BY artist.artist_id;
+		ERROR 1111 (HY000): Invalid use of group function
+
+User Variables
+	mysql> SELECT @artist:=artist_name FROM artist WHERE artist_id = 1;
+	mysql> SELECT @artist;
+	mysql> SET @counter := 0;
+	mysql> SET @counter := 0, @age:=23;
+	mysql> SELECT MAX(played) FROM played;
+	mysql> SELECT track_name FROM track INNER JOIN played
+		-> USING (artist_id, album_id, track_id)
+		-> WHERE played = "2006-08-15 14:33:57";
+
+	mysql> SELECT @recent := MAX(played) FROM played;
+	mysql> SELECT track_name FROM track INNER JOIN played
+		-> USING (artist_id, album_id, track_id)
+		-> WHERE played = @recent;
+
+	变量注意事项
+		- User variables are unique to a connection: variables that you create can’t be seen
+		by anyone else, and two different connections can have two different variables with
+		the same name.
+	   	- The variable names can be alphanumeric strings and can also include the period
+		(.), underscore (_), and dollar ($) characters.
+     	- Variable names are case-sensitive in MySQL versions earlier than version 5, and
+		case-insensitive from version 5 onward.
+		- Any variable that isn’t initialized has the value NULL; you can also manually set a
+		variable to be NULL.
+		- Variables are destroyed when a connection closes.
+		- You should avoid trying to both assign a value to a variable and use the variable as part of a SELECT query. Two reasons for this are that the new value may not be available for use immediately in the same statement, and a variable’s type is set when it’s first assigned in a query; trying to use it later as a different type in the same SQL statement can lead to unexpected results.
+
+	mysql> SELECT @aid, @aid:=artist.artist_id, @aid FROM artist,album WHERE
+			album.artist_id=@aid;
+	mysql> SELECT @aid, @aid:=artist.artist_id, @aid FROM artist,album WHERE
+			album.artist_id=artist.artist_id;
+	mysql> SELECT @aid, @aid:=artist.artist_id, @aid FROM artist,album WHERE
+			album.artist_id=@aid;
+
+Transactions and Locking
+	Table Types
+		transaction-safe (TST) versus non-transaction-safe (NTST)
+
+		mysql> SHOW TABLE STATUS;
+		mysql> SHOW ENGINES;
+		mysql> CREATE TABLE mytable (field INT(2)) type=Memory;
+		mysql> ALTER TABLE artist type = InnoDB;
+			alias ENGINE for TYPE.
+
+	- MyISAM
+	- InnoDB
+		- Support for transactions
+		- Advanced crash recovery features
+		- Row-level locking
+		- Foreign-key support
+		- Fast, flexible indexing
+
+	Transaction examples
+		mysql> ALTER TABLE artist type = InnoDB;
+		mysql> ALTER TABLE album type = InnoDB;
+		mysql> START TRANSACTION;
+		mysql> INSERT INTO artist VALUES (8, "The Cure");
+		mysql> INSERT INTO album VALUES (8, 1, "Disintegration");
+		mysql> COMMIT;
+
+	Rollback examples
+		mysql> START TRANSACTION;
+		mysql> INSERT INTO artist VALUES (9, "The Wh");
+		mysql> ROLLBACK;
+
+
+chapter 8 更多操作
+
+Inserting Data Using Queries
+	mysql> CREATE TABLE shuffle (
+		-> artist_id SMALLINT(5) NOT NULL DEFAULT 0,
+		-> album_id SMALLINT(4) NOT NULL DEFAULT 0,
+		-> track_id SMALLINT(3) NOT NULL DEFAULT 0,
+		-> sequence_id SMALLINT(3) AUTO_INCREMENT NOT NULL,
+		-> PRIMARY KEY (sequence_id));
+	mysql> INSERT INTO shuffle (artist_id, album_id, track_id)
+		-> SELECT artist_id, album_id, track_id FROM
+		-> track ORDER BY RAND() LIMIT 10;
+
+	ORDER BY RAND()
+		mysql> SELECT RAND();  ==> [0, 1)
+		mysql> SELECT *, RAND() FROM artist;
+
+	mysql> CREATE DATABASE art;
+	mysql> USE art;
+	mysql> CREATE TABLE people (
+		-> people_id SMALLINT(4) NOT NULL,
+		-> name CHAR(128) NOT NULL,
+		-> PRIMARY KEY (people_id));
+	mysql> INSERT INTO art.people (people_id, name)
+			SELECT artist_id, artist_name FROM music.artist;
+
+	mysql> INSERT INTO shuffle (artist_id, album_id, track_id, sequence_id)
+			SELECT artist_id, album_id, track_id, 1 FROM track LIMIT 1;
+		ERROR 1062 (23000): Duplicate entry '1' for key 1
+	mysql> INSERT IGNORE INTO shuffle (artist_id, album_id, track_id, sequence_id)
+			SELECT artist_id, album_id, track_id, 1 FROM track LIMIT 1;
+	mysql> INSERT INTO artist SELECT artist_id,artist_name FROM artist;
+		ERROR 1062 (23000): Duplicate entry '1' for key 1
+	mysql> INSERT INTO artist SELECT 10*artist_id,artist_name FROM artist;
+		Query OK, 6 rows affected (0.00 sec)
+		Records: 6 Duplicates: 0 Warnings: 0
+
+Loading Data from CSV
+	mysql> LOAD DATA INFILE 'academics.csv' INTO TABLE details FIELDS TERMINATED BY ',';
+	mysql> LOAD DATA INFILE 'academics.colon_sv' INTO TABLE details FIELDS TERMINATED BY ':';
+
+Writing Data into CSV
+	mysql> SELECT artist_name, album_name FROM artist, album WHERE artist.artist_id=album.artist_id;
+	mysql> SELECT artist_name, album_name FROM
+		-> artist, album WHERE artist.artist_id=album.artist_id
+		-> INTO OUTFILE '/tmp/artists_and_albums.csv' FIELDS TERMINATED BY ',';
+
+Creating Tables with Queries
+	mysql> CREATE TABLE artist_2 LIKE artist;
+	mysql> CREATE TABLE artist_2 SELECT * from artist;
+	mysql> CREATE TABLE report (artist_name CHAR(128), album_name CHAR(128))
+		-> SELECT artist_name, album_name FROM artist INNER JOIN album
+		-> USING (artist_id);
+	mysql> DESCRIBE artist_2;
+	mysql> SHOW CREATE TABLE artist_2;
+	mysql> CREATE TABLE artist_2 (UNIQUE(artist_id)) SELECT * FROM artist;
+	mysql> CREATE TABLE artist_3
+		-> (artist_id SMALLINT(5) NOT NULL AUTO_INCREMENT,
+		-> artist_name CHAR(128) NOT NULL DEFAULT "New Order",
+		-> PRIMARY KEY (artist_id), KEY (artist_name))
+		-> SELECT * FROM artist;
+
+Updates and Deletes with Multiple Tables
+	删除
+		mysql> SELECT track_name FROM track WHERE NOT EXISTS
+			-> (SELECT * FROM played WHERE
+			-> track.artist_id = played.artist_id AND
+			-> track.album_id = played.album_id AND
+			-> track.track_id = played.track_id);
+		mysql> DELETE track FROM track WHERE NOT EXISTS
+			-> (SELECT * FROM played WHERE track.artist_id = played.artist_id AND
+			-> track.album_id = played.album_id AND
+			-> track.track_id = played.track_id);
+		mysql> DELETE FROM track, album USING artist, album, track WHERE
+			-> artist_name = "New Order" AND
+			-> artist.artist_id = album.artist_id AND
+			-> artist.artist_id = track.artist_id AND
+			-> album.album_id = track.album_id;
+		mysql> DELETE track, album FROM artist, album, track WHERE
+			-> artist_name = "New Order" AND
+			-> artist.artist_id = album.artist_id AND
+			-> artist.artist_id = track.artist_id AND
+			-> album.album_id = track.album_id;
+		mysql> DELETE FROM artist WHERE artist_id IN (SELECT artist_id FROM artist);
+			ERROR 1093 (HY000): You can't specify target table 'artist' for update in
+			FROM clause
+
+	更新 Updates
+		mysql> SELECT DISTINCT album_name FROM
+			-> album INNER JOIN track USING (artist_id, album_id)
+			-> INNER JOIN played USING (artist_id, album_id, track_id);
+		mysql> UPDATE album INNER JOIN track USING (artist_id, album_id)
+			-> INNER JOIN played USING (artist_id, album_id, track_id)
+			-> SET album_name = UPPER(album_name);
+		mysql> UPDATE artist, album, track, played
+			-> SET album_name = UPPER(album_name)
+			-> WHERE artist.artist_id = album.artist_id AND
+			-> album.artist_id = track.artist_id AND
+			-> album.album_id = track.album_id AND
+			-> track.artist_id = played.artist_id AND
+			-> track.album_id = played.album_id AND
+			-> track.track_id = played.track_id;
+
+	限制
+		- You can’t use ORDER BY.
+		- You can’t use LIMIT.
+		- You can’t update a table that’s read from in a nested subquery.
+
+Replacing Data
+	1. Delete an existing row using its primary key and then insert a new replacement
+	with the same primary key.
+	2. Update a row using its primary key, replacing some or all of the values (except the
+	primary key).
+	3. REPLACE statement
+
+	mysql> REPLACE artist VALUES (2, "Nick Cave and The Bad Seeds");
+	mysql> REPLACE INTO artist VALUES (2, "Nick Cave and The Bad Seeds");
+	mysql> REPLACE INTO artist (artist_id, artist_name) VALUES (2, "Nick Cave and The Bad Seeds");
+	mysql> REPLACE artist (artist_id, artist_name) VALUES (2, "Nick Cave and The Bad Seeds");
+	mysql> REPLACE artist SET artist_id = 2, artist_name = "Nick Cave and The Bad Seeds";
+	mysql> REPLACE artist (artist_id, artist_name) VALUES (2, "Nick Cave and The Bad Seeds"), (3, "Miles Dewey Davis");
+	mysql> REPLACE INTO artist VALUES (10, "Jane's Addiction");
+	mysql> REPLACE INTO shuffle (artist_id, album_id, track_id, sequence_id)
+		-> SELECT artist_id, album_id, track_id, 7 FROM
+		-> track ORDER BY RAND() LIMIT 1;
+
+	If a table doesn’t have a primary key, replacing doesn’t make sense. This is because
+	there’s no way of uniquely identifying a matching row in order to delete it. When you
+	use REPLACE on such a table, its behavior is identical to INSERT. Also, as with INSERT,
+	you can’t replace rows in a table that’s used in a subquery. Finally, note the difference
+	between INSERT IGNORE and REPLACE: the first keeps the existing data with the duplicate
+	key and does not insert the new row, while the second deletes the existing row and
+	replaces it with the new one.
+
+The EXPLAIN Statement
+	mysql> EXPLAIN SELECT * FROM artist;
+	mysql> EXPLAIN SELECT * FROM artist INNER JOIN album USING (artist_id);
+
+
+
+
+chapter 9 用户和权限管理
+
+The EXECUTE, PROCESS, REPLICATION CLIENT, REPLICATION SLAVE, CHANGE MASTER, KILL,
+and PURGE MASTER LOGS statements are outside the scope of this book;
+
+创建用户
+	mysql> GRANT ALL ON music.* TO 'allmusic'@'localhost' IDENTIFIED BY 'the_password';
+	mysql> GRANT ALL ON music.* TO ali@localhost IDENTIFIED BY 'the_password';
+	mysql> GRANT ALL ON music.artist TO 'partmusic'@'localhost' IDENTIFIED BY 'the_password';
+	mysql> GRANT ALL ON music.album TO 'partmusic'@'localhost';
+	mysql> GRANT SELECT (track_id, time) ON music.track TO 'partmusic'@'localhost';
+
+权限 Privileges
+	- Global level: use ON *.* in a GRANT statement to grant a user a particular privilege across all databases on the server.
+	- Database level: music.* to grant a privilege for one or more databases.
+	- Table level: music.album to grant a privilege for one or more tables in a database.
+	- Column level: Grants access for one or more columns in a table in a database.
+		GRANT SELECT (album_name, album_id) ON music.album
+
+	普通权限
+		- Global level: ON *.* in a GRANT statement to grant a user a particular privilege across all databases on the server.
+		- Database level: music.* to grant a privilege for one or more databases.
+		- Table level: music.album to grant a privilege for one or more tables
+		- Column level: GRANT SELECT (album_name, album_id) ON music.album
+
+	管理权限
+		- GRANT OPTION—which allows a user to pass on his privileges to another user
+
+	mysql> GRANT ALL ON music.* TO 'hugh'@'localhost';
+	mysql> GRANT GRANT OPTION ON music.* TO 'hugh'@'localhost';
+	mysql> GRANT ALL ON music.* TO 'selina'@'localhost';
+	mysql> GRANT GRANT OPTION ON music.* TO 'selina'@'localhost';
+	mysql> GRANT ALL ON music.* to 'lucy'@'localhost' WITH GRANT OPTION;
+	mysql> GRANT ALL ON music.artist TO 'rose'@'localhost';
+	mysql> FLUSH PRIVILEGES;
+
+创建远程用户 CREATE A NEW REMOTE USER
+	mysql> GRANT ALL on *.* TO 'hugh'@'localhost' IDENTIFIED BY 'the_password';
+	$ mysql --host=localhost --user=hugh --password=the_password
+	$ mysql --user=hugh --host=127.0.0.1 --password=the_password
+	$ mysql --user=hugh --host=192.168.1.2 --password=the_password
+		ERROR 1130 (): #HY000Host '192.168.1.2' is not allowed to connect to this MySQL server
+
+	mysql> GRANT ALL ON *.* TO 'hugh'@'192.168.1.2' IDENTIFIED BY 'the_password';
+		Query OK, 0 rows affected (0.00 sec)
+	$ mysql --user=hugh --host=192.168.1.2 --password=the_password
+
+	mysql> GRANT ALL ON *.* TO 'hugh'@'toorak.invyhome.com' IDENTIFIED BY 'the_password';
+	$ mysql --user=hugh --host=ruttle.invyhome.com --password=the_password
+
+	mysql> GRANT ALL ON *.* TO 'jill'@'%.invyhome.com' IDENTIFIED BY 'the_password';
+	mysql> GRANT ALL ON *.* TO 'harry'@'192.168.1.%' IDENTIFIED BY 'the_password';
+
+匿名用户	Anonymous Users
+	mysql> GRANT SELECT ON music.* TO ''@'localhost';
+		Query OK, 0 rows affected (0.00 sec)
+	$ mysql
+	mysql> SELECT CURRENT_USER();
+
+	mysql> GRANT SELECT ON music.* TO 'dave'@'%' IDENTIFIED BY 'the_password';
+		Query OK, 0 rows affected (0.06 sec)
+	mysql> GRANT ALL ON music.* TO 'dave'@'localhost' IDENTIFIED BY 'the_password';
+		Query OK, 0 rows affected (0.01 sec)
+
+		The first user dave can now connect from any host and run only SELECT statements on
+		the music database. The second user dave is specific to the localhost and is allowed all privileges on music.
+
+	CURRENT_USER( ) function reports for the connection we’ve just used
+	mysql> SELECT CURRENT_USER();
+
+权限检查 Checking Privileges
+	mysql> SHOW GRANTS;
+	mysql> SHOW GRANTS FOR 'selina'@'localhost';
+	mysql> SHOW GRANTS FOR 'partmusic'@'localhost';
+	mysql> SHOW GRANTS FOR 'fred'@'%';
+
+快速查看权限  mysqlaccess
+		$ mysqlaccess --user=root --password=the_mysql_root_password 'user_name' 'psswd';
+	To quickly see what level of access a particular user has for a particular database, you
+	can use the mysqlaccess script from a terminal or command prompt.
+
+	$ mysqlaccess --user=root --password=the_mysql_root_password partmusic music
+
+	see the access privileges for all users
+	$ mysqlaccess --user=root --password=the_mysql_root_password '*' '*'
+
+取消权限 Revoking Privileges
+	mysql> REVOKE SELECT (time) ON music.track FROM 'partmusic'@'localhost';
+	mysql> REVOKE SELECT (track_id) ON music.track FROM 'partmusic'@'localhost';
+	mysql> REVOKE ALL PRIVILEGES ON music.artist FROM 'partmusic'@'localhost';
+	mysql> REVOKE ALL PRIVILEGES ON music.album FROM 'partmusic'@'localhost';
+
+	mysql> REVOKE ALL PRIVILEGES FROM 'partmusic'@'localhost';
+	mysql> REVOKE GRANT OPTION FROM 'partmusic'@'localhost';
+	mysql> REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'partmusic'@'localhost';
+	mysql> REVOKE ALL PRIVILEGES ON *.* FROM 'allmusic'@'localhost';
+
+删除用户 Removing Users
+	mysql> SHOW GRANTS FOR 'partmusic'@'localhost';
+	mysql> DROP USER 'partmusic'@'localhost';
+	mysql> DELETE FROM mysql.user WHERE User='partmusic' and Host='localhost';
+		Query OK, 1 row affected (0.00 sec)
+	mysql> FLUSH PRIVILEGES;
+		Query OK, 0 rows affected (0.00 sec)
+
+修改密码 Changing Passwords
+	1. GRANT 语句
+	- 创建用户时，设定密码
+	mysql> GRANT ALL ON music.* TO 'allmusic'@'localhost' IDENTIFIED BY 'the_password';
+	mysql> SELECT PASSWORD('the_password');
+	mysql> SELECT PASSWORD('the_password');
+	mysql> SELECT OLD_PASSWORD('the_password');
+	- GRANT 更新密码
+	mysql> GRANT ALL ON music.* TO 'selina'@'localhost' IDENTIFIED BY 'the_password';
+		Changes the password but has no effect on the current privileges:
+	mysql> GRANT USAGE ON *.* TO 'selina'@'localhost' IDENTIFIED BY 'another_password';
+
+	2. SET 重置用户密码
+	mysql> SET PASSWORD FOR 'selina'@'localhost' = PASSWORD('another_password');
+	mysql> SET PASSWORD=PASSWORD('the_password');
+
+	3. mysqladmin 重置用户密码
+	mysqladmin password()
+	$ mysqladmin --user=your_mysql_username --password=your_old_mysql_password password "your new mysql password"
+
+	自己hash, The PASSWORD keyword stores the hashed string directly, rather than passing it through the PASSWORD() function.
+	mysql> GRANT USAGE ON *.* TO 'partmusic'@'localhost' IDENTIFIED BY PASSWORD '*14E65567ABDB5135D0CFD9A70B3032C179A49EE7';
+	You can also manually set a password to its hashed version by using the SET PASS WORD statement without the PASSWORD() function as follows
+	mysql> SET PASSWORD FOR 'partmusic'@'localhost' ='*14E65567ABDB5135D0CFD9A70B3032CE7'
+
+默认用户
+	root: the superuser, who can do anything to the server, users, databases, and data.
+	anonymous: 没有用户名和密码, 可以直接连接服务器,权限有限 ==> 直接干掉
+
+默认用户设置
+	mysql> SELECT User,Host FROM mysql.user;
+	mysql> SHOW GRANTS for 'root'@'localhost';
+	mysql> SHOW GRANTS for 'root'@'ruttle.invyhome.com';
+	mysql> SHOW GRANTS for ''@'localhost';
+
+	mysql> SHOW GRANTS for ''@'ruttle.invyhome.com';
+	mysql> GRANT ALL ON test.* TO ''@'%';
+	mysql> GRANT ALL ON `test\_%`.* TO ''@'%';
+
+安全设置
+	- Always set a password for the root user
+	- Remove privileges for the test databases
+	- Remove anonymous access
+	- Remove remote access
+
+	1. 设置管理员密码
+	$ mysql --user=root --password=the_mysql_root_password
+	mysql> SET PASSWORD FOR 'root'@'localhost' = password('the_mysql_root_password');
+
+	2. 收回所有 test 的权限
+	mysql> REVOKE ALL ON test.* FROM ''@'%';
+	mysql> REVOKE ALL ON `test\_%`.* FROM ''@'%';
+
+	3. 删除匿名用户、删除test库
+	mysql> DROP USER ''@'host.domain
+	mysql> DROP USER ''@'localhost';
+	mysql> DROP DATABASE test;
+
+	4. 手动操作mysql.user 表进行相应操作
+	mysql> DELETE FROM mysql.user WHERE User = '';
+	mysql> FLUSH PRIVILEGES;
+	mysql> UPDATE mysql.user SET Password = PASSWORD('the_new_anonymous_user_password')
+		WHERE User = '';
+	mysql> FLUSH PRIVILEGES;
+
+	5. 配置root
+		mysql> DROP USER 'root'@'host.domain'；
+		mysql> DELETE FROM mysql.user WHERE Host <> 'localhost';
+		mysql> FLUSH PRIVILEGES;
+
+资源权限	Resource-Limit Controls
+	- The number of SQL statements per hour, using the MAX_QUERIES_PER_HOUR clause. All statements executed by a user are counted toward this limit.
+	- The number of updates per hour, using the MAX_UPDATES_PER_HOUR clause. Any statement that modifies a database or its tables counts toward this limit.
+	- The number of connections per hour, using the MAX_CONNECTIONS_PER_HOUR clause. Any connection, from the monitor, a program, or a web script, counts toward this limit.
+
+	mysql> GRANT USAGE ON *.* to 'partmusic'@'localhost' WITH
+		-> MAX_QUERIES_PER_HOUR 100
+		-> MAX_UPDATES_PER_HOUR 10
+		-> MAX_CONNECTIONS_PER_HOUR 5;
+
+命令行管理入口 mysql_setpermission
+		The mysql_setpermission program is a Perl script;
+	$ mysql_setpermission --user=root --password=the_mysql_root_password
+
+通过 SQL 管理
+	1. 全局权限 ==> 用户表 mysql.user
+			The user table manages users and global privileges
+		mysql> USE mysql；
+		mysql> SELECT * FROM user WHERE User = 'fred';
+	2. 库权限 ==> 库表 mysql.db
+			db table manages privileges for a particular database
+		mysql> GRANT SELECT, INSERT, DELETE on music.* TO 'bob'@'localhost';
+		mysql> SELECT * FROM db WHERE User = 'bob';
+	3. 表级权限 ==> 表权限表  table_priv
+			The tables_priv table stores privileges for the table level.
+		mysql> GRANT INDEX on music.artist TO 'bob'@'localhost';
+		mysql> SELECT * FROM tables_priv WHERE User = 'bob';
+		mysql> GRANT UPDATE (album_name) ON music.album TO 'bob'@'localhost';
+		mysql> SELECT * FROM tables_priv WHERE User = 'bob';
+	4. 列级权限 ==> 列权限表 columns_priv
+			The columns_priv table lists which privileges are available for which columns. It’s only accessed if the tables_priv table says that a privilege is available for one or more columns in a table and that privilege isn’t already available at the table level.
+		mysql> SELECT * FROM columns_priv WHERE User = 'bob';
+
+
+	5. 主机表 host Table
+		需求
+			1. when sam accesses the server from the localhost, you want him to have all privileges for the database except GRANT OPTION.
+			2. when he accesses the server from anywhere else on your network subnet—which is all machines matching 192.168.1.%—you want him to have all simple non-administrator privileges.
+			3. when he connects from anywhere else, you want him to have the SELECT privilege only.
+		方案一
+			By creating three users that that have access to music.*: 'sam'@'localhost', 'sam'@'192.168.1.%, and 'sam'@'%'.
+		方案二 modify host table
+			mysql> GRANT ALL ON music.* TO 'sam'@'' IDENTIFIED BY 'p^R5wrD';
+				Notice that we’ve given the privileges to 'sam'@'', which sets the Host column value to the empty string; don’t use just 'sam' because this is the same as 'sam'@'%'. We’ve also set this user’s password to 'p^R5wrD'.
+			mysql> DESCRIBE host;
+			mysql> INSERT INTO host VALUES ('localhost', 'music','Y','Y','Y','Y','Y','Y', 'Y','Y','Y','Y','Y','Y');
+			mysql> FLUSH PRIVILEGES;
+			mysql> INSERT INTO host VALUES ('192.168.1.%','music', 'Y','Y','Y','Y','N','N', 'N','N','N','N','N','Y');
+			mysql> INSERT INTO host VALUES ('%', 'music','Y','N','N','N','N','N','N', 'N','N','N','N','N');
+			mysql> INSERT INTO host VALUES ('192.168.1.200', '%','N','N','N','N','N','N', 'N','N','N','N','N','N');
+
+	The server verifies that users have authorization to perform an operation by checking
+	the global privileges listed for them in the user table. If they don’t have the required
+	privilege for all databases, then the server checks the db table to see whether they have that privilege for the active database. If the Host field in the db table is blank, the user’s privileges for the database vary depending on the host they’re connecting from. These privileges are stored in the host table and are verified against the global settings in the db table to determine the privileges for a database when it’s accessed from a client.
+
+
+重置mysql 密码
+
+	停止mysql服务:
+		- mysqladmin shutdown command, but you can’t use this command if you’ve forgotten the MySQL root user password.
+		- use the /etc/init.d/mysql or /etc/init.d/mysqld script under Linux, the MySQL_Directory/scripts/mysql.server
+		- kill” the server process, though this is not recommended since it can lead to data loss. You will need to have sufficient authorization to kill the server process
+			$ kill `cat MySQL_Directory/data/your_host_name.pid`
+			$ kill `cat /usr/local/mysql/data/localhost.pid`
+
+	重启服务并重设root密码
+
+		方案一 启动安全模式，读入sql script，重设root密码
+		- you can open a text editor and create a text file containing an SQL command to update the database root user password:
+			SET PASSWORD FOR 'root'@'localhost' = PASSWORD('the_mysql_root_password');
+		Save this file under the name reset_root_password.sql.
+
+		- you need to start the MySQL server with the init-file option, telling the server to execute the commands in this file:
+			$ mysqld_safe --init-file=path_to_the_init_file &
+			$ mysqld_safe --init-file=~/tmp/reset_root_password.sql &
+			Note that the server should have permission to access and read this file.
+
+		- shut it down and start it again normally without the init-file option. You should then carefully delete the text file containing the password. If you drag and drop the file to the system Trash can or Recycle Bin, empty this so that the file can’t be easily recovered. Even better, you should use a file-wiping tool such as shred (under Linux and Mac OS X) or Eraser (under Windows) that ensures that sensitive files—and any temporary or backup files created by your text editor— are destroyed when they are deleted.
+
+		方案二 修改mysql.user表
+		1. 安全模式下启动
+			Restart the server using the skip-grant-tables option. This tells the server not to check user passwords and access levels:
+			$ mysqld_safe --skip-grant-tables
+			---->
+			Now, anyone can have access to the server with maximum privileges and without a
+			password. Be very careful—it’s wise to disconnect your system from the network while you’re doing this!
+		2. mysql客户端设置root密码
+			$ mysql
+			mysql> UPDATE mysql.user SET Password = PASSWORD('new_password') WHERE User = 'root';
+			mysql> SET PASSWORD for 'root'@'localhost'=PASSWORD('the_new_root_password');
+			mysql> FLUSH PRIVILEGES;
+			mysql> QUIT
+		3. 正常重启服务器
+
+
+
+chapter 10 备份|恢复
+
+冷备份、还原
+	1. 备份数据  mysqldump
+		$ mysqldump --user=root --password=the_mysql_root_password --result-file=music.sql music
+
+		mysqldump in 4 main ways
+		- Backup all the databases on a MySQL server, use the command:
+			$ mysqldump --user=root --password=root_password --result-file=out.sql --all-databases
+		- Backup specific databases
+			$ mysqldump --user=root --password=root_password --result-file=outfile.sql --databases database_name
+			List several databases one after the other in the command:
+			$ mysqldump --user=root --password=root_password --result-file=outfile.sql --databases music wedding
+		- Backup specific tables from a database
+			$ mysqldump --user=root --password=root_password --result-file=outfile.sql database_name table_name
+		- Backup specific data from a table in a database
+			$ mysqldump --user=root --password=root_password --result-file=outputfile.sql database_name table_name where=where_clause
+
+	2. 还原数据 Loading Data from an SQL Dump File
+		- 命令行
+			$ mysql mysql_options < dumpfile.sql
+			过程
+			$ mysql --user=root --password=the_mysql_root_password
+			mysql> DROP DATABASE music;
+			mysql> CREATE DATABASE music;
+			mysql> USE music;
+			mysql> SOURCE music.sql;
+		- mysql客户端
+			mysql> SOURCE dumpfile.sql
+
+热备份、还原 mysqlhotcopy
+	If you want to create a copy of a database on the same host as the server, and all the
+	tables in your database are of the MyISAM (or the older ISAM) type, then you may find
+	mysqlhotcopy handy.
+
+	# mysqlhotcopy --user=root --password=the_mysql_root_password music music_bak
+
+	First, the server has to be running when you run mysqlhotcopy.
+	Second, you must have operating-system-level access to the database files.
+
+	- To restore a database from the backup copy, you should stop the server, copy the backup directory to the MySQL data directory, and restart the server.
+	- To restore all databases on a server, you’ll need backups of all the individual databases, as well as the mysql grants database.
+
+定时备份 Scheduling Backups
+
+The Binary Log
+	# mysqlbinlog hostname-bin.* | mysql
+
+Checking and Repairing Corrupted Tables
+	mysql> CHECK TABLE music.artist;
+
+	mysqlcheck: mysqlcheck allows you to check and repair tables from the command line.
+
+			- all-databases: Performs operation on all tables in all databases
+			- repair: Tries to repair any corrupted tables.
+			- extended: Tries harder to repair any corrupted tables (slower than repair)
+
+		$ mysqlcheck --user=root --password=the_mysql_root_password --repair music
+		$ mysqlcheck --user=root --password=the_mysql_root_password --extended --all-databases
+
+	myisamchk
+		$ myisamchk --check /var/lib/mysql/music/artist.MYI
+		$ myisamchk --recover /var/lib/mysql/music/artist.MYI
+		$ myisamchk --check /var/lib/mysql/music/artist.MYI
+
+Re-Creating Damaged Grant Tables
+	- Windows, extract the mysql directory from the installation package, place it under the MySQL data directory.
+	- Linux or Mac OS X, use the mysql_install_db script to regenerate the mysql database and the privilege tables in it. This is particularly handy if your mysql database has somehow become corrupted. Note that if the user table has to be created, the root password for the server will be reset to the default value (blank).
+
+	# mysql_install_db
+	# mysql_install_db --user=mysql
+
+
+
+chapter 11 使用可选文件
+
+配置
+	$ chmod u=rw,g=,o= ~/.my.cnf
+	[mysql]
+	user=root
+	password=the_mysql_root_password
+
+	$ mysql --host=sadri.learningmysql.com --port=5777 --user=allmusic --password=the_password --database=music
+		[mysql]
+		host=sadri.learningmysql.com
+		port=57777
+		user=allmusic
+		password=the_password
+		database=music
+
+可选文件结构
+	[server]
+	user=mysql
+	port=57777
+	basedir=/usr/local/mysql-standard-5.0.22-linux-i686
+	socket=/home/mysql/server1.sock
+	datadir=/home/mysql/data
+	tmpdir=/home/mysql/tmp
+	pid_file=/home/mysql/logs/server1.pid
+	# log server messages to:
+	log=/home/mysql/logs/server1.main.log
+	# log errors to this
+	log_error=/home/mysql/logs/server1.error.log
+	# log updates to this binary logfile
+	log_bin=/home/mysql/logs/server1_updates.bin
+	[client]
+	socket=/home/mysql/server1.sock
+	[mysql]
+	database=mysql
+	[mysqldump]
+	all-databases
+	result_file=/tmp/dump.sql
+
+Scope of Options
+	- System-wide: Settings apply for all MySQL programs on the system. The default
+		location for a system-wide options file is /etc/my.cnf for Linux or Mac OS X systems. Under Linux and Mac OS X, the MySQL server and client programs automatically read in an options file at the default location.
+	- Server-specific: Settings apply for the MySQL programs in a particular installation.
+		<MySQL_directory>/ my.cnf for Linux and Mac OS X, and <MySQL_directory>\my.ini for Windows.
+	- User-specific: Settings apply for the MySQL programs run by a particular user. The
+		default location of a user-specific options file on a Linux or Mac OS X system is the file .my.cnf located in the user’s home directory—that is, ~/.my.cnf.
+
+Search Order for Options Files
+	The MySQL server and client programs look for options files in the standard locations
+	and read them in order; values from later files take precedence over earlier ones. Options specified on the command line override values from options files.
+
+	Tell a MySQL program to ignore the default options files by telling it to read a specific file at a location given with the defaults-file option.
+	$ mysql --defaults-file=path_to_options_file
+	$ mysql --defaults-extra-file=path_to_local_options_file
+	$ mysql --no-defaults
+		==> On a Linux or Mac OS X system, the search order:
+			- /etc/my.cnf
+			- <MySQL_Directory>/my.cnf
+			- defaults-extra-file
+			- ~/.my.cnf
+			Note: for security reasons, files that are world-writable are ignored.
+
+Determining the Options in Effect
+	$ mysqldump --print-defaults
+	mysqldump would have been started with the following arguments:
+	--socket=/home/mysql/server1.sock
+	--all-databases
+	--result_file=/tmp/dump.sql
+	--host=localhost
+	--port=3306
+	--database=Music
+	--result_file=/home/saied/dump.sql
+
+	$ my_print_defaults client mysqldump
+	--socket=/home/mysql/server1.sock
+	--all-databases
+	--result_file=/tmp/dump.sql
+	--host=localhost
+	--port=3306
+	--database=Music
+	--result_file=/home/saied/dump.sql
+
+
+chapter 12 服务器配置|调优
+
+MySQL Server Options
+	- basedir: where MySQL is installed on the system. If you don’t specify this option,
+		the program will try to use the location specified when the program was compiled.
+	- datadir: where the database files are stored
+	- defaults-file: the location of the options file to read; this is particularly useful
+		if you want the server to read in options from a nondefault location.
+	- enable-named-pipe: Allows a server running under Windows to use a named pipe.
+	- init-file: specifies a text file containing SQL commands that the server must execute
+		when starting up. Reset root password.
+	- log: use the specified file to log every client connection and query.
+	- log-bin: specifies where the binary log of commands that attempt to modify data on
+		the server
+	- log-err: use the specified file to log server startup, shutdown, and errors. By
+		default, this is the file <hostname>.err in the data directory.
+	- log-slow-queries: log queries that take an unusually long time to process, together
+		with the EXPLAIN command to determine how best to tune the server or optimize the tables.
+	- pid-file: save mysql process ID to the specified file; by default, <hostname>.pid
+		(for Linux systems) or <hostname>.local.pid (for Mac OS X systems) and located in the MySQL data directory.
+	- port: the port the MySQL server should listen to for incoming connections. The
+		default MySQL port is 3306. If there’s already a server listening on that port, you’ll need to specify a different port.
+	- shared-memory-base-name: Windows-->use the specified shared memory name. The default
+		value is MYSQL. If you want to run multiple MySQL servers on a single Windows host, you’ll need to specify a different value for each server.
+	- skip-networking: ask the server to not listen to a TCP port for incoming connections.
+		This is more secure, as only connections from clients on the same system as the server (localhost) will be accepted. On a Linux or Mac OS X system, clients connect through the Unix socket file (described next). Under Windows, clients need to connect through a named pipe, so you’ll need to set the enablenamed-pipe option for this to work.
+	- socket: The absolute path to the Unix socket file on Linux and Mac OS X, or the named
+		pipe under Windows, that the server uses for incoming connections from the localhost. The default path is /tmp/mysql.sock for the Unix socket, and MYSQL for the Windows named pipe
+	- tmpdir: where to store its temporary files
+	- user: On Linux and Mac OS X, the server tries to run under your account; if you start
+		the server from the root account, the server will run with all the privileges of this superuser, which is dangerous. The user option tells mysqld what user account to run under. It’s a good idea to create an account with the name mysql, with access permissions for only the MySQL directories, and set the server to run under that username. Don’t forget that this user should be able to read and write files in the MySQL data and temporary directories. If you don’t specify the username, most MySQL scripts will automatically try to use your operating system account name as the value for the username.
+
+		[mysqld]
+		user= mysql
+		port= 57777
+		socket= /tmp/mysql/server1.sock
+		basedir= /usr/local/mysql
+		datadir= /tmp/mysql/data
+		tmpdir= /tmp/mysql/tmp
+		# log server messages to:
+		log= /tmp/mysql/logs/server1.main.log
+		# log errors to this file:
+		log-error=/tmp/mysql/logs/server1.error.log
+		pid-file= /tmp/mysql/logs/server1.pid
+
+Server Variables
+	$ mysqld --max_connections=200
+	mysql> SET sort_buffer_size=2000000;
+	mysql> SET GLOBAL sort_buffer_size=2000000;
+
+	mysql> SET max_connections=200;
+		ERROR 1227 (HY000): Access denied; you need the SUPER privilege for this operation
+
+	mysql> SET max_connections=200;
+		ERROR 1229 (HY000): Variable 'max_connections' is a GLOBAL variable and should be set with SET GLOBAL
+
+The Slow Query Log
+	If you start the server with the log-slow-queries option, any queries that take more than 10 seconds to complete will be logged
+	mysqldumpslow script from the MySQL scripts directory to help summarize and organize
+	this information.
+	$ scripts/mysqldumpslow -t 2
+	$ mysqldumpslow path_to_your_slow_query_log_file
+
+Query Cache
+	mysql> SHOW VARIABLES LIKE '%query_cache%';
+
+
+Checking Server Settings
+	mysql> SHOW VARIABLES;
+	$ mysqladmin --user=root --password=the_mysql_root_password variables
+	mysql> SHOW VARIABLES LIKE 'k%';
+	mysql> SHOW STATUS;
+
+	$ mysqladmin --user=root --password=the_mysql_root_password status
+		Uptime: 12093 Threads: 1 Questions: 7160 Slow queries: 0 Opens: 76
+		Flush tables: 1 Open tables: 60 Queries per second avg: 0.592
+
+	mysql> SHOW PROCESSLIST;
+	$ mysqladmin --user=root --password=the_mysql_root_password processlist
+
+	$ mysqladmin --user=root --password=the_mysql_root_password kill 26534
+
+other factors
+	- run the OPTIMIZE TABLE command to reorganize the table file on disk. This is
+		especially true if the table contains variable length fields:
+
+		mysql> OPTIMIZE TABLE artist;

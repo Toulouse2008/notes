@@ -1,0 +1,83 @@
+案例一
+public class TryCatch {
+    public int aaa() {
+        int x = 1;
+        try {
+        		++x;  //==>执行 x = 2
+        } catch (Exception e) {
+        } finally {
+            ++x;    //==>执行 x = 3
+            System.out.println("test me" + ", x: " + x);  //执行
+        }
+        System.out.println("x after finally :" + x);    //==>执行
+        return x;   //==>执行 x=3
+    }
+    public static void main(String[] args) {
+    	TryCatch t = new TryCatch();
+        int y = t.aaa();
+        System.out.println(y);
+    }
+}
+输出结果是: ===============================>
+    test me, x: 3
+    x after finally :3
+    3
+
+
+
+案例二
+public class TryCatch {
+    public int aaa() {
+        int x = 1;
+        try {
+            return ++x;     //==>执行 x = 2
+        } catch (Exception e) {
+        } finally {
+        	System.out.println("test me 1" + ", x: " + x);     //==>执行 x = 2
+            ++x;    //==>执行 x = 3，但是返回值仍然是 2
+            System.out.println("test me 2" + ", x: " + x);      //==>执行 x = 3
+        }
+        System.out.println("x after finally :" + x);    //==>不执行
+        return x;    //==>不执行，但也不报错
+    }
+    public static void main(String[] args) {
+    	TryCatch t = new TryCatch();
+        int y = t.aaa();
+        System.out.println(y);
+    }
+}
+输出结果是: ===============================>
+    test me 1, x: 2
+    test me 2, x: 3
+    2
+
+
+
+案例三
+public class TryCatch {
+    public int aaa() {
+        int x = 1;
+        try {
+    		//++x;
+    		throw new Exception();
+            //return ++x;   //comment out otherwise unreachable statements
+        } catch (Exception e) {
+        } finally {
+        	System.out.println("test me 1" + ", x: " + x);    //==>执行 x=1
+            ++x;    //==>执行 x=2
+            System.out.println("test me 2" + ", x: " + x);    //==>执行x=2
+        }
+        System.out.println("x after finally :" + x);    //==>执行 x=2
+        return x;    //==>执行x=2
+    }
+    public static void main(String[] args) {
+    	TryCatch t = new TryCatch();
+        int y = t.aaa();
+        System.out.println(y);
+    }
+}
+输出结果是: ===============================>
+    test me 1, x: 1
+    test me 2, x: 2
+    x after finally :2
+    2

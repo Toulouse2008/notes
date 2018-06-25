@@ -1,0 +1,15 @@
+练习：创建/tmp/mylinux/usr/local/bin, /tmp/mylinux/usr/local/sbin, /tmp/mylinux/etc/sysconfig, /tmp/mylinux/etc/init.d, /tmp/mylinux/bin, /tmp/mylinux/sbin
+
+# mkdir -pv /tmp/mylinux/{usr/local/{bin,sbin},etc/{sysconfig,init.d},bin,sbin}
+
+练习：创建/tmp/a b
+
+
+练习：创建以当前时间命令目录，例如2014-02-11-16-25-20;
+
+# mkdir `date +%F-%H-%M-%S`
+
+
+练习：
+1、创建/tmp/etc/rc.d, /tmp/etc/rc.d/init.d, /tmp/etc/rc.d/rc0.d, /tmp/etc/sysconfig, /tmp/etc/pam, /tmp/etc/yum.repos.d/
+2、创建/tmp/etc/rc.d, /tmp/etc/rc.d/init.d, /tmp/etc/rc.d/rc0.d, /tmp/etc/sysconfig, /tmp/etc/pam, /tmp/etc/yum.repos.d/, /tmp/usr, /tmp/usr/share, /tmp/usr/share/doc, /tmp/usr/share/man, /tmp/usr/bin, /tmp/usr/sbin, /tmp/usr/lib, /tmp/usr/lib64

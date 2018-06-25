@@ -1,0 +1,264 @@
+文件系统管理
+    挂载: 将额外文件系统与根文件系统某现存目录关联起来，进而使得此目录作为该文件访问入口的过程
+    卸载: 解除此关联的过程    unmount 设备 | 挂载点
+    挂载点: mout point, 设备关联到的那个目录
+
+    注意: 挂载点下如果已经有文件，则被隐藏起来，不能访问了，知道卸载设备之后，才能再次访问
+
+    挂载  mount
+        $mount
+            ==>不带任何参数，显示当前系统下，所有的挂载点
+            proc  ==> /proc
+            sysfs ==>/sys
+        mount DEVICE MOUNT_POINT
+            device: 指明挂载设备
+                设备文件，如 /dev/sda5
+                卷标， -L "LABEL", 如 -L "MY DATA"
+                UUID, -U "UUID", 如 -L "YOUR_DIVICE_UUID"
+                伪文件系统，只要内核支持，只需要名字即可，proc, sysfs, devtmpfs, configfs
+            dir: 挂载点
+                事先存在，建议使用空目录
+                    长期挂载，避免使用 mnt 和 media 目录
+            常用选项
+                -t vsftype: 指明要挂载的设备上的文件系统，可以省略，mount会自动调用 blkid 查看
+                -r: readonly, 只读挂载
+                -w: read and write, 读写挂载
+                -n: 不更新/etc/mtab文件
+                -a: 自动挂载所有支持自动挂载的设备(定义在/etc/fstab中，且挂载选项中有 自动挂载 的)
+                -L 'LABEL': 指定挂载设备
+                -U 'UUID': 指定挂载设备
+                -B : 把一个目录挂载绑定到另一个目录， --bind
+
+            -o option1,option2,...  挂载文件系统的选项
+                async: 异步模式
+                sync:  同步模式
+                atime/noatime: 更新 atime 与否，如果频繁访问，可以设为 noatime, 提升性能
+                diratime/nodiratime: 目录的访问时间戳
+                auto/noauto: 是否支持自动挂载
+                exec/noexec: 是否支持文件系统上的引用程序运行为进程
+                dev/nodev: 是否支持在此文件系统上支持使用设备文件
+                suid/nosuid:
+                remount: 是否支持重新挂载
+                ro: readonly
+                rw: read and write
+                user/nouser: 是否允许普通用户挂载此设备
+                acl: 启动此文件系统的 acl 功能
+        卸载命令
+            unmount DEVICE
+            unmount MOUNT_POINT
+
+            查看正在访问指定文件系统的进程：
+                fuser -v MOUNT_POINT  ==>查看谁在用该挂载点
+            终止所有正在访问指定文件系统的进程
+                fuser -km MOUNT_POINT
+
+        挂载交换分区
+            启用: swapon
+                swapon [option]... [DEVICE]
+                    -a: 激活所有的交换分区
+                    -p PRIORITY: 指定交换分区的优先级
+            禁用: swapoff
+
+
+查看内存空间
+    free [option]
+        -m
+        -g
+        Mem: 物理内存   total: 总大小  used:   free:   shared:
+        buffers: 缓冲   cached: 缓存
+        -/+ buffers/cache: 出去 buffers/cached 后使用了多少
+
+查看硬盘空间
+    df  查看所有已经挂载的文件系统的使用状态
+        FileSystem: 文件系统类型
+        1k-blocks: 多少个 1k 大小的块
+        Used: 已用空间大小
+        Available: 可用空间大小
+        Use%:   使用的比例
+        Mounted on: 挂载点
+
+        df -h:
+        df -i: 查看 inode 的使用情况
+        df -P: 以 POSIX 兼容的方式输出，不管多长，都一行显示，保证格式统一
+查看目录总体空间占用状态
+    du  disk usage  <== 统计一个目录的所有子目录和文件的大小
+    du [options] DIR
+        -h
+        -s
+
+文件系统挂载的配置文件     /etc/fstab
+    每行定义一个挂载的文件系统，格式如下
+        设备或伪文件系统    挂载点     文件系统类型  挂载选项    转储率     自检次序
+    设备或伪文件系统: 设备文件  LABEL(LABEL="") UUID(UUID="") 伪文件系统(proc, sysfs)
+    挂载选项: 即使是默认，也必须指明 defaults
+    转储率:  0: 不做备份   1: 每天转储     2: 每隔一天转储
+    自检次序: 非法关机后，重启，系统自检与否   0: 不自检  1: 首先自检，一般只有root ...9
+            不建议自检数据库系统，例如，数据只有最后两行坏了，自检将可能删除所有记录
+            而手动可以进行数据修复
+
+文件系统上的其他概念
+    inode: Index Node, 索引节点
+        地址指针:
+            直接指针
+            间接指针
+            三级指针
+        inode bitmap: 对位标识每个 inode 空闲与否的状态信息
+    链接文件
+        硬链接:
+            - 不能给目录创建硬链接，原因: 潜在风险，循环引用
+            - 不能跨分区(文件系统)创建硬链接，原因: inode 的引用不能跨分区
+            - 指向同一个 inode 的多个不同路径，创建文件的硬链接即为为inode创建新的引用路径，
+                因此会增加其引用计数
+        软链接 | 符号链接
+            - 可以对目录进行
+            - 可以跨分区(文件系统)
+            - 指向的是另一个文件的路径，不是指向 inode，因此不增加引用计数，其大小是所指向的
+                路径字符串的长度
+
+            ln [-sv] SRC DEST
+                -s: symbolic link
+                -v: verbose
+
+      文件管理操作对文件的影响
+          文件删除
+             - 硬链接: inode 计数减少
+             - 软链接: broken
+          文件复制: 开辟空间，复制数据
+          文件移动: 同分区，只是改一下路径，inode， data 均不需要动; 不同分区，同复制
+
+      练习
+         1. 创建一个 20G 的文件系统， 块大小为 2048， 文件系统 ext4， 卷标 TEST， 要求此
+            分区开机自动挂载到 /testing 目录，且默认有 acl 挂载选项
+         2. 创建一个 5G 的文件系统， 卷标 HUGE， 要求此分区开机自动挂载到 /mogdata 目录，此
+            文件系统类型为 ext3
+
+         3. 写一个脚本，完成如下功能
+            - 列出当前系统识别的所有磁盘设备
+            - 如果磁盘数量为 1， 则显示其空间使用信息，否则，则显示最后一个磁盘的空间使用信息
+
+
+bash 脚本 -- 用户交互
+    read [option]...  [name ...]
+        example
+            read a b c
+            >>how are you?  ==> $a=how  $b=are  $c=you?
+            read a b c
+            >>how are       ==> $a=how  $b=are  $c=
+            read a b c
+            >>how old are you?  ==>$a=how $b=old $c=are you?
+        -p "Message": prompt，输出提示信息
+        -t #seconds:  命令等待超时，退出
+
+    $bash -n /path/to/xxx.sh     ==>检查脚本是否存在语法错误
+    $bash -x /path/to/xxx.sh     ==>测试执行，显示程序执行的每一步
+
+
+dd命令    convert and copy a file     比 cp 更接近底层，效率更高
+    用法
+        dd if=/path/to/SRC  of=/path/to/DEST
+            bs=#: block size
+            count=#: 复制的lock数
+
+        备份 MBR
+            dd if=/dev/sda of=/tmp/mbr.bak bs=512 count=1
+        破坏MBR
+            dd if=/dev/zero  of=/dev/sda bs=512 count=1
+        破坏MBR中的BootLoader
+            dd if=/dev/zero  of=/dev/sda bs=256 count=1
+
+        两个特殊设备
+            /dev/null   数据黑洞， bitbucket
+            /dev/zero   吐零
+
+
+
+===========================重听 视频 3 4 =============================
+硬盘I/O能力
+    读: 400/s    写: 200/s
+
+
+RAID    Redundant Arrays Inexpensive Disks 廉价冗余磁盘阵列
+        Redundant Arrays Independent Disks 独立冗余磁盘阵列
+        ==>Berkeley
+           A case for Redundant Arrays of Inexpensive Disks: RAID
+
+        目的:
+            提供 I/O 能力
+                磁盘并行读写: 可以有自己的内存，并上一个电池，保证断电发生时数据能同步到盘片上
+            提高耐用性
+                磁盘冗余来实现
+
+    RAID 的实现方式
+        外接式磁盘阵列: 通过扩展卡提供适配            控制器controller   扩展槽adaptor
+        内接式RAID: 主板集成 RAID 控制器
+        软解 RAID:
+
+    RAID 级别  level 实现方式
+        RAID-0: 0, strip, 条带卷
+        RAID-1: 1, mirror, 镜像卷
+        RAID-2
+        ..
+        RAID-5:
+        RAID-6:
+        RAID10:
+        RAID01:
+
+        RAID-0:
+            读写性能提升
+            可用空间: n * min(s1, s3, s3)
+            容错: 没有冗余
+            最少磁盘数: 2
+
+        RAID-1:
+            读性能提升，但写略有下降
+            可用空间: 1 * min(S1, S2,...)
+            容错: 有冗余能力
+            最少磁盘数: 2, 2+
+        RAID-4:
+            三块以上的盘组成，一个盘存校验码(一般是异或值)，一个盘坏掉，数据可以从另外两块盘算
+            出来，但是，只允许一块盘出问题
+            一块出问题后，进入降级模式，暂停业务，替换坏的盘，恢复数据，恢复服务
+            校验盘访问压力巨大
+        RAID-5:
+            读写提升
+            可用空间: (N-1) * (S1,S2,...)
+            容错: 有冗余能力
+            磁盘数: 3 , 3+
+        RAID-6:
+            校验盘: 两块盘
+            读写提升
+            可用空间 (N-2)*min(s1,s2)
+            容错: 可以坏 2 盘
+            最少磁盘: 4, 4+
+        RAID10: 两两一组，做成 RAID-1，然后再做成RAID-0
+            容错: 可以坏掉一半，但是不能坏同一个组的两个
+            读写提升
+            可用空间 N*min(s1,s2,...)
+            磁盘数: 4, 4+
+
+        RAID01: 先分两组，一组做成条带，然后把另一组做成镜像
+
+        RAID-50     RAID7 非常昂贵
+
+        JBOD: Just a Bunch of Disks
+            将多块磁盘的空间合并成一个大的连续空间
+
+        常见级别: RAID-0, 1, 5, 10, 50, JBOD
+
+        centos 6:
+            软件RAID 的实现，结合内核中的md(multi devices)
+            mdadm: 模式化工具
+                mdadm [mode] <raiddevice> [option] <component-devices>
+                支持: LINEAR, RAID-0, -1, -4, -5, -6, -10
+                模式
+                    创建
+                    装配
+
+
+
+
+LVM2    Logical Volume Manager, Version 2
+    dm: device manager,
+
+
+lvm 基本应用， 扩展及其缩减

@@ -1,0 +1,132 @@
+bash的基础特性(3)
+    1. 提供了编程环境
+
+文本工具
+
+grep    张无忌     sed     令狐冲     awk     杨过
+
+grep: 文本过滤工具(模式: pattern)
+sed: stream editor, 文本编辑工具
+awk: Linux 上的实现 gawk, 独立的编程语言，文本报告生成器
+
+grep: 文本过滤工具(模式: pattern)
+      grep, egrep, fgrep
+      Gloab search REgular expresion and Print out the line
+      作用: 文本搜索工具，根据用户指定的"模式"对目标文本逐行进行匹配检查，打印匹配到的行
+            REGEXP: 由一类特殊字符及文本编写的模式，其中某些字符不表示字符的字面意义，而表示
+                    控制或通配的功能
+                元字符:
+                分类:
+                    基本正则表达式: BRE
+                    扩展正则表达式: ERE    $grep -E | $egrep
+
+      grep [OPTIONS] PATTERN [FILE...]
+          --color=auto:
+          -v:  显示没有匹配到的行
+          -i:  忽略大小写
+          -o:  只显示匹配到的字符串
+          -q:  静默模式，不输出任何信息
+          -A num: 匹配行及其后面 num 行
+          -B num: 匹配行及其前面 num 行
+          -C num: 匹配行及其前、后各 num 行
+          -E:  支持扩展 REGEXP
+
+      基本正则元字符
+         字符匹配
+            . : 匹配任意单个字符，不包括换行符
+            []: 指定范围内的任意单个字符，中间不能有空格
+            [^]: 取反
+         匹配次数
+            * : 表示匹配其前面的字符任意次数 [0, )  $grep "x*y" ==>abxy, xay, xxxxxy
+            .*: 匹配前面（任意字符)任意次数
+            \?: 匹配 0 | 1 次
+            \+: 匹配前面字符 1 | 任意次数  [1, )
+            \{n\}: 匹配前面字符 n 次
+            \{m,n\}: 匹配前面字符 m 到 n 次
+            \{m,\}: 匹配前面字符至少 m 次
+         位置锚定
+            ^: 行首 ^root
+            $: 行尾 root$
+            ^$: 空行
+            ^[[:space:]]*$: 空白行
+            \< | \b: 词首锚定，单词开头
+            \> | \b: 词尾锚定
+            \<PATTERN\>: 匹配单词
+        分组
+            \(\):  \(xy\)*  ==> 匹配任意次数的 xy
+            后向引用: 已用前面分组匹配到的字符(不是模式本身)
+                \(ab\+\(xy\)*\)
+                    \1: ab\+\(xy\)*
+                    \2: xy
+        练习
+            1. 显示 /proc/meminfo 文件中以大小 s 开头的行(要求： 两种方式)
+                Solution: $grep '^[Ss].*' /proc/meminfo
+                          $grep -i 's' /proc/meminfo
+            2. 显示 /etc/passwd 中不以 /bin/bash 结尾的行
+                Solution: $grep -v '/bin/bash$' /etc/passwd
+            3. 显示 /etc/passwd 中 ID 号最大的用户的用户名
+                Solution: $sort -rn -d: -k3  | head -n 1| cut -t':' -f1
+            4. 如果 root 用户存在，显示其默认的 shell
+                Solution: $grep ^root /etc/passwd | cut -d':' -f7
+            5. 找出 /etc/passwd 中的两位或三位数
+                Solution: $grep '\<[1-9][0-9]\{1,2\}\>' /etc/passwd
+            6. 显示 /etc/rc.d/rc.sysinit 文件中，至少一个空白字符开头且后面有非空字符的行
+                Solution: $grep '[[:space:]]+[[:alnum:]]+' /etc/rc.d/rc.sysinit
+            7. 找出 'netstat -tan' 命令的结果中以 'LISTEN' 后跟 [0, ) 空白结尾的行
+                Solution: $netstat -tan | grep LISTEN[[:space:]]*$
+            8. 添加用户 bash, testbash, basher 以及 nologin(其shell为 /sbin/nologin)
+                而后找出 /etc/passwd 中用户同 shell 名的行
+                Solution: $sudo useradd -s /sbin/nologin bash, testbash basher, nologin &>/dev/null
+                           && grep '^\('
+
+        练习
+            1. 写一个脚本，实现如下功能
+                如果 user1 用户存在，显示其存在，否则，添加 user
+                显示该用户的 id 号等信息
+                Solution:   $grep '^user1' /etc/passwd || sudo useradd user1 && id -a user1
+            2. 写一个脚本，实现如下功能
+                如果 root 用户登录了当前系统， 显示 root 用户在线， 否则，显示 root 未登录
+                Solution:
+                    $w | grep ^root &>/dev/null && echo "root login" || echo "Root is not login"
+      grep [OPTIONS] [-e PATTERN | -f FILE] [FILE...]
+
+      egrep
+          扩展正则表达式元字符
+                字符匹配
+                    .
+                    []
+                    [^]
+                次数匹配
+                    *
+                    ？
+                    +
+                    {m}
+                    {m,n}
+                    {m,}
+                锚定
+                    ^
+                    $
+                    \< | \b
+                    \> | \b
+                分组
+                    ()
+                    后向引用  \1, \2, \3 ...
+                    |:  a|b  a or b     C|cat ==> C or cat  (C|c)at ==> Cat or cat
+
+        练习
+            用 egrep 实现前面的练习
+            1. 显示当前系统 root, centos 或 user1 用户的默认shell 和 UID
+                $grep -E '^(root)|^(centos)|^(user1)' /etc/passwd
+            2. 找出 /etc/rc.d/init.d/functions 文件中某单词后面跟一个小括号的行
+
+            3. 使用echo 输出一绝对路径，使用egrep 取出其基名
+
+            4. 找出 ifconfig 命令结果中 1-255  之间的数值
+
+            5. 找出 ifconfig 命令结果中的 IP 地址
+
+    fgrep
+        不做模式匹配，直接搜索给定的字符串
+
+sed: stream editor, 文本编辑工具
+awk: Linux 上的实现 gawk, 独立的编程语言，文本报告生成器

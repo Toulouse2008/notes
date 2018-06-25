@@ -1,0 +1,13 @@
+#!/bin/bash
+ read -p "please input username: " username
+    if ! grep "^$username\>" /etc/passwd &> /dev/null;then
+       exit 7
+   elif
+     [[ "`grep "^$username\>" /etc/passwd | cut -d: -f7`" ==  "/bin/bash" ]];then
+     echo "$username Bash User"
+      returnValuer=0
+    else
+    echo " $username Not Bash User"
+    returnValue=1
+  fi
+exit $returnValue

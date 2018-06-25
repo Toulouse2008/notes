@@ -1,0 +1,44 @@
+系统设定的三个信息流
+    默认输出: 标准输出，stdout,  1     显示器
+    默认输入: 标准输入, stdin,   0     键盘
+    默认错误:          stderr,  2     显示器
+
+重定向符号
+    输出
+        > : 覆盖输出重定向，内容覆盖原有内容
+        >>: 追加输出重定向，内容添加到原有内容后面
+    输入
+        < :
+
+    注意:
+        <<: 不是输入追加重定向，而是表示此处是生成文档的意思    END | EOF | 任意其他指定STRING
+            $cat <<END
+            >your_input
+            >your_input
+            >END
+            $cat >> /tmp/test <<EOF     | $cat <<EOF >>/tmp/test
+
+标准错误的重定向
+    2> : 将错误定向到指定文件，如果有内容先清空再写如，而不再是显示器
+    2>>: 将错误定向到指定文件，如果有内容则添加到文件尾部，而不再是显示器
+
+同时重定向输出和错误
+    定向到不同文件
+        $ls /varr > /tmp/3.out  2>/tmp/err.out
+    定向到同一个文件中
+        分别引导
+            $ls /varr > /tmp/3.out 2>/tmp/3.out
+        一次搞定    &>
+        $ls /varr &> /tmp/3.out
+set
+    设定 shell 的指定属性
+    -C: 如果文件存在，禁止使用覆盖重定向
+        如果 /tmp/1 已经存在
+        $ls > /tmp/1 <==报错  $ls >| /tmp/1  <== OK
+    +C: 开启文件覆盖重定向
+
+管道  |: 把命令的执行结果作为下一个命令的输入
+
+tee     read from stdin and output to stdout and files
+    $echo "Hello world" | tee /tmp/test.txt ==> 把 "Hello world" 打印到屏幕同时到text.txt
+    $wc -l passwd | cut -d' ' -f1   ==>只显示行数，不显示任何其他信息

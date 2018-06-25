@@ -1,0 +1,240 @@
+Java
+
+Webapp server:
+    jsp: tomcat jboss jetty
+
+Java
+    SUN, James Gosling, Green Project, Oak, Java, SunWorld
+    1995: Java 1.0, Write Once, Run Anywhere
+    1996: JDK(Java Development Kit), 包含一个 JVM(Sun Classic VM)
+          JDK 1.0: JVM, Applet, AWT
+    1997: JDK 1.1
+          JAR 文档格式, JDBC, JavaBeans
+    1998: JDK 1.2
+        Sun 把 Java 技术拆分为三个方向: Java 2
+            J2SE: Standard Edition
+            J2EE: Enterprise Edition
+            J2ME: Mobile Edition
+        代表性技术: EJB, Java Plug-in, Swing
+        JIT编译器： Just In Time, 即时编译
+    2000: JDK 1.3
+        1999: HotSpot 虚拟机
+    2002: JDK 1.4   Java 走向成熟   Windows 的 .Net 出现
+    2004: JDK 1.5 重大改版，加入了collection，等等
+    2006: JDK 1.6 SUN 开源了 Java 技术，在 GPL 规范下，开源了 JDK 中的大部分源码
+        建立 OpenJDK 组织管理这些代码
+    2011: JDK 1.7
+        Oracle 收购 SUN 70 billion
+    2014: JDK 8
+    2017: JDK 9
+    2018: JDK 10
+
+    虚拟机: JRockit, HotSpot， J9(?)
+
+    Java 程序体系结构
+        Java 编程语言
+        Java Class  文件格式
+        Java API    Java 类库
+        Java VM     Java 虚拟机  (Class Loader 类加载器 和 执行引擎)
+
+    Java 编程语言的特点
+        面向对象    多线程     结构化错误处理     垃圾收集    动态链接    动态扩展
+
+    Java 技术流派
+        J2SE ==> Java 2 SE
+        J2EE ==> Java 2 EE
+        J2ME ==> Java 2 ME
+
+    JVM 运行时区域:      多线程运行
+        方法区: 存放虚拟机加载的类信息、常亮、静态变量等；为线程共享区
+
+        堆: Java JVM 管理内存中最大的一部分，是 gc 管理的主要区域，基于分代收集算法；
+                 线程共享
+
+        Java 栈: 线程私有，存放线程自己的局部变量等信息
+
+        PC 寄存器: Program Counter Register
+                  寄存器/程序计数器, 保留了要执行的程序的行号，线程独占各自的 PC 寄存器
+
+        本地方法栈: Native Method Stack
+                  具体实现方案依赖于平台，为 Java 程序运行提供服务的
+
+        守护线程: JVM --> gc
+
+    Java 2 EE:
+        Java 2 SE
+        Servlet, JSP, EJB, JMS, JMX, JavaMail, etc
+
+        Servlet Container:  用户通过浏览器向服务器发请求，要求得到 HTML， 因此，html 标签
+            硬编码在应用程序中。客户端请求的资源必须在服务器端运行一次，生成 html 然后封装并发给客户端
+        JSP: 充当 Servlet 前端，Java 代码内嵌到 html 代码中， Jasper 翻译成 servlet 代码
+
+        Web Container
+            JDK(SUN), Servlet, JSP
+
+            商业实现
+                WebSphere(IBM)
+                WebLogic: Oracle(EEA --> Oracle)
+                Oc4j:
+                Glassfish
+                Geroimo
+                JOnAS
+                JBoss: RedHat 收购并开源
+            开源实现
+                Tomcat(7.0): 开源，独立运行，支持远程部署 （编译 8 s）
+                jetty(7.0): 开源，独立运行，轻量级，被生产环境中，被嵌入到其他Java app中 (编译 13 s)
+                resin(3.1): 不是完全开源，支持负载均衡，运行 php 程序(编译 7 s)
+
+        开源 JDK Apache Harmony, OpenJDK 等。
+
+    Tomcat  对 Java EE 的不完整实现，只实现了 Servlet 和 JSP
+        SUN 公司创建第一个 Servlet 容器， 即 Java Web Server, JWS 只是为了掩饰Servlet
+        的相应功能，很不稳定。与此同时，ASF(Apache Software Foundation) 创建了 JServ 项目，
+        一个能与 apache 整合起来的 servlet 容器。 1999年， SUN 把 JWS 捐给了 ASF，Servlet
+        和 JServ 合二为一，即 Tomcat 的前生。 第一个 Tomcat 版本是 Tomcat 3.x 系列，而
+        发布于2011年的 Tomcat 4.0 则是在此前基础上进行了重新设计和实现，其代码项目被命名为
+        Catalina。 目前版本是 8.x。
+
+        Java SE 则包含了 Java 二进制程序(如 JVM 和 Java 编译器) 和 Java 的核心类库， 而
+        Java EE 标准则包含了一组适应于创建企业级 web 应用程序的 API. EE 包含多个独立的 API，
+        Servlet 和 JSP 就是其中两个，其他部分如下
+            EJB(Enterprise JavaBeans): Java 相关的诸多高级功能实现，如 RMI(Remote Method
+                Invocation), 对象/关系映射，跨越多个数据源的分布式服务等
+            JMS(Java Message Service): 高性能异步消息服务，实现 Java EE 应用程序与非 JAVA
+                程序的"透明"通信
+            JMX(Java Management Extensions): 在程序运行时对其进行交互式监控和管理的机制
+            JTA(Java Transaction API): 允许应用程序在自身的一个或多个组件中平滑地处理错误
+                的机制
+            JavaMail: 通过工业标准的 POP/SMTP/IMAP 协议发送和接收邮件的机制
+
+        Java SE APIs:
+            JNDI(Java Naming and Directory Interface): 用于和 LDAP 服务交互的 API
+            JAXP(Java API for XML Processing): 用于分析及转换 XML(基于 XSLT 实现)
+
+        Tomcat 组件
+            Catalina: Servlet Container
+            Coyote: HTTP connector
+            Jasper: JSP engine
+
+            Tomcat 本身就是用 Java 开发的
+
+        Tomcat Instance: 运行中的 Tomcat 进程(Java 进程)
+            Server: 即一个 Tomcat 实例
+            Engine: Tomcat 的核心组件，用于运行 jsp 或 servlet 代码
+
+
+            Connector: 接受并解析用户请求，将请求映射为 Engine 中运行的代码，之后，将运行
+                结果构建成响应报文。  HTTP， ajp。一个连接器只属于一个Engine，一个 Engine
+                可以有多个 Connector。
+
+            Service: Engine 和 Connector 之间的桥梁，一个 Service 只能服务一个 Engine
+                一个 Engine 可以有多个 Service，一个 Service 可以有多个 Connector，但是
+                一个 Connector 只能属于一个 Service
+
+            Context： 类似于 httpd 中的 alias， 把路径映射为其他目录下的内容
+
+            Host: 类似于 httpd 中的虚拟主机
+
+            注意:
+                每个组件都是由具体的 "类"实现的，有些组件有多种实现
+                顶级类组件: Server
+                服务类组件: Service
+                容器类组件: 即可以部署 webapp 的组件， engine， host， context
+                连机器类组件: connector
+                被嵌套组件: value, logger, realm
+
+                <server>
+                    <service>
+                        <connector />
+                        <connector />
+                        ....
+                        <engine>
+                            <host>
+                                <context />
+                                <其他被嵌套类组件》
+                            </host>
+                            ....
+                        </engine>
+                    </service>
+                </server>
+
+        Tomcat 的运行模式
+            standalone: 通过内置的 web server(http, connector) 来接收来自客户端的请求
+            proxy: 有专门的 web server 服务客户端的 http 请求
+                in-process: 部署于同一主机
+                network: 部署于不同主机
+
+        安装 Tomcat
+            前提
+                JDK: Oracle JDK,     OpenJDK
+                    安装
+                        - yum 安装
+                        - 官方站点下载
+            Tomcat
+                - yum 安装
+                - 官方站点下载
+
+
+                目录
+                    bin: 脚本及启动时用到的类
+                    lib: 类库
+                    conf: 配置文件
+                        server.xml: 主配置文件
+                        context.xml: 配置每个webapp都可以有专用的配置文件，常位于weapp
+                            应用程序目录下的 WEB-INF 目录中，用于定义会话管理器，JDBC等；
+                            conf/context.xml 是为各 webapp 提供默认配置
+                        web.xml: 每个webapp 部署之后才能被访问，此文件用于为所有的 webapp
+                            提供默认的相关配置
+                        catalina.policy: 当使用-security 选项启动 Tomcat 实例时，会
+                            读取此配置文件来实现安全运行策略
+                        catlina.properties: Java  属性的定义文件，用于设定类加载器的路径
+                            等，以及一些其他 JVM 性能相关的调优参数
+                        logging.properties: 日志相关的配置信息
+                    logs: 日志
+                    webapps: 应用程序默认部署目录
+                    work: 工作目录
+                    temp: 临时文件目录
+
+Tomcat 安装配置流程 --> CentOS 7, JDK jdk1.8.0_162  Tomcat 8.5
+    - 下载 jdk jdk1.8.0_162-linux-x64.rpm
+        #rpm -ivh jdk-7u67-linux-x64.rpm
+    - 安装
+        #rpm -ql        <== 查看安装目录   --> /usr/java
+        #cd /usr/java  -->latest  default jdk1.8.0_162
+        #cd /usr/java/jdk1.8.0_162 -->Java 的相关目录
+
+    - 配置java的环境变量
+        #vim /etc/profile.d/java.sh
+            export $JAVA_HOME=/usr/java/latest
+            export PATH=$JAVA_HOME/bin:$PATH
+        #. /etc/profile.d/java.sh
+        #java           <=== 不要传递任何参数   看到帮助列表，表示 jdk 安装配置成功
+
+    - 下载 apache-tomcat-8.5.29.tar.gz
+    - 解压到 /usr/local
+        $tar xf apache-tomcat-8.5.29.tar.gz -C /usr/local
+        $cd /usr/local/
+        # mv apache-tomcat-8.5.29 tomcat   <== 重命名目录
+            /bin   ==>一系列脚本 jar， xml  ==> .sh 文本可以直接运行，catalina.sh 启动服务
+    - 配置环境变量
+        $vim /etc/profile.d/tomcat.sh
+            export CATALINA_HOME=/usr/local/tomcat
+            export PATH=$CATALINA_HOME/bin:$PATH
+    - 启动 Tomcat
+        默认监听 8080 端口, 查看该端口是否可用
+        $ss -tnl
+        $catalina.sh start
+        $ss -tnl  ==>8080
+        $ss -tnlp  ==> users(('java')) 8080
+        $ps aux   ==> /usr/java/latest/bin/java -Djava.xxxxx....
+
+    - 目录
+        server.xml: 主配置文件
+        context.xml: 每个webapp 都可以有专用的配置文件，这些配置文件通常位于 webapp 应用
+            程序目录下的 WEB-INF 目录中，用于定义会话管理器，jdbc等； conf/contex.xml
+            是为各 webapp 提供默认配置
+        web.xml: 每个 webapp 部署之后才能被访问，此文件用于为所有的 webapp 提供默认配置
+        tomcat-users.xml: 认证访问时的账号和密码的配置文件
+        catalina.policy: 当使用 -security 选项启动时，读取此文件实现安全策略
+        catalina.properties: Java 属性的定义文件，用于设定类加载器路径等，以及JVM 调优参数
+        logging.properties: 日志相关的配置信息

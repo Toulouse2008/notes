@@ -1,0 +1,137 @@
+HTTP: HyperText Transfer Protocol
+MIME: Multipurpose Internet Mail Extensions
+URI: Uniform Resource Identifier
+URL: Uniform Resource Locator
+W3C: World Wide Web Consortium
+
+HTTP 请求
+    1）请求行
+        请求方式：POST、GET
+        请求的资源：/DemoEE/form.html
+        协议版本：HTTP/1.1
+        HTTP/1.0，发送请求，创建一次连接，获得一个web 资源，连接断开。
+        HTTP/1.1，发送请求，创建一次连接，获得多个web 资源，保持连接。
+    2）请求头
+        请求头是客户端发送给服务器端的一些信息，使用键值对表示key：value
+
+        Referer: 浏览器通知服务器，当前请求来自何处。如果是直接访问，则不会 有这个头。
+                 常用于：防盗链
+        If-Modified-Since: 浏览器通知服务器，本地缓存的最后变更时间。与另一个响应头组合控制
+                 浏览器页面的缓存。
+        Cookie: 与会话有关技术，用于存放浏览器缓存的cookie 信息。
+        User-Agent: 浏览器通知服务器，客户端浏览器与操作系统相关信息
+        Connection: 保持连接状态。Keep-Alive 连接中，close 已关闭
+        Host: 请求的服务器主机名
+        Content-Length: 请求体的长度
+
+        Content-Type: 如果是POST 请求， 会有这个头，
+                    默认值为application/x-www-form-urlencoded，表示请求体内容使用url编码
+        Accept： 浏览器可支持的MIME 类型。文件类型的一种描述方式。MIME 格式：大类型/小类型[;参数]
+                例如：
+                    text/html ，html 文件
+                    text/css，css 文件
+                    text/javascript，js 文件
+                    image/*，所有图片文件
+        Accept-Encoding: 浏览器通知服务器，浏览器支持的数据压缩格式。如：GZIP 压缩
+        Accept-Language: 浏览器通知服务器，浏览器支持的语言。各国语言（国际化i18n）
+
+    3）请求体
+        当请求方式是post 的时，请求体会有请求的参数，格式如下：
+        username=zhangsan&password=123
+        如果请求方式为get，那么请求参数不会出现在请求体中，会拼接在url 地址后面
+        http://localhost:8080...?username=zhangsan&password=123
+
+HTTP 响应
+    1）响应行   Http 协议     状态码：
+        常用的状态码如下：
+        200 ：请求成功。
+        302 ：请求重定向。
+        304 ：请求资源没有改变，访问本地缓存。
+        404 ：请求资源不存在。通常是用户路径编写错误，也可能是服务器资源已删除。
+        500 ：服务器内部错误。通常程序抛异常。
+        状态信息：状态信息是根据状态码变化而变化的
+    2）响应头
+        响应也都是键值对形式，服务器端将信息以键值对的形式返回给客户端
+        Location: 指定响应的路径，需要与状态码302 配合使用，完成跳转。
+        Content-Type: 响应正文的类型（MIME 类型）取值：text/html;charset=UTF-8
+        Content-Disposition: 通过浏览器以下载方式解析正文, 取值：attachment;filename=xx.zip
+        Set-Cookie 与会话相关技术。服务器向浏览器写入cookie
+        Content-Encoding: 服务器使用的压缩格式, 取值：gzip
+        Content-length: 响应正文的长度
+        Refresh: 定时刷新，格式：秒数;url=路径。url 可省略，默认值为当前页。
+                 取值：3;url=www.itcast.cn //三秒刷新页面到www.itcast.cn
+        Server: 指的是服务器名称，默认值：Apache-Coyote/1.1。可以通过conf/server.xml
+                配置进行修改。<Connector port="8080" ...server="itcast"/>
+        Last-Modified: 服务器通知浏览器，文件的最后修改时间。与If-Modified-Since一起使用。
+    3）响应体
+        响应体是服务器回写给客户端的页面正文，浏览器将正文加载到内存，然后解析渲染显示页面内容
+
+常用的web 应用服务器
+    1）weblogic：oracle 公司的大型收费web 服务器 支持全部javaEE 规范
+    2）websphere：IBM 公司的大型收费web 服务器 支持全部的javaEE 规范
+    3）Tomcat：Apache 开源组织下的 开源免费的中小型的web 应用服务器 支持javaEE 中的 servlet
+        和 jsp 规范
+
+Tomcat：应用也算非常广泛的web服务器，支持部分j2ee，免费，出自apache基金组织，支持Servlet、jsp。
+    Tomcat 是一个小型的轻量级应用服务器，在中小型系统和并发访问用户不是很多的场合下被普遍使用，
+    是开发和调试JSP 程序的首选。在Tomcat中，应用程序的部署很简单，你只需将你的WAR放到Tomcat
+    的webapp目录下，Tomcat会自动检测到这个文件，并将其解压。
+JBoss：开源的应用服务器，比较受人喜爱，免费（文档要收费）
+Weblogic与Websphere：应该说算是业界第一的app  server，全部支持j2ee1.4，  对于开发者，有免费使用一年的许可证。
+Apache：全球应用最广泛的http服务器，免费，出自apache基金组织，可以作为web服务器使用。不过只支持静态网页，如(asp,php,cgi,jsp)等动态网页无法支持。
+
+
+JBoss还具有如下六大优点：
+1、JBoss是免费的，开放源代码J2EE的实现，它通过LGPL许可证进行发布。
+2、JBoss需要的内存和硬盘空间比较小。
+3、安装非常简单。先解压缩JBoss打包文件再配置一些环境变量就可以了。
+4、JBoss能够"热部署"，部署BEAN只是简单拷贝BEAN的JAR文件到部署路径下就可以了。如果没有加载就加载它；如果已经加载了就卸载掉，然后LOAD这个新的。
+5、JBoss与Web服务器在同一个Java虚拟机中运行，Servlet调用EJB不经过网络，从而大大提高运行效率，提升安全性能。
+6、用户可以直接实施J2EE-EAR，而不是以前分别实施EJB-JAR和Web-WAR，非常方便。
+
+WebLogic是美国bea公司
+
+
+bin：脚本目录
+    启动脚本：startup.bat
+    停止脚本：shutdown.bat
+conf：配置文件目录 (config /configuration)
+    核心配置文件：server.xml
+    用户权限配置文件：tomcat-users.xml
+    所有web 项目默认配置文件：web.xml
+lib：依赖库，tomcat 和web 项目中需要使用的jar 包
+logs：日志文件.
+    localhost_access_log.*.txt tomcat 记录用户访问信息，星*表示时间。
+    例如：localhost_access_log.2016-02-28.txt
+temp：临时文件目录，文件夹内内容可以任意删除。
+webapps：默认情况下发布WEB 项目所存放的目录。
+work：tomcat 处理JSP 的工作目录。
+
+
+绑定 Tomcat 到 Eclipse
+    Eclipse --> Window --> Preferences --> search for Server --> Runtime Environment
+    --> Add --> Apache --> Apache Tomcat vX.X --> Next & Create Server --> Next -->
+    Browse --> find the tomcat fold --> Finish --> OK
+配置发布路径
+    JavaEE --> Overview(bottom panel) --> Servers --> Double click on Tomcat
+    Server at localhost[Stopped xxx] --> Overview --> Server Locations -->
+    Use Tomcat Installation  --> Deploy path --> webapps
+    如果没有改，服务器没问题，仍然可以访问页面，但是，问题在于项目发布到第一个 Server Location
+    下，很不好查找
+启动server
+    访问: http://localhost:8080 --> Cat page
+
+项目发布实质
+    把 JavaEE 项目下的 WebContent 所有内容，复制一份，放到 Tomcat 所在文件夹中 webapps
+    下，与 JavaEE 项目同名的目录下，从浏览器访问的是该目录下的内容
+
+注意
+    如果项目要修改名字，请使用 Refactor
+    同时，查看 Properties 下 搜索 web， 查看 Web project Settings，确保 Context root
+    下的值 和项目名称一致
+
+    开始建项目之前，务必配置好一切!!!
+
+注意:
+    如果在配置发布路径之前，已经发布过项目了，Server Locations 下面的选项有是灰的，eclipse
+    不允许修改。这时需要删掉已经存在的 tomcat 和 WEB 项目，然后按上述步骤重新配置一次。

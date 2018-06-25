@@ -1,0 +1,2 @@
+sudo的在英语里的意思是switch user and do something．在Linux系统上，你需要root权限来安装
+和卸载软件包。sudo可以临时将你的用户ID切换为root。

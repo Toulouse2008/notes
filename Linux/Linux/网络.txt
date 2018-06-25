@@ -1,0 +1,185 @@
+马哥 运维初级：14
+网络
+MAC: Media Access Control
+
+IPv4 分类：
+	A类：255.0.0.0
+		127个A类网络，127 用于回环， 1-126
+		2^7 -1 个A类网，每个网容纳2…^24 - 2 个主机
+		主机位全0:网络地址
+		主机位全1:广播地址
+	B类： 255.255.0.0， 16 位
+		10 00 0000 - 10 11 1111
+		128-191
+		129.1.0.0
+		130.1.0。0
+		64个B类网， 2^14 个B类网
+		容纳主机：2^16 -2
+	C类：255.255.255.0, 24
+		110 0 0000 - 110 1 1111
+		192-223
+		32个C类， 2^21个C类网
+		容纳 2^8 - 2
+	私有地址：
+		A类: 10.0.0.0/8
+		B类: 172.16.0.0/16 - 172.31.0.0/16
+		C类: 192.168.0.0/24 - 192.168.255.0/24
+
+		D类:
+			1110 0000 - 1110 1111
+			224-239
+		E类:
+
+	申请网络: 201.1.2.0/24
+		- 10 个主机
+		- 分成两个网络，4 和 6，相互之间不能通讯，主机位做网路位
+		- 8 - 2 = 6 位， 表示主机
+			- 00
+			- 01 00 0001 -01 11 1110
+				网络地址：201.1.2.64
+				广播地址：201.1.2.127
+				65 - 126
+			- 10 00 0001 - 10 11 1110
+				201.1.2.128, 201.1.2.191
+				129 - 190
+			- 11
+
+			划分子网，浪费地址：
+				未划分-->254个地址可用，划分后-->124
+
+IP地址是32位的点分十进制表示,只有IP地址无法确定其属于哪一个网络,在IP地址的32位中,用前n位来标识
+网络,后32-n位标识网络中的主机,一般情况下是用前8,16或者24位来标识网络地址的,给定一个ip地址,则
+其网络地址为ip地址与1...10...0(n个1,32-n个0)作与运算的结果.1...10...0(n个1,32-n个0)称为
+这个网络的子网掩码(netmask).
+二、子网划分
+
+    在实际应用中， 一个公司申请了一个公网，比如201.1.2.0/24，但是这个公司有两个组,一个组中的
+	主机个数为6,另一个组中的主机个数为4,同时不希望这两个组的主机之间互相通信, 若再申请一个公网,
+	代价过高, 所以就要将这一个网络划分为多个子网.划分子网的方法是: 将网络地址中的主机位中的前m位
+	与网络地址位同时作为标识网络的位如:
+
+201.1.2.0(借2位),先不考虑00和11的情况:
+        00:
+        01:
+            01 00 0001 - 01 11 1110: 65 - 126
+            网络地址为:201.1.2.64/26, 广播地址为: 201.1.2.127
+        10:
+            10 00 0001 - 10 11 1110: 129 - 190
+            网络地址为:201.1.2.128/26, 广播地址为: 201.1.2.191
+        11:
+	注意: 划分子网会浪费地址
+	子网合并就是子网划分的逆过程
+
+路由:
+
+主机接入网络:
+		网卡：
+			lo: 本地回环
+			以太网卡： ethX
+			pppX:
+	IP地址IP:
+	子网掩码Netmask:
+	网关Gateway:
+	DNS服务器地址:
+		DNS1：当第一个不在线时，才找DNS2，DNS3
+	路由:
+
+	DHCP: Dynamic Host Configuration Protocol
+		DHCP失败后
+			169.254.x.x
+			只能用于本地通信，没有网关
+
+ifconfig
+	显示网络接口信息
+	ifconfig [ethX]
+		-a: 显示所有接口的配置信息
+	配置ip
+	ifconfig ethX IP/MASK [up|down]
+		ifconfig ethx 10.1.1.1/8
+		--立即生效，但是重启网络服务或者主机-->失效
+			/etc/init.d/network  start|stop|restart|status
+网关：
+	route
+		route: 查看本地路由表
+			-n: 以数字方式显示各主机或端口信息
+		route add|del
+		add: 添加
+			-host:主机路由
+			--net:网络路由
+				-net 0.0.0.0 默认路由
+			route add -net 10.0.0.0/8 gw 192.168.19.0
+			route add default gw NEXTHOP <== 添加默认路由
+			route add default gw 192.168.10.1
+		del:
+			route del -net 10.0.0.0/8 [gw NEXTHOP]
+			route del -net 0.0.0.0
+			route del -net defualt
+
+	配置网络文件:
+		/etc/sysconfig/network
+
+	网络接口配置文件:
+	/etc/sysconfig/network-scripts/ifcfg-INTERFACE_NAME
+	DEVICE=:关联的设备名称，要与文件名的后半部"INTERFACE_NAME"保
+			持一致
+	BOOTPROTO=[static|none|dhcp|bootp]:引导协议要使用静态，
+								static或者none，dhcp自动获取
+	IPADDR=: IP地址
+	NETMASK=:子网掩码
+	GATEWAY=:设定默认网关
+	ONBOOT=:开机时是否自动激活此网络接口
+	HWADDR=:硬件地址，要与硬件中的地址保持一致；不知道，可省略
+	USERCTL={yes|no}:是否允许普通用户控制此接口
+	PEERDNS={yes|no}:是否在BOOTPROTO为dhcp时接受由DHCP服务器指
+					定的DNS地址
+
+	==>不会立即生效，但是重启网路服务或者主机后，会永久生效
+
+	配置路由：
+		/etc/sysconfig/network-scripts/route-ethX
+		- 添加格式：
+			DEST via NEXTHOP
+		- 添加格式:
+			ADDRESS0=
+			NETMASK0=
+			GATEWAY0=
+
+	DNS服务器配置:
+		方法只有一种，/etc/resolv.conf
+			nameserver DNS_IP_1
+			nameserver DNS_IP_2
+
+	指定本地解析:
+		/etc/hosts
+		主机IP				主机名			主机别名
+		172.16.0.1		www.mageedu.com		  www
+
+	DNS-->/etc/hosts-->DNS
+
+	配置主机名:
+		hostname HOSTNAME
+			-->立即生效，但不是永久
+		/etc/sysconfig/network
+			HOSTNAME=
+			-->不立即生效，但是永久有效
+
+	RHEL5:
+		system-config-network-tui
+		system-config-network-gui
+		-->修改配置文件，需要重启才能生效
+
+	ifconfig:老旧工具
+
+	iproute2:
+		ip
+			link：网络接口属性
+				show:
+					ip link show === ifconfig -a
+					ip -s link show
+				set:
+					ip link set DIVICE {up|down...}
+
+			addr:协议地址
+
+
+			route:路由

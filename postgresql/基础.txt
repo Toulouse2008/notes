@@ -1,0 +1,20 @@
+1. 安装
+    #yum install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
+    #yum install postgresql10
+    #yum install postgresql10-server
+2. 初始化数据库
+    #/usr/pgsql-10/bin/postgresql-10-setup initdb
+3. 启动服务
+    #
+4. 切换为postgres用户
+    #su - postgres  <====进入bash
+5. 建库
+    -bash-4.2$ createdb mydb
+
+6. 进入postgresql client界面
+    -bash-4.2$ psql mydb    ===> psql(10.4)
+                                Type "help" for help
+
+                                postgres=#
+
+6.

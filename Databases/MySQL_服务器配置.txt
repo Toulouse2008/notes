@@ -1,0 +1,42 @@
+服务器选项
+    - basedir
+    - datadir
+    - defaults-file
+    - enable-name-pipe
+    - init-file
+    - log
+    - log-bin
+    - log-error
+    - log-slow-queries: 超过 10s 即认为是慢查询
+    - pid-file
+    - port
+    - shared-memory-base-name
+    - skip-networking
+    - socket
+    - tmpdir
+    - user
+
+设置变量
+    $mysqld --max_connections=200
+    mysql>SET sort_buffer_size=20000000;
+    mysql> SET GLOBAL sort_buffer_size=2000000;
+
+    mysql> SET max_connections=200;  ==>Error: Access denied; need super privilege
+    mysql>SET max_connections=200;  ==> GLOBAL variable and should be set with SET GLOBAL
+
+查看慢查询
+    $mysqldumpslow /path/to/slow_query_log_file
+    查看最慢的两条查询
+    $scripts/mysqldumpslow -t 2
+
+查看服务器设置
+    mysql>SHOW VARIABLES;   | SHOW VARIABLES LIKE 'k%';
+    mysql>SHOW STATUS;
+    mysql>SHOW PROCESSLIST;
+    mysql>KILL pid#;
+    $mysqladmin --user=root --password=your_pass variables
+    $mysqladmin --user=root --password=your_pass status
+    $mysqladmin --user=root --password=your_pass processlist
+    $mysqladmin --user=root --password=your_pass kill pid#
+
+优化表: 大范围改动表机构和内容后, 执行 OPTIMIZE TABLE, 重新组织磁盘上的表文件

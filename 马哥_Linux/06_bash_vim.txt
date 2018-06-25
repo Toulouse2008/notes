@@ -1,0 +1,517 @@
+bash 的基本特性(4)
+    变量类型
+        决定了数据的存储格式，存储空间的大小， 参与运算的种类
+        字符型
+        数值型:    整形  浮点型
+        强类型     弱类型
+    bash 中的变量种类
+        默认: 所有变量均为字符串
+
+        生效范围:
+            本地变量: 生效范围为当前 shell 进程, 即仅对当前shell有效，其他的无效
+            环境变量: 生效范围为当前shell及其子shell
+                    $declare -x a=8   <==环境变量的声明方法
+            局部变量: 生效范围为当前shell进程中的某代码段，一般是函数内
+            位置变量: 通过命令行向脚本传递的参数，$1,$2,$3...
+            特殊变量: bash 定义的变量，$?, $0, $#, $*, $@ ...
+
+            本地变量
+                赋值: name='value'
+                        value
+                            1. 可以使字符串: name="username"
+                            2. 变量引用:  name="$username"
+                            3. 命令引用: name=`command` | name=$(command) 命令的执行结果赋值
+                引用: ${v_name}, $v_name，如果没有定义，返回空值
+                    '': 强引用，不对变量进行替换
+                    "": 弱引用，遇到定义的变量，则替换
+                显示已经定义的变量
+                    set
+                销毁不需要的变量
+                    unset v_name   <== 没有 $
+
+            环境变量
+                - export name=VALUE
+                - declare -x name=VALUE
+                - 也可以先定义为本地变量，然后 declare | export 为环境变量
+                显示环境变量
+                    - env
+                    - printevn
+                    - export
+                销毁变量
+                    unset v_name
+                bash 有许多内建的环境变量，定义变量时，避免重名
+                    如 PATH, SHELL, UID, HISTSIZE, PWD, OLDPWD, HISTFILE, PS1...
+
+            变量命名的规则
+                1. 不能使用关键字和保留字  if，for， while，...
+                2. 只能使用字母，下划线和数字，但不能以数字开头
+                3. 尽量做到见名知意
+                    驼峰法 | 下划线分开， 避免全大写，容易与环境变量冲突，避免下划线开头，python
+            只读变量
+                readonly name
+                declare -r name
+            位置变量
+                不需要定义和赋值，直接在命令行中传递参数即可
+                $1, $2, $3
+                $0: 脚本本身
+
+                $*: 传递给脚本的所有参数, 所有的参数是一个字符串
+                $@: 传递给脚本的所有参数，每个参数是独立的字符串
+                $#: 传递给脚本的参数的个数
+                shift number: 踢出 number 个参数，默认踢出 1 个
+
+    bash 配置文件
+        按范围分
+            全局配置
+                /etc/profile
+                    如果配置文件过大，可分割为多个放到下面目录下
+                    /etc/profile.d/*.sh
+                /etc/bashrc
+            个人配置文件
+                ~/.bash_profile
+                ~/.bashrc
+        按功能分类
+            profile 类: 为交互式登录的 shell 提供配置
+                全局: /etc/profile, /etc/profile.d/*.sh
+                个人: ~/.bash_profile
+                功用:
+                    1. 用于定义环境变量
+                    2. 用于运行命令或者脚本
+
+            bashrc  类: 为非交互式登录 shell 提供配置
+                全局: /etc/bashrc
+                个人: ~/.bashrc
+                功用:
+                    1. 用于定义命令别名
+                    2. 用于定义本地变量
+
+            shell 登录方式
+                交互式登录
+                    直接通过终端输入账号和密码登录
+                    使用 su - username | su -l username 切换
+
+                    配置文件读取顺序:
+                    /etc/profile --> /etc/profile.d/*.sh --> ~/.bash_profile
+                                 -->~/.bashrc -->/etc/bashrc
+                        注意:
+                            如果一个变量在多个文件中重复定义，则最后定义的生效
+                非交互式
+                    - su username
+                    - 图形界面下打开的终端
+                    - 执行脚本
+                    配置文件读取顺序:
+                        ~/.bashrc --> /etc/bashrc -->/etc/profile.d/*.sh
+
+                    强制编辑后的配置文件立即生效
+                        - 重启一个shell
+                        - $. .bashrc  | source .bashrc
+                问题
+                    1. 定义对所有用户生效的别名？
+                        /etc/bashrc
+                    2. 对所有用户生效的提示信息？
+                        /etc/profile.d/x.sh
+                    3. 让用户的查询路径多一条，怎么配置？
+                        root: ~/.bash_profile  $PATH
+                        普通用户: ~/.bash_profile $PATH
+                        全局: /etc/profile.d/xx.sh  $PATH
+
+     bash 中的运算
+         id++, id--	variable post-increment, post-decrement
+         ++id, --id	variable pre-increment, pre-decrement
+         -, +		unary minus, plus
+         !, ~		logical and bitwise negation
+         **		exponentiation
+         *, /, %		multiplication, division, remainder
+         +, -		addition, subtraction
+         <<, >>		left and right bitwise shifts
+         <=, >=, <, >	comparison
+         ==, !=		equality, inequality
+         &		bitwise AND
+         ^		bitwise XOR
+         |		bitwise OR
+         &&		logical AND
+         ||		logical OR
+         expr ? expr : expr
+                 conditional operator
+         =, *=, /=, %=,
+         +=, -=, <<=, >>=,
+         &=, ^=, |=	assignment
+
+    bash 中的算数运算
+        + - * / % **
+        实现算数运算
+            1. let var=算数表达式
+                $m=1    $n=2    $let sum=$n+$m  $echo $sum  ==>3
+            2. var=$[算数表达式]
+                $sum=$[$m+$n]
+            3. var=$((算数表达式))
+                $sum=$(($m+$n))
+            4. var=$(expr arg1 arg2 ...)
+                $sum=$(expr 1 + 3 \* 4)  $echo $sum  ==>13
+                注意:
+                    * 需要转义
+            bash 内建的伪随机数生成器:
+                $RANDOM     范围 0-32767
+        增强型赋值
+            *=  /=  %=  +=  -=  <<= >>= &=  ^=  |=
+            let count+=1 | count++
+            let count-=1 | count--      * /
+        自增自减
+            let var+=1  ==> let var++
+            let var-=1  ==> let var--
+
+        练习
+            1. 写脚本计算 /etc/passwd 中第 10 个和最后一个用户的 id 的和
+                let id_one=`head -n 10 /etc/passwd | tail -n 1|cut -d':' -f3`
+                let id_two=`tail -n 1 /etc/passwd | cut -d':' -f3`
+                let sum=$id_one+$id_two
+                echo $sum
+            2. 传递连个文件给脚本，计算空白行之和
+                let lines_1=$(grep "^[[:space:]]*$" $1 | wc -l)
+                let lines_2=$(grep "^[[:space:]]*$" $2 | wc -l)
+                let sum=$lines_1+$lines_2
+                echo $sum
+            3. 脚本统计 /etc, /var, /usr 目录下共有多少个文件和一级子目录
+                let etc=$(ls -l /etc | wc -l)
+                let var=$(ls -l /var | wc -l)
+                let usr=$(ls -l /usr | wc -l)
+                let sum=$etc+$var+$usr
+                echo $sum
+
+    条件测试        0 表示真   1 表示假
+        测试命令
+            test EXPRESSION
+            [ EXPRESSION ]
+            [[ EXPRESSION ]]
+                表达式前后必须有空格，否则，报错
+        bash 的测试类型
+            数值测试:
+                -gt    -ge     -ne   -eq     -lt     -le
+            字符串测试
+                == | =     >    <   !=
+                =~ : 右侧的模式是否能匹配到左侧字符串的内容
+                    Note: 一般放在 [[ ]] 中
+                -z v_name:  测试字符串是否为空，空为真，不空为假
+                -n v_name:  测试字符串是否为空，不空为真，空为假
+                注意
+                    字符串放到引号里面，'' 没有变量替换 | "" 变量替换
+            文件测试
+        bash 自定义状态码
+            exit(n): 自定义的退出码
+                脚本一旦遇到exit 命令，脚本即刻中止执行，状态码取决于exit
+                如果未定义，则取决于最后一条命令的状态码
+
+        练习
+            脚本接受文件路径做参数，如果参数个数小于 1， 提示用户至少给 1 个参数，并退出
+            否则，显示第一个参数所指向文件的空白行数
+            #!/bin/bash
+            [[ $# -lt 1 ]] && echo "$0 accept at least 1 parameter" && exit(-1)
+            echo $(grep "^[[:space:]]*$" | wc -l)
+
+
+vim 编辑器
+    vi: Visual Interface    文本编辑器
+    vim: vi improved
+        $sudo yum -y install vim
+    文本: ASCII, Unicode
+
+    文本编辑器
+        行编辑器: sed
+        全屏编辑器: nano  vi   vim
+    使用
+        模式化的编辑器
+        基本模式
+            编辑模式: 命令模式
+            输入模式: 插入模式
+            末行模式: vim 内置命令行接口
+        打开文件
+            $vim [option] [files ...]
+                +number: 文件打开后，光标处于该行行首
+                +/pattern: 文件打开后，光标处于第一个匹配行的行首
+                +: 光标定位到文件末行行首
+        模式之间的切换
+            编辑模式-->输入模式
+                i: insert, 插在光标之前
+                a: append, 插在光标之后
+                o: 光标之下，开一新行，并进入插入模式
+                O: 光标之上，开一新行，并进入插入模式
+                I: 跳转至光标所在行的行首，并进入插入模式
+                A: 跳转至光标所在行的行尾，并进入插入模式
+                c:  C:  s:  S:
+
+            输入模式 --> 编辑模式
+                ESC
+            编辑模式 --> 末行模式
+                :
+            末行模式 --> 编辑模式
+                ESC
+            末行模式 --x--> 输入模式
+        关闭文件
+            :q  退出
+            :wq
+            :q! 放弃所做的修改并退出
+            :wq 保存并退出
+            :x  保存并退出
+            :w /path/to/file    当前文本保存到file中
+            ZZ  编辑模式下，保存并退出
+
+    快速光标跳转
+        字符
+            h, j, k, l ==>Right, Down, Up, Left
+            number + h, j, k, l  ==> 一次跳 number 个字符
+        单词
+            w: 向右跳一个单词，词首  number + w: 向右跳number个单词，词首
+            b: 当或者前一个单词的词首  number + b
+            e: 当前或下一个单词的词尾  number + e
+        行
+            ^: 跳到行的第一非空字符
+            0: 跳到行首
+            $: 绝对行尾
+        行间
+            number + G: 跳到指定行
+            G: 最后一行行首
+            1G | gg: 第一行行首
+        句间
+            ): 下一个句首
+            (: 上一个句首
+        段落
+            }: 下一个段首
+            {: 收一个段首
+
+    vim 编辑命令
+        字符
+            x: 删除光标处字符
+            #x: 从光标开始删除 # 个字符(向右删)
+            xp: 交互光标所在处及其后一个字符的位置
+        替换命令
+            replace
+            r:
+            #r:
+
+            s: 替换光标处字符
+            #s:
+        删除
+            d: 需要结合光标跳转命令，确定删除范围
+                d$: 光标到行尾
+                d^: 光标到行首
+                d0: 光标到行首
+
+                dw | d#w
+                de | d#e
+                db | d#b
+
+                dd: 清除光标所在行     #dd: 清除光标所在行及一下 # 行
+                D: 只删除内容，保留空行
+
+        粘贴命令
+            put/paste
+            p: 缓冲区若是整行内容，则粘贴到光标所在行的下行，否则，粘贴到光标之后
+            P: 缓冲区若是整行内容，则粘贴到光标所在行的上行，否则，粘贴到光标之前
+
+        复制命令
+            yank
+            y: 复制，类似于 d
+                y$  y0  y^  yw  ye  yb
+            yy: 复制整行
+            #yy: 从光标所在行起，向下复制 # 行
+
+        改变命令
+            change
+            c: 修改, 类似 y 命令  但是，改完后，进入输入模式
+                c^  c0  c$  cb  ce  cw  c#|b|w|e
+            cc: 删除并输入新内容
+            #cc:
+
+        其他编辑
+            可视化模式
+                v: 按字符选定
+                V: 按行选定
+                    note: 结合编辑名 d, c, y
+            撤销操作
+                undo 撤销此前的操作
+                u:
+                #u: 撤销此前的 # 次操作
+            撤销此前的撤销
+                Ctrl + r
+            重复上一次操作
+                .
+
+        翻屏操作
+            Ctrl+f: 后翻一屏
+            Ctrl+b: 向前翻一屏
+            Ctrl+d: 后翻半屏
+            Ctrl+u: 前翻半屏
+
+        练习操作，请使用 vimtutor
+
+    vim 中的末行模式
+        内建的命令行接口
+
+        1. 地址定界
+            :start_pos,end_pos
+                #: 具体第 # 行, 如 2 表示第二行
+                m,n: 从第 m 行开始，到第 n 行
+                m,+n: 从第 m 行开始包括(该行)，向下再数 n 行
+                m,-n: 从第 m 行开始包括(该行), 向上再数 n 行
+                .: 当前行
+                $: 最后一行
+                    .,$-1 ==> 当前行到倒数第二行
+                %: 全文, 相当于 1,$
+
+                /pattern1/,/pattern2/
+                    从第一次被 pattern1 匹配到的行开始，到第一次被 pattern2 匹配到的行结束
+                m,/pattern/
+                    从 m 行开始，到第一次被 pattern 匹配到的行结束
+                /pattern/,m
+                    从第一次被 pattern 匹配到的行开始，到 m 行结束
+                /pattern/,$
+
+            使用方式
+                后跟一个编辑命令
+                    d   y
+                    w /path/to/file     将选定范围保存到 file 中
+                    r /path/from/file   在指定位置插入 file 的内容
+        2. 查找
+            /pattern: 从光标开始向尾部搜索
+            ?pattern: 从光标开始向头部搜索
+                n:  与命令同方西的下一个
+                N:  与命令反方向的下一个
+        3. 查找并替换
+            s: 在末行模式下完成查找替换操作
+                s/要查找的内容/替换为的内容/修饰符
+                    查找内容: 可以使用模式
+                    替换内容: 不能使用模式，但可以使用 \1,\2...等向后引用符号，还可以使用
+                             & 引用前面查找时查找到的整个内容
+                    修饰符
+                        i: 忽略大小写
+                        g: 全局替换，默认只替换每行的第一次匹配
+                :.,$s/r\(..\)t/R\1T/g   ==>当前行到结尾，所有root 替换为RooT
+                :%s/l...x/&er/g
+                :1,10s/how/HOW/g
+                :%s/\/etc\/fstab/\/var\/log/g
+
+            可设定分隔符
+                :%s@/var/log@/etc/fstab@g
+
+    练习
+        1. 复制 /etc/grub2.cfg 到 /tmp 目录，删除该文件中行首的空白字符
+            $cp /etc/grub2.cfg ./
+            $vim grub2.cfg
+            :%s/^[[:space:]]* //     | :%s/^[[:space:]]\+//g
+        2. 复制 /etc/rc.d/init.d/functions 到/tmp 目录，将该文件空白行行首加 #
+            :%s/^[[:space:]]/#/    | :%s/^[[:space:]]/#&/
+
+    vim 的多文件模式
+        打开
+            vim /path/to/{file, list,...}
+        切换
+            :prev
+            :next
+            :first
+            :last
+        保存和退出
+            :wall
+            :qall
+            :wqall
+    窗口分割模式
+        打开
+            vim -o  file1, fil2, ... :水平分割
+            vim -O file1, fil2, ...  :垂直分割
+        窗口切换
+            Ctrl+w 上下箭头: 上下切换活动窗口
+            Ctrl+w 左右箭头: 左右切换活动窗口
+    单文件窗口分割
+        分割
+            Ctrl+w, s: 水平分割 split
+            Ctrl+w, v: 垂直分割 vertical
+        切换
+            上下左右箭头实现窗口切换
+    定制vim的工作特性
+        配置文件    永久有效
+            全局: /etc/vimrc
+            个人: ~/.vimrc    如果没有，需要自己动手创建
+        末行定制: 当前vim有效
+        特性
+            1. 行号
+                显示: set nu |set number
+                取消: set nonu | set nonumber
+            2. 括号匹配
+                匹配: set sm | set showmatch
+                取消: set nosm | set noshowmatch
+            3. 自动缩进
+                启用: set ai | set autoindent
+                禁用: set noai | set noautoindent
+            4. 高亮搜索结果
+                启用: set highlightsearch | set hlsearch
+                禁用: set nohighlightsearch | set nohlsearch
+            5. 语法高亮
+                启用: syntax on
+                禁用: syntax off
+            6. 忽略字符大小写
+                启用: set ic
+                禁用: set noic    默认
+
+            获取帮助
+                :help
+                :help subject
+            问题
+                如何设置 tab 缩进 4 个字符？
+
+            练习
+                1. 复制 /etc/rc.d/init.d/functions 到 /tmp, 替换文件中的
+                    /etc/sysconfig/init 为 /var/log
+
+                2. 删除 /tmp/functions 中所有以 # 开头，且 # 后至少有一个空白字符的行首
+                    的行首 #
+
+
+bash 条件测试
+    测试方式
+        test EXPRESSION
+        [ EXPRESSION ]   <== 是一个命令
+        [[ EXPRESSION ]]    <== bash shell 内置的保留字
+    测试表达式
+        数值比较
+        字符串测试
+        文件测试
+            存在性测试
+                -a: 文件存在为真，否则，假
+                -e: 文件存在为真，否则，假
+            存在性及其类别测试
+                -b: 文件存在且为块设备
+                -c: 文件存在且为字符设备
+                -d: 文件存在且为目录
+                -f: 文件存在且为普通文件
+                -p: 存在且为命名的管道
+                -S: 存在且为套接字
+                -L | h: 存在且为软链接
+            文件权限测试
+                -r: 是否存在且可读
+                -w: 是否存在且可写
+                -x: 是否存在且可执行
+            文件特殊权限
+                -g: 是否存在且拥有sgid权限
+                -k: 是否存在且拥有sticky权限
+                -u: 是否存在且拥有suid权限
+            文件大小测试
+                -s: 是否存在且非空
+            文件打开性测试
+                -t fd: 文件描述符是否打开且和某个终端相关  fd: file descriptor
+
+
+                -N: 文件自从上次读取后，是否被修改过
+                -O: 当前有效用户是否为文件的属主
+                -G: 当前有效用户是否为文件的属组
+
+            双目测试
+                file1 -ef file2: 两个文件是否同一个文件
+                file1 -nt file2: file1 比 file2 更新  newer than
+                file2 -ot file2: file1 比 file2 更老  older than
+
+        组合测试
+            1. 逻辑运算
+                COMMAND1  [&&,||] COMMAND2   !COMMAND
+            2. -a | -o | !
+                expression1 -a expression2
+                expresion1 -o -expression2
+                !expression

@@ -1,0 +1,107 @@
+XML: eXtensible Markup Language
+    最开始，由于不同平台间数据的传输。但是，现在主要用做配置文件。
+组成
+    文档声明: 声明xml的基本属性，告诉解析引擎如何解析当前xml,通常一个xml有且仅有一个
+            位置: 必须第一行顶格写
+            <?xml version="1.0" encoding="utf-8" standalone="no" ?>
+                //standalone 是可选属性,默认yes，表示该xml可以单独存在，不需要依赖其他文件
+                    如果依赖其他文件，则必须设置该属性为 no
+                //此处只有三个属性，文件保存用的字符和编码字符集不一致，会导致乱码
+    元素:  一组开闭标签标记的数据，称为元素。标签必须关闭，如果只有属性但是没有内容，则自己可以
+          自己关闭<at />, 否则，标签必须成对出现, <a></a>
+          一个xml文档，只最好有一个 root 标签，其他标签嵌入其中
+          标签:
+              区分大小写
+              只能以字母开头，不能以 数字、标点符号或者下划线开头
+              不能以 xml 和 XML 开头
+    属性: 描述元素的特性或特征. 以键值对的形式出现，一个元素可以有多个属性
+         命名规则和元素一样
+         属性的值必须放到 单引号或者双引号 中
+
+    注释:  格式 <!-- 我是注释 -->
+          条件: 1. 不能出现在第一行 2. 注释不能嵌套
+
+    CDATA区: 转义大段文字，表示该段文字是文本，不要进行任何解析
+            格式: <![CDATA[你的含有特殊字符的段落]]>
+    转义字符:   &amp;  &lt;  &gt;  &quot;  &apos;
+    处理指令: Processing Instruction, 告诉解析引擎，如何解析xml文档
+            格式: <?  指令   ?>
+            <?xml-stylesheet type="text/css" href="1.css" ?>  //用1.css渲染该xml文档
+
+XML 约束
+    DTD: Data Type Definition
+        外部引用:
+            定义: dtd的约束内容放到一个单独的 dtd 文件中, 该文件必须以.dtd结尾且保存为utf8编码
+            引入: xml中使用dtd
+                本地dtd: <!DOCTYPE 根元素名称 SYSTEM "/path/to/file.dtd">
+                网络dtd: <!DOCTYPE 根元素名称 PUBLIC "dtd名称" “dtd 的url”>
+        内部引用: 直接将约束内容定义在当前xml中
+            <!DOCTYPE 根元素名称[
+                dtd约束的内容
+            ]>
+
+        语法
+            元素: <!ELEMENT 元素名称 元素约束>
+                约束:
+                    存放类型: ANY/EMPTY
+                        ANY:任意dtd定义的元素
+                        EMPTY:不能包含任何元素，必须是空元素
+                    元素约束: 小括号内放子元素列表,
+                            ,: 子元素间用逗号分隔, 且必须按照该顺序出现
+                            |: 选择关系，子元素只能出现列表内的其中之一
+                            #PCDATA: 表示包含标签体
+                            匹配次数:
+                            +:
+                            *:
+                            ?:
+            属性:
+                <!ATTLIST 元素名1 属性类型 属性约束
+                    元素名1 属性类型 属性约束
+                >
+                元素名: dtd 定义的元素
+                属性:
+                    CDATA: 普通字符串
+                    ENUMERATED: 枚举列表
+                    ID: 该属性的值在整个文档中必须是唯一的, id只能由字母, 下划线
+                    <!ENTITY>: 实体, 大段内容的引用
+                        引用实体: <!ENTITY 实体名称 ”实体内容“>.
+                                xml中的使用: &实体名称
+                        参数实体: 在dtd中引用的实体
+                            <!ENTITY % 实体名称 "实体内容">
+                            使用: %实体名称
+                #REQUIRED: 属性必须出现
+                #IMPLIED: 属性可选
+                #FIXED: 固定值，不需要给出，自动获取。如果强行指定，则报错
+                '默认值': 不给则用默认，给则用给定的值
+    SCHEMA:
+
+
+格式:
+首行顶格写
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>  //standalone="yes"|"no"
+<!DOCTYPE --  public | system -------- >  // PUBLIC 网络， System: 本地
+CDATA: 字符串数据，格式 <![CDATA[your_code]]>
+DTD: Document Type Definition
+    元素: *， ？， +， , (), |
+    属性:
+    #PCDATA: 文本
+    version:
+    CDATA:
+    #IMPLIED: 属性不是必须的
+
+Schema: 新的约束格式, DTD 的替代者
+
+解析
+    dom4j: 将文档一次性加载到内存
+        形成 DOM 树，可随机读取，方便的进行增删改操作
+        缺点: 如果文档特别大，可能导致内存溢出
+    SAX: Simple Api for XML
+        时间驱动，边读边解释，适用于大文档解析
+        缺点: 不能增删改，只能单向读取
+    PULL: Android 内置，类似 SAX
+
+    常用的解析包
+        JAXP: SUN 公司提供 支持 DOM 和 SAX
+        JDom: dom4j 的兄弟
+        jsoup: 一种处理 HTML 特定解析开发包
+        dom4j: 比较常用的开发包，hibernate 底层采用

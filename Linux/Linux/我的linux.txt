@@ -1,0 +1,25 @@
+我的linux
+
+scp
+在本地terminal上
+本地复制到虚拟主机
+$scp -P 1111 7.txt frank@localhost:/home/frank/    ==>复制本地7.txt到虚拟主机
+
+虚拟主机复制到本地
+$scp -P 1111 frank@localhost:/home/frank/{7.txt,passwd_bak} ./
+
+虚拟机terminal line上：？
+
+
+  507  scp 1.txt -o -p 1111 frank@localhost: ./ 
+  508  scp 1.txt -o -p 1111 frank@10.0.2.15: ./ 
+  509  scp -r 1.txt frank@10.0.2.15 ./
+  510  scp -r 1.txt frank@10.0.2.15 /home/frank/
+  511  scp -r 1.txt -o frank@10.0.2.15 /home/frank/
+  514  scp -r 1.txt  frank@10.0.2.15:/home/frank/
+  519  scp 1.txt frank@localhost:/home/frank/
+  520  scp 1.txt frank@localhost:/home/frank/
+  521  scp 1.txt localhost:/home/frank/
+  522  scp 1.txt frank@10.0.2.15:/home/frank/
+  523  scp 1.txt 10.0.2.15:/home/frank/
+  524  scp -P 1111 1.txt frank@localhost:/home/frank/

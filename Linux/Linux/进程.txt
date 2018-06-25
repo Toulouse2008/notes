@@ -1,0 +1,191 @@
+马哥 运维初级 13
+
+进程
+
+init:进程号1
+ps: process state
+	sysV风格: -
+	BSD风格: 没有 -
+
+	a:显示所有与终端有关的进程
+	u:显示进程由那个用户启动的
+	x:显示所有与终端无关的进程
+
+进程状态:
+	D:不可中断的睡眠
+	R:运行或就绪
+	S:可中断的睡眠
+	T:停止
+	Z:僵尸zombie
+
+	<:高优先级进程
+	N:低优先级进程
+	+:前台进程组中的进程
+	l:多线程进程
+	s:会话进程的首进程，即会话进程的领导者
+
+ps aux:
+		注意: 没有 -
+	user pid cpu mem vsz rss tty stat start time command
+	COMMAND:哪个命令启动的进程，加[]表示内核启动的
+	TIME:运行时长
+	START:启动时间
+	STAT:进程状态
+	TTY:关联终端，?表示没有终端
+	RSS:常驻内存
+	VSZ:虚拟内存
+	MEM%:
+	CPU%:
+	PID:
+	USER:
+
+	-a:显示所有进程
+	-F:
+	-l:
+	-e:
+	-ef | -eF | -elF:
+	PRI:priority
+	NI:nice value
+	PSR:运行的cpu号
+
+ps -o PROPERTY1 ...
+	ps -o pid, comm, ni
+
+pstree
+	显示当前系统上的进程树
+
+pgrep:
+pidof:根据主程序名称，查找其相关进程的ID号
+
+top:
+	每个5s刷新一次
+	信息分解：
+		top -time: 当前时间
+		up: 已经运行时间
+		user:用户数
+		load average:平均队列长度，1 min, 5 min, 15 min
+		Tasks:
+			tatol:任务总数
+			running:运行数
+			sleeping:睡眠数
+			stopped:停止数
+			zombie:僵尸数
+		Cpu(s):(默认显示平均的，按1显示每个CPU详细)
+			us:用户空间，user
+			sy:内核空间 system
+			ni:调整nice影响
+			id:空闲，idle
+			wa:等待I/O完成占用时间，wait
+			hi:等待硬件中断占用时间， hardware interrupt
+			si:等待软件中断占用时间，software interrupt
+			st:被偷走的时间，stolen time
+		Mem:
+			total:总数
+			used:已用
+			free:空闲
+			buffers:
+		Swap:
+			total:总数
+			used:已用
+			free:空闲
+			cached:
+		PID:
+		USER:
+		PR: Priority, RT-->Real Time
+		NI:
+		VERT:虚拟内存集
+		RES: 常驻内存集，Resident
+		S: 状态，state
+		SHR:共享， shared
+		CPU:
+		MEM:
+		TIME+: 占用的CPU时长
+		COMMAND:
+
+	交互式命令--------------------
+		默认按当前刷新时，cpu占用时间排序
+	M:根据驻留内存大小排序
+	P:根据CPU使用百分比排序
+	T:根据累计时间排序
+
+	l:是否显示平均负载和启动时间
+	t:是否显示进程和cpu相关的信息
+	m:是否显示内存相关信息
+
+	c:是否显示完整的命令行信息
+	q:退出top
+	k:终止某个进程
+
+	-d: 指定刷新间隔，second
+	-b: 以批处理模式显示，按页显示，可以翻屏
+	-n #: 显示#屏后对出
+
+进程间通讯(IPC: Inter Process Communication)
+	共享内存:
+	信号: signal
+	旗语: Semaphore
+
+信号
+	kill -l ==>显示signal列表
+	1: SIGHUP --> 进程不用重启，就可以重读其配置文件，让配置
+				   信息生效
+	2: SIGINT -->  中断，interrupt
+	9: SIGKILL --> 杀死进程，不做后续处理，直接挂掉
+	15: SIGTERM  --> 终止进程，允许做善后处理，再挂掉
+
+	kill pid
+	==>kill 默认使用 15 SIGTERM
+
+	指定信号
+		-信号号码: kill -9
+		-信号名称: kill -SIGKILL
+		-信号名称简写: kill -KILL
+
+	killall 进程名
+		- 杀死所有该名称的进程
+		- 信号和kill相同
+
+调整进程nice值：
+	-进程已启动 renice NICEVALUE pid
+		renice 109 3704
+	-进程未启动 nice -n NICEVALUE COMMAND
+
+前台作用：占用命令提示符
+后台作业：启动之后，释放命令提示符，后续操作在后台完成
+
+前台-->后台
+	Ctrl+z: 把正在前台的作业送往后台
+	command + &: 让命令在后台执行
+
+bg: 让后台的作业继续运行
+	默认操作带+号的作业
+	bg %#：操作#后台作业, %可省略
+
+fg: 将后台作业调回前台
+	fg [%job#]  <==%可省略
+
+kill %jobID: 终止作业，%不能省略
+
+jobs: 查看后台的所有作业，作业号，不同于进程号
+	+:命令将默认操作的作业
+	-:命令将第二默认操作的作业
+
+vmstat: 查看内存
+	procs 	memory 	 	swap 	io	 system 	cpu
+	r b 	swpd free	si so  bi bo in cs| us sy id wa st
+	r: 运行队列长度 b:阻塞队列长度
+	swpd:已用交换内存空间	free:空闲  buff:    cache:
+	si: swap in   so: swap out  <==动态值，观察时间内的值
+	bi: block in 硬盘到内存   bo: block out 内存到硬盘
+	in: interrupt,中断个数 cs:context
+							switch，上下文切换的次数，进程切换
+	us:用户空间 sy:内和空间 id:空闲 wa:等待 st:被偷走
+
+	vmstat n  ==>每个n秒显示一次
+	vmstat m n  ==>每个m秒显示一次，共计n次退出
+
+uptime ==>当前时间, 1 user, load average
+
+/proc/meminfo   ==>系统内存信息
+
+每个进程所占用的内存信息，保存在/proc/ 下各自的maps中， cat可看

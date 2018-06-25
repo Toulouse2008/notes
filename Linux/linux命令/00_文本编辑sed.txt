@@ -1,0 +1,257 @@
+sed     stream editor  流编辑器     默认不编辑源文件, 显示模式空间的内容
+        sed [option] [script_file] [input_file]
+
+        sed '指定地址指定命令[额外修饰符]' file1 ...
+             <==注意 地址 命令 修饰符 之间不许分割   此处单、双引号均可，有变量用双引号
+
+    选项
+        -n: 静默模式，即不显示模式空间的行，只按照命令显示需要显示的行
+        -i: 直接修改源文件   ==>危险，慎用!!!
+        -e script -e script: 每个 -e 后面跟指定的 地址命令 组合，可对文本进行连续多次处理
+        -f /path/to/sed_script: 用指定脚本处理文件
+            $sed -f /path/to/script your_file
+        -r: 使用扩展正则表达式
+
+    命令
+        d: 删除符合条件的行，其余的行保留在模式空间，并输出到屏幕
+            sed '/^\//d'    ==>删除 / 开头的行
+        p: 显示符合条件的行
+        a \your_new_content: 在指定行后面添加 your_new_content,
+                          如果新内容有空格，放到引号内，不加引号也可以
+                          添加多行，则用 \n 隔开
+        i \your_new_content: 在指定的行前面添加 your_new_content
+        r FILE: 将指定文件 FILE 的内容添加到符合条件的行后
+                $sed '2r /etc/issue' /etc/fstab
+                $sed '1,5r /etc/issue' /etc/fstab
+        w FILE: 将指定范围的内容保存到指定的 FILE 中
+        s/pattern1/string/: 查找并替换, 将每行中匹配到的字符串替换为 string
+                $sed 's/oot/OOT/' /etc/fstab
+                $sed 's/^\//#/' /etc/fstab  <==行首 / 替换为 #
+                注意:
+                    - 默认只替换每行中第一次匹配到的字符串
+                    - 如果要把一行中所有匹配到的都替换掉，
+                      需要加修饰符
+                        g: 全局替换   s/pattern1/string/g
+                        i: 匹配时不区分大小写
+                    - 分隔符不仅限于 /, 可以用其他的替换，如 @ # 等均可
+                            s#pattern1#string#g
+                            s@@@
+                    - 后向引用  \(\),  \1, \2
+                        \(\):
+                            $sed 's/\(l..e\)/\1r/g' sed.txt   ==>把 l..e 替换为 l..er
+                        &: 引用匹配到的内容
+                            $sed 's/l..e/&r/g' sed.txt   ==>把 l..e 替换为 l..er
+                            注意:
+                                下列情况只能使用分组:
+                                    $sed 's#l\(..e\)#L\1#g' sed.txt  ==>like-->Like
+                                    即: 当引用匹配内容的一部分是，必须用分组来指定引用范围
+
+    地址
+        - 指定起始行,结束后     如 1,100
+        - 使用正则模式  /RegExp/      如 /^root/
+                                    <==root 开头的行
+        - 正则指定起止行   /pattern1/,/pattern2/
+                        <==从第一次pattern1匹配行到第一次pattern2 匹配行
+        - 单一数字     指定行      如 2 ==>第二行
+                      $: 最后一行
+                      $-1: 倒数第二行
+        - startline, +N: 从 startline 开始，再数 N 行， 总共 N+1 行
+
+
+
+
+
+
+
+
+
+
+Read: SED reads a line from the input stream (file, pipe, or stdin) and stores
+    it in its internal buffer called pattern buffer.
+
+Execute: All SED commands are applied sequentially on the pattern buffer. By
+    default, SED commands are applied on all lines (globally) unless line
+    addressing is specified.
+
+Display: Send the (modified) contents to the output stream. After sending the
+    data, the pattern buffer will be empty
+
+
+Read
+    SED reads a line from the input file quote.txt and stores it in its pattern
+    buffer. Then it applies SED commands on the pattern buffer. In our case,
+    no SED commands are there, hence no operation is performed on the pattern
+    buffer. Finally it deletes and prints the contents of the pattern buffer on
+    the standard output.
+    $sed '' /path/to/file   ==> 同 cat
+    $sed ''                 ==> 同 cat
+
+    The first form allows to specify the commands in-line and they are enclosed
+    within single quotes. The later allows to specify a script file that contains
+    SED commands. However, we can use both forms together multiple times. SED
+    provides various command-line options to control its behavior.
+        sed [-n] [-e] 'command(s)' files
+            $sed -e '1d' -e '2d' -e '5d' books.txt
+        sed [-n] -f scriptfile files
+            $echo -e "1d\n2d\n5d" > commands.txt
+            $sed -f commands.txt books.txt
+
+            -n: no default output
+                $sed -n '' quote.txt  ==>没有任何输出
+            -e:
+                $sed -e '' -e 'p' quote.txt ==> 每行输出两次后输出下一行
+            -f scriptfile:
+            -i[SUFFIX], --in-place[=SUFFIX]:
+            -l N, --line-length=N:
+            -r, --regexp-extended: use extended regular expression
+            -u, --unbuffered: use minimal amount of memory
+            命令
+            打印命令    p   print
+                $sed 'p' books.txt     重复输出 <==>  $sed -n 'p' books.txt 不重复
+                $sed -n '3p' books.txt 输出第三行 <==>  $sed -n '2,5 p' books.txt 输出[2,5]
+                $sed -n '$ p' books.txt 输出最后一行 <==>  $sed -n '3,$ p' books.txt 输出[3,$]
+                $sed -n '2,+4 p' books.txt 输出 [2, 2+4] <==> $sed -n '2,+ p' books.txt 输出第二行
+                $sed -n '1~2 p' books.txt   隔行输出    =====>1,3,5
+                $sed -n '2~2 p' books.txt   第二行起隔行输出===>2,4,6
+                模式匹配输出
+                    $sed -n '/Paulo/ p' books.txt
+                可以用模式匹配代替数字，控制输出范围的起始行和隔行输出
+                    $sed -n '/Alchemist/, 5 p' books.txt
+                    $sed -n '/The/,$ p' books.txt
+                    $sed -n '/Two/, /Pilgrimage/ p' books.txt
+                    $sed -n '/Two/, +4 p' books.txt
+
+            删除命令    d   delete
+                [address1[,address2]]d
+                 $sed 'd' books.txt ==> 没有任何输出
+                 $sed '4d' books.txt    ==> 输出除第四行之外的内容
+                 $sed '2, 4 d' books.txt ==> 输出除[2,4]行后的内容
+                 $sed '/Paulo Coelho/d' books.txt   ==>删除匹配到的行
+                 $sed '/Storm/,/Fellowship/d' books.txt ==>从 Storm 行开始山到 Fellowship行
+            写入命令    w   write
+                [address1[,address2]]w file
+                $sed -n 'w books.bak' books.txt
+                $sed -n '2~2 w junk.txt' books.txt
+                $sed -n -e '/Martin/ w Martin.txt' -e '/Paulo/ w Paulo.txt'
+                    -e '/Tolkien/ w Tolkien.txt' books.txt
+            追加命令    a   append
+                [address]a AppendText
+                $sed '4 a 7) Adultry, Paulo Coelho, 234' books.txt  ==>第四行后追加一行
+                $sed '$ a 7) Adultry, Paulo Coelho, 234' books.txt  ==>最后追加一行
+                $sed '/The Alchemist/ a 7) Adultry, Paulo Coelho, 234' books.txt
+                $sed '/The/ a 7) Adultry, Paulo Coelho, 234' books.txt
+            修改命令    c   change
+                [address1[,address2]]c  ReplaceText
+                $sed '3 c 3) Adultry, Paulo Coelho, 324' books.txt  ==>替换第三行
+                $sed '/The Alchemist/ c 3) Adultry, Paulo Coelho, 324' books.txt  ==>替换匹配行
+                $sed '4, 6 c 4) Adultry, Paulo Coelho, 324' books.txt   ==>一行替换多行，删除[4,6]
+            插入命令    i   insert
+                [address]i  InsertText
+                $sed '4 i 7) Adultry, Paulo Coelho, 324' books.txt  ==>第四行处插入，原有第后移
+                $sed '1 i 7) Adultry, Paulo Coelho, 324' books.txt
+                $sed '$ i 7) Adultry, Paulo Coelho, 324
+            读入命令    r   read
+                [address]r file
+                $sed '3 r junk.txt' books.txt   ==>第三行后读入junk.txt的内容
+                $sed '3, 5 r junk.txt' books.txt ==>[3,5]每行后都读入junk.txt的内容
+                $sed '/Paulo/ r junk.txt' books.txt ==>匹配行后读入
+            执行命令    e   execute
+                [address1[,address2]]e [command]
+                $sed '3 e date' books.txt   ==>第三行处执行 date 命令，结果放在第三行
+                $sed '/Paulo/ e date' books.txt
+                $echo -e "date\ncal\nuname" > commands.txt
+                $sed 'e' commands.txt
+            等号命令    =
+                [/pattern/]=
+                [address1[,address2]]=
+                $ sed '=' books.txt         ==>显示行号
+                $sed '1, 4=' books.txt      ==>[1,4]行显示行号
+                $sed '/Paulo/ =' books.txt  ==>匹配行显示行号
+                $sed -n '$ =' books.txt     ==>显示最后一行的行号
+            地址命令    &
+                Whenever a pattern match succeeds, this special character stores
+                the matched pattern.
+                $sed 's/[[:digit:]]/Book number &/' books.txt
+                sed 's/[[:digit:]]*$/Pages = &/' books.txt
+
+            分行 ‘l #’
+            $sed -n 'l 25' books.txt    ==>25 个字符一行
+            $sed -n 'l 0' books.txt     ==>按原有显示，不自定义行的长度
+
+    查找替换
+        [address1[,address2]]s/pattern/replacement/[flags]
+        $sed 's/,/ | /' books.txt   ==> | 替换掉 , <==替换第一行的
+        $sed 's/,/ | /g' books.txt  ==>替换所有行
+        $sed '/The Pilgrimage/ s/,/ | /g' books.txt     ==>全局替换匹配行
+        $sed 's/,/ | /2' books.txt      ==>替换每行第二次匹配
+        $sed -n 's/Paulo Coelho/PAULO COELHO/p' books.txt    ==>替换后打印结果
+        $sed -n 's/Paulo Coelho/PAULO COELHO/w junk.txt' books.txt  ==>替换后写入文件
+        $sed  -n 's/pAuLo CoElHo/PAULO COELHO/pi' books.txt ==>忽略大小写
+
+        $echo "Three,One,Two" | sed 's|\(\w\+\),\(\w\+\),\(\w\+\)|\2,\3,\1|'
+            ==>One,Two,Three
+
+    正则
+        ^   $sed -n '/^The/ p' books.txt
+        $   $sed -n '/Coelho$/ p' books.txt
+        .   $echo -e "cat\nbat\nrat\nmat\nbatting\nrats\nmats" | sed -n '/^..t$/p'
+        []  $echo -e "Call\nTall\nBall" | sed -n '/[CT]all/ p'
+        [^] $echo -e "Call\nTall\nBall" | sed -n '/[^CT]all/ p'
+        [-] $echo -e "Call\nTall\nBall" | sed -n '/[C-Z]all/ p'
+            $echo -e "Call\nTall\nBall" | sed -n '/[A-P]all/ p'
+        \?  $echo -e "Behaviour\nBehavior" | sed -n '/Behaviou\?r/ p'
+        \+  $echo -e "111\n22\n123\n234\n456\n222"  | sed -n '/2\+/ p'
+        *   $echo -e "ca\ncat" | sed -n '/cat*/ p'
+        {n} $cat numbers.txt    1,10,100,1000,10000,100000,1000000
+            $sed -n '/^[0-9]\{3\}$/ p' numbers.txt  ==>100
+        {m,}   $sed -n '/^[0-9]\{5,\}$/ p' numbers.txt
+        {m,n}  $sed -n '/^[0-9]\{5,8\}$/ p' numbers.txt
+        |   $echo -e "str1\nstr2\nstr3\nstr4" | sed -n '/str\(1\|3\)/ p'
+
+        [:alnum:] [:alpha:] [:blank:] [:digit:] [:lower:] [:upper:] [:punct:]
+        [:space:]
+
+        \   \n  \r  \
+
+    meta
+        \b  单词边界    $echo -e "these\nthe\nthey\nthen" | sed -n '/\bthe\b/ p'
+        \B  非单词边界  $echo -e "these\nthe\nthey" | sed -n '/the\B/ p'
+        \s  单个空白    $echo -e "Line\t1\nLine2" | sed -n '/Line\s/ p'
+        \S  Single non-whitespace   $echo -e "Line\t1\nLine2" | sed -n '/Line\S/ p'
+        \w  Single word char    $ echo -e "One\n123\n1_2\n&;#" | sed -n '/\w/ p'
+        \W  Single non-word char    $echo -e "One\n123\n1_2\n&;#" | sed -n '/\W/ p'
+        \`   "\`" implies the beginning of the pattern space
+            $ echo -e "One\nTwo One" | sed -n '/\`One/ p'
+So far, we have used only the foreslash(/) character as a delimiter, but we can
+also use vertical bar(|), at sign(@), caret(^), exclamation mark(!) as a delimiter.
+
+$sed -n 'x;n;p' books.txt
+-   Initially, SED reads the first line, i.e., A Storm of Swords into the pattern
+    buffer.
+-   x command moves this line to the hold buffer.
+-   n fetches the next line, i.e., George R. R. Martin into the pattern buffer.
+-   The control passes to the command followed by n which prints the contents
+    of the pattern buffer.
+The process repeats until the file is exhausted.
+$sed -n 'x;n;x;p' books.txt
+
+
+常用组合
+    删除空行    $echo -e "Line #1\n\n\nLine #2" | sed '/^$/d'
+    打印费空行   $echo -e "Line #1\n\n\nLine #2" | sed -n '/^$/!p'
+    删除注释行   $sed 's|//.*||g' hello.cpp
+    注释掉指定行  $sed '3,5 s/^/#/' hello.sh
+    统计行数     $sed -n '$ =' hello.sh     ==> $wc -l
+    同head       $sed '10 q' /path/to/file
+    同tail -1    $sed -n '$p' /path/to/file
+sed      stream editor
+    sed [OPTION]... {script-only-if-no-other-script} [input-file]...
+
+    -n, --quiet, --silent: suppress automatic printing of pattern space
+        默认输出每一行到屏幕，如果找到匹配行，重复输出一次，该选项禁止默认输出，只输出匹配行
+    -i, --in-place[=SUFFIX]: edit files in place [make backup if SUFFIX supplied]
+        $sed --in-place=.bak /nologin/d  shells
+        ==>在编辑文件之前以备份源文件，命名为原文件名 + .bak，然后在源文件中删除匹配行
+    -c, --copy: use copy instead of rename when shuffling files in -i mode
+        $sed -ic /sync/d shells
+        ==>在编辑源文件之前，先复制一份，命名为 源文件名 + c，然后再删除匹配行

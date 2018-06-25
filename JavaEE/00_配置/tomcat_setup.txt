@@ -1,0 +1,44 @@
+Mac
+
+- download from official website
+     http://tomcat.apache.org
+- unzip
+- move the folder to a proper directory
+- rename it to Tomcat or tomcat or whatever you like
+- add x permission before start tomcat
+    - go to ./tomcat/bin
+    - chmod 744 startup.sh catalina.sh shutdown.sh
+    - start tomcat
+        $ ./startup.sh
+        http://localhost:8080
+- stop tomcat
+    $ ./shutdown.sh
+
+
+绑定 Tomcat 到 Eclipse
+    Eclipse --> Window --> Preferences --> search for Server --> Runtime Environment
+    --> Add --> Apache --> Apache Tomcat vX.X --> Next & Create Server --> Next -->
+    Browse --> find the tomcat fold --> Finish --> OK
+配置发布路径
+    JavaEE --> Overview(bottom panel) --> Servers --> Double click on Tomcat
+    Server at localhost[Stopped xxx] --> Overview --> Server Locations -->
+    Use Tomcat Installation  --> Deploy path --> webapps
+    如果没有改，服务器没问题，仍然可以访问页面，但是，问题在于项目发布到第一个 Server Location
+    下，很不好查找
+启动server
+    访问: http://localhost:8080 --> Cat page
+
+项目发布实质
+    把 JavaEE 项目下的 WebContent 所有内容，复制一份，放到 Tomcat 所在文件夹中 webapps
+    下，与 JavaEE 项目同名的目录下，从浏览器访问的是该目录下的内容
+
+注意
+    如果项目要修改名字，请使用 Refactor
+    同时，查看 Properties 下 搜索 web， 查看 Web project Settings，确保 Context root
+    下的值 和项目名称一致
+
+    开始建项目之前，务必配置好一切!!!
+
+注意:
+    如果在配置发布路径之前，已经发布过项目了，Server Locations 下面的选项有是灰的，eclipse
+    不允许修改。这时需要删掉已经存在的 tomcat 和 WEB 项目，然后按上述步骤重新配置一次。

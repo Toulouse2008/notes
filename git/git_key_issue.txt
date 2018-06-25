@@ -1,0 +1,50 @@
+git Permission denied (publickey)
+
+- Open Git Bash.
+
+- Paste the text below, substituting in your GitHub email address.
+    $ssh-keygen -t rsa -b 4096 -C wenli.du@udc.edu
+        --->This creates a new ssh key, using the provided email as a label.
+- Generating public/private rsa key pair.
+        --Accept default in this section
+    - When you're prompted to "Enter a file in which to save the key,"
+    press Enter. This accepts the default file location.
+    - Enter a file in which to save the key (/c/Users/you/.ssh/id_rsa):[Press enter]
+    - At the prompt, type a secure passphrase. For more information,
+        see "Working with SSH key passphrases".
+    - Enter passphrase (empty for no passphrase): [Type a passphrase]
+    - Enter same passphrase again: [Type passphrase again]
+
+        Final output in terminal
+        Your identification has been saved in /Users/frank/.ssh/id_rsa.
+        Your public key has been saved in /Users/frank/.ssh/id_rsa.pub.
+        The key fingerprint is:
+        SHA256:32b4IxXy7VtaSJbAtrOvXq/vSkYtQAD74Jdy6PiaalA wenli.du@udc.edu
+        The key's randomart image is:
+        +---[RSA 4096]----+
+        |        .....    |
+        |         . o     |
+        |        o   =    |
+        |    E  . +.o.+ o |
+        |   .    S =ooo* .|
+        |  .    o = oo*.o |
+        |   .  . . o.=.= o|
+        |    .  o  .+.=.= |
+        |   ...o..  o+o**+|
+        +----[SHA256]-----+
+
+- $eval $(ssh-agent -s)
+    Agent pid 59566
+- $ssh-add ~/.ssh/id_rsa
+
+Add public key to github account
+- $ pbcopy < ~/.ssh/id_rsa.pub
+    # Copies the contents of the id_rsa.pub file to your clipboard
+- In the upper-right corner of any page, click your profile photo, then click Settings.
+- In the user settings sidebar, click SSH and GPG keys.
+- Click New SSH key or Add SSH key.
+- In the "Title" field, add a descriptive label for the new key. For example,
+    if you're using a personal Mac, you might call this key "Personal MacBook Air".
+- Paste your public key into the "Key" field.
+- Click Add SSH key.
+- If prompted, confirm your GitHub password.

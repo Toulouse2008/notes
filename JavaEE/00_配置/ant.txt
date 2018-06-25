@@ -1,0 +1,68 @@
+Apache Ant:
+    Another Neat Tool  -->ANT, ant
+基于Java的，将软件工程的编译、测试、部署等步骤联系在一起并加以自动化的构建(build)工具
+
+Ant也是按照插件式结构设计的，因此，每天都可能会有很多新的功能加入。我们不可能在很短的时间内将所
+有的Ant相关知识全部学完，也不可能等到将所有的Ant知识学习通透了再去工作。只有在工作中去学习，带
+着问题去学，才会有真正意义上的进步。在Ant中，哪个部分是自己马上要用到的，就先学习那个部分，其他
+部分等需要用到时在去查资料也不迟。
+
+下载Ant安装包
+    首先，到Ant官网 http://ant.apache.org/ 下载安装包、源代码、使用手册等资源
+    安装Ant
+        将下载安装包解压到指定的目录下（笔者解压的路径为：D:\Ant），并在系统环境变量中添加
+        ANT_HOME，并将地址指向Ant解压的根目录。
+        在PATH环境变量中增加Ant的bin目录地址
+        打开cmd（命令行）窗口，输入ant并回车，如果打印出build.xml不存在，则表示Ant安装成功，
+        只是build文件未指定。
+    第一个Ant构建脚本
+        在任意目录下创建我们的第一个build.xml构建脚本文件（笔者的文件地址为：D:\tmp\build.xml,
+        并输入以下内容：
+            <?xml version="1.0" encoding="GB2312"?>
+            <project name="demo">
+            </project>
+        打开cmd（命令行）窗口，进入构建脚本所在目录（如：D:\tmp），输入ant并回车，如果打印出：
+        构建成功和执行时间。恭喜，这表示我们的第一个构建脚本执行正常
+        元素介绍
+根元素<project>
+
+    project是构建脚本的根元素，所以一个构建脚本文件中必须包含且仅能包含一个project标签，<project>
+    和</project>之间所包含的所有内容组成了一个完整的构建文件。
+    以下是project元素的属性列表：
+        name    当前构建文件的名称，非必须
+        default 当前构建文件(name)缺省的执行入口目录<target>，默认target，是必须的
+        basedir 当前构建文件(name)的基础路径，默认 . 即当前目录，非必须的
+
+任务元素<target>
+
+    一个构建脚本里可以包含1至N个target（任务元素），当然你也可以像我们前面那样不包含任务元素，
+    但那样的话什么也做不了。
+    另外，同一个构建脚本中不能存在name属性值重复的目标元素。每个目标元素都可以包含一系列你想要
+    执行的事务的集合。
+
+    以下是target元素的属性列表：
+        name, target的名称，无默认值，必须的
+        depends 依赖关系表，是一个以逗号分隔的<target>元素名称列表，无默认，非必须
+        id，target 的 ID，无默认，非必须
+        if, 用于验证指定的属性是否存在，无默认，非必须
+        unless  用于验证指定的属性是否不存在，无默认，非必须
+        description 对当前目标任务<target>功能的简短描述，无默认，非必须
+
+执行第一个任务
+    准备执行我们的第一个任务，那么这第一个任务执行点啥呢？还是执行经典的"hello world! "吧！
+    打开我们的构建脚本文件，并增加第一个任务元素，名为：say hello。并通过echo元素打印出：hello world!
+    找到根元素，并添加default属性，属性值为：say hello，使Ant默认执行say hello任务。代码如下：
+    <?xml version="1.0" encoding="GB2312"?>
+    <project name="demo" default="say hello">
+    	  <target name="say hello" description="你好，世界！">
+    	  	  <echo level="info" message="hello world!"/>
+    	  </target>
+    </project>
+    打开cmd（命令行）窗口，进入构建脚本所在目录（如：D:\tmp），输入ant并回车，如果打印出：“hello world!”。
+
+Ant的依赖文件
+    build.xml的正常运行依赖于以下文件
+    1. build.properties: 定义一些全局设置属性。
+    2. properties.xml: 用于定义build.xml所需的属性值，主要完成通过build.properties定义
+        构建工具需要变量集合、Classpath属性等工作。
+    3. app-settings.xml: 用于定义设置应用程序状态的一些属性。

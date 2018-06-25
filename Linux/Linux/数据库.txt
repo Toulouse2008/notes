@@ -1,0 +1,1462 @@
+马哥 运维中级 23_02
+
+http visit:
+prefork 模式下内存消耗
+static: 2M /process
+dynamic: 10 M/process
+
+数据库
+
+数据管理:
+	文件:
+		数据冗余
+		数据访问困难: 大数据量查询时，非常困难
+		数据孤立: 分散在不同文件中
+		完整性：转账停电
+		数据原子性：转账，加减必须都执行完成，或者都不执行
+		数据并发一致性：
+		安全性问题: 部分字段授权，不能实现
+
+文件
+	表示层：文件
+	逻辑层：文件系统-->存储引擎
+	物理层: 元数据		数据-->数据块
+
+关系模型:
+	层次模型
+	网状模型
+	关系模型: 一个关系一个表，每个字段是一个属性，一行已记录，一表一实体集合
+		实体-关系模型: Entity-Relation
+		对象关系模型: 图片
+		半结构化关系模型：xml-->Extended Markup Language
+
+数据存储和查询
+	- 存储管理器
+		-权限及完整性管理 -->权限及完整性管理器
+		-事务 --> 事务管理器
+		-文件 --> 文件管理器
+		-缓冲区 --> 缓冲区管理器
+	- 查询管理器
+		-DML解释器
+		-DDL解释器
+		-DCL解释器
+		-查询执行引擎
+
+数据库使用者
+	-应用程序、SQL用户、程序员、DBA
+	-C/S架构: 协议 -->MySQL
+
+MySQL:
+	单进程多线程 
+		用户线程-->每个用户查询行成独立线程，保证正确授权
+		守护线程
+		线程重用 -->不用的线程并不销毁，放入空闲线程池，
+					提速，thread reuse
+	32位系统:
+		4 Gb内存，操作系统用去 1 Gb，MySQL最多可使用的内存只有2.7Gb
+	64位系统:
+		smp:对称多处理器，MySQL对此支持不好，一个查询只能利用一个cpu
+
+关系运算:
+	投影: 只输出指定属性 -->选择属性
+	选择: 只输出符合条件的行 -->选择行
+	自然选择: 具有相同名字的属性上所有值相同的行
+	笛卡尔积: (a+b)*(c+d)，交叉连接
+	并: 集合运算
+
+SQL: Structured Query Language
+	IBM: 1970s, System R, 第一款关系型数据块管理系统
+	之后，Ingres(Berkeley), Oracle, Sybase
+
+	公司多，接口混乱:
+		ANSI: SQL86, 89, 92, 99, etc
+
+
+SQL Server: 
+	Oracle:性能好，昂贵
+	DB2:
+	Sybase:
+	Infomix:
+	SQL Server: Sybase和微软联合开发的运行在windows上的数据库, 一般
+
+	开源: 
+		egreSQL: Berkeley，第一个
+		PostgreSQL:
+		pgsql:
+		EnterpriseDB: RedHat注入资金，性能向Oracle靠近
+		MySQL: 瑞典， 3.2， 4.0， 5.0， 5.5， etc。阿里，Facebook, 
+				淘宝。 开源，可以随时改数据库
+				去IOE化: IBM， Oracle， EMC
+						Linux 集群 -->存储集群-->MySQL		
+
+IBM，SUN: 全线供应商，硬件到软件 
+		  操作系统，CPU，数据库
+		  AIX   CPU    DB2
+		  JAVA  SPARC  购买MySQL， 10亿美元
+
+	SUN: OpenOffice, Java, MySQL, Sparc,
+
+		 OpenOffice -->Oracle-->闭源 --> LibreOffice
+
+	Oracle:
+		- BEA: WebLogic 83亿美元
+		- SUN: 73亿美元
+		- PeopleSoft: 客户关系管理软件，183亿美元
+
+反关系型: NoSQL
+	- MongoDB:文档数据库
+	- Redis: 内存数据库，缓存数据库
+	- HBase: 稀疏的基于键值对的数据库
+
+
+MySQL:
+	Community Edition
+	Enterprise Edition
+
+软件包格式
+	软件包管理器特有的格式
+		rpm， exe等
+	通用二进制格式
+	源程序
+
+c/s架构
+	- 客户端: mysql
+	- 服务器端: mysqld  tcp/3306    <==以mysl:mysql方式运行
+
+RDBMS：
+	基于TCP，
+	但是如果在同一台主机，即localhost/217.0.0.1
+		- Linux: socket ==>/var/lib/mysql/mysql.sock
+		- Windows: memory
+
+	RedHat安装目录：
+		/var/lib/mysql/
+	安装命令:
+		yum -y install mysql-verver
+
+	启动命令:
+		mysqld start
+
+	客户端连接命令:
+		选项和参数之间可以没有空格
+
+		- u: 指定登录用户名，默认root
+		- p: 指定密码, 默认空
+		- h: 指定主机  默认localhost ==>服务器主机
+		- P: 端口， 默认3306
+
+		USERNAME@hostname   ==>登录主机
+
+		两种工作模式:
+			- 交互模式:
+				-客户端命令: 
+					有两种输入格式，全命令和简写
+					quit, \h==>客户端命令列表
+				-服务器端命令: 
+					必须使用语句结束符，默认';'
+					送到服务器端执行
+			- 批处理模式
+				- 执行mysql脚本
+SQL接口:
+	Oracle: FL/SQL
+	SQL Server: T-SQL
+
+MySQl历史
+	1995.05.23	internal release
+	1996.08.31	public release, only binaries for Solaris
+	1998.01.08	Windows Release, 95 & NT
+	2000.06		3.23 Beta BDB and InnoDB
+	2001.01		GA
+	2002.08		4.0 Beta Unions
+	2003.03		4.0 GA
+	2004.06		4.1 Beta  B-tree and R-tree indexes
+	2004.10		4.1 GA
+	2005.10		5.0 Beta Storage procedure, cursors, vies, 
+				triggers
+	2006.05		5.1 Beta Partitioning, row-based replication
+	2007.04		6.0 Beta
+
+版本:
+	alpha: 内部测试版
+	beta: 公开测试版
+	RC: Release Candidate
+	GA: General Availability  <==稳定版
+
+产品家族
+	- MySQL Server: mysqld, mysql
+	MySQL Cluster: 集群，至少需要4个节点，一年宕机时间不会唱过5min,没人用
+	- MySQL Proxy: 代理服务器，提供路由，分派语句到特定点 
+				 ==>读写分离
+				 ==>重写优化语句
+	MySQL Administrator:
+	MySQL Query Browser:
+	MySQL Workbench:
+	MySQL Migration Toolkit:数据移植
+	MySQL Embeded Server: 嵌入式
+	MySQL Drivers and Connectors:
+
+	2007.08
+		MySQL Community: 免费
+		MySQL Enterprise: 付费
+			blogging, mailing lists, user groupds, documentation, code, MySQL Magazine
+
+	Percona: 改装自开源版的MySQL，性能远高于MySQL，优化了很多方面，
+				免费但是卖服务
+	MariaDB:
+
+MySQL安装:
+	deb:
+		-ubuntu, debian
+	rpm: 
+		- RHEL(oracle Linux), centOS
+		- SUSE
+		发行商制作的，红帽制作的
+
+	通用二进制格式的包：
+		gcc: gnu c 编译器 x86， x64, sun SPARC, etc
+		icc: intel c 编译器
+
+	源程序包:
+		需要自己编译
+		MySQL 5.5 5.6
+		- cmake: cross platform; 同样的源码可以编译不同系统的二进制
+
+	rpm包
+		-MySQL-client:客户端
+		MySQL-debuginfo:调试，追踪性能、错误
+		MySQL-devel: 开发组件
+		MySQL-embeded:嵌入式
+		MySQL-ndb-management: Cluster server
+		-MySQL-server: 服务器
+		-MySQL-shared: 共享库
+		-MySQL-shared-compat: 兼容共享库， 补充MySQL-shared
+		-MySQL-test:	The MySQL test suite
+		MySQL-VERSION.PLATFORM.src.rpm:  source code for all pack
+
+	安装后目录结构
+		bin: 二进制程序
+		data: 数据目录
+		include: 头文件
+		lib: 库文件
+		man：手册
+		mysql-test:测试组件
+		scripts: MySQL初始化脚本，初始化数据字典
+		share: Language support for messages such as erros, 信息的
+				各种语言版
+		sql-bench: 基准性能测试
+		support-files: 启动服务脚本，配置文件
+
+	服务器的初始配置
+		my.cnf
+			[mysql]
+			[mysqld]
+		位置:
+			unix
+				/etc/my.cnf
+				/etc/mysql/my.cnf
+				$MYSQL_HOME/my.cnf
+				/path/to/file when defaults-extra-file=/path/to/file is specified
+				~/.my.cnf
+				==>会一次查询每个文件，几个文件共存，最后读取的将生效
+	设置初始密码
+		安装即生成5个用户(mysql_install_db scripts)，全都没有密码
+		3个root
+			root@127.0.0.1
+			root@localhost
+			root@hostname
+			-改密码
+			#mysqladmin -u root password 'newpasswd' -p
+			#mysqladmin -u root -h host_name password 'newpasswd'
+				==> -p:输入旧密码才能改
+		2个匿名
+			''@localhost
+			''@hostname
+			--删除 Drop user ''@localhost ''@hostname
+
+	MySQL 组成:
+			/usr/local/mysql/bin
+		-Server
+			-mysqld
+			-mysqld_safe
+			-mysqld_multi: 一台主机可运行3个实例，3306 3307 3308
+		-客户端:
+			-mysqlimport	==>importing data files
+			-mysqldump 		==>making backups
+			-mysqladmin		==>server administration
+			-mysqlcheck		==>check the integrity of DB files
+				-u -p -h -P
+				--protocol: tcp socket pipe memory
+				--host
+				--password:
+				--port
+				--shared-memory
+		-非客户端组件
+			-myisamchk		==>检查和修复myisam表
+			-myisampack		==>压缩myisam表
+	MyISAM:
+		每个表有三个文件：
+			.frm:表结构
+			.MYD:表数据
+			.MYI:表索引
+	InnoDB:
+		所有表共享一个表空间文件
+		建议:每个表一个表空间文件 ==>turn on InnoDB_file_pertable = 1
+			==> /etc/my.cnf
+		.frm:表结构
+		.ibd:表空间  ==>同时存储表数据和表索引
+
+	db.opt:默认字符集和排序规则定义，TEXT file， 每一个数据块都会有一个
+			这样的配置文件
+
+默认的数据库
+	information_schema:位于内存中的信息,运行过程中产生的运行数据
+	mysql:
+	test: 空的，只有测试时才有数据
+
+文件和数据库:
+	一个文件夹对应一个数据库，mkdir mydb, show databases; ==>mydb
+
+关系数据库对象
+	库、表、索引、约束、视图/虚表、存储过程、存储函数、触发器、游标、用户、
+	权限、事务:
+
+
+	表: 行和列，实体集
+		行-->记录、实体, row
+		列-->字段，Field, colomn
+			-字段名称: 字符、下划线、数字
+			-数据类型:			
+				1. 确定存储值类型
+				2. 存储空间
+				3. 定长或变长
+				4. 比较规则
+				5. 是否可索引
+
+				字符：
+					定长:
+						CHAR(M):最多M个，占据所有空间, ->255	
+							CHAR(L) CHARACTER(L)
+						BINARY(M):区分大小写
+					变长:
+						VARCHAR(M):做多M，时间n+1/2, ->2^16
+							CHARACTER VARYING(L)
+							CHAR VARYING(L)
+							VARCHAR(L)
+						VARBINARY(M):
+					TEXT(M):大对象，不分大小写
+						TINYTEXT:-->255
+						TEXT:-->65535
+						MRDIUMTEXT: -->2^24
+						LONGTEXT	-->2^32
+					BLOB:
+						TINYBLOB: 255， 1byte overhead
+						BLOB(M):区分大小写，二进制大对象 64k 2
+						MEDIUMBLOB:16M 3bytes overhead 
+						LONGTEXT: 4Gb  4bytes overhead
+
+					ENUM: 列表元素个数 1-65535， 给定值的可选选项
+						1-255 个选项--> 1 byte
+						256-65535 个 -->2 bytes
+					SET: 列表元素个数 1 - 64
+						1 选项: byte
+						2-9: 2bytes
+						10-17: 3 bytes
+						18-25: 4 bytes
+						26-64: 8 bytes
+
+					注意: CHAR不区分大小写，BINARY区分
+
+					NOT NULL, NULL(默认), DEFAULT, CHARSET(字段定义-->表-->库-->server), COLLATION
+
+				数值：
+					精确:
+						整型:
+							TINYINT: 1 byte -128 ~ 127
+							SMALLINT: 2
+							MEDIUMINT: 3
+							INT: 4
+							BIGINT: 8
+							修饰符: UNSIGNED, 无符号
+								   NOT NULL, 非空
+								***AUTOINCREMENT,自动增长
+								   	-NOT NULL
+								   	-INDEXED | PRIMARY KEY
+								   	-INTEGER UNSIGNED
+								   	步长，LAST_INSERT_ID
+		***AUTOINCREMENT,自动增长
+		   	-NOT NULL
+		   	-INDEXED | PRIMARY KEY
+		   	-INTEGER UNSIGNE
+		   	-当心 --ZEROFILL
+		   	步长，LAST_INSERT_ID
+		   CREATE TABLE t_name(ID INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY);
+						十进制: 定点数
+							DECIMAL NUMERIC
+
+					近似数值型:
+						浮点型:
+							FLOAT: 4
+							DOUBLE: 8
+							BIT:
+							REAL:
+				日期时间：
+					DATE:1000-01-01/9999-12-31 3bytes
+					TIME: -838:59:59 - 838:59:58, 3 bytes
+					DATETIME: DATE HH:MM:SS, 8bytes
+					TIMESTAMP: 1970.01.01 00:00:00 - 2038.01.18 
+								22:14:07 4bytes
+					YEAR: 
+						YEAR(2): 00 - 99 1 byte
+						YEAR(4): 1901 - 2155	1 byte 
+				布尔：
+					O
+					1
+
+			-类型修饰符: NULL, NOT NULL, 
+SQL 模型：
+	ANSI quotes: 
+		double quotes treated as an identifier quote(`)
+		Strings can only be quoted with a single quote(')
+	IGNORE_SPACE:
+	STRICT_ALL_TABLES: invalid data will be rejected, throw error
+	STRICT_TRANS_TABLES: invalid data in a transactional table
+		are rejected and an error is thrown
+	TRADITIONAL: syntax and behavior closely match traditional 
+		expectations
+
+MySQL服务器变量
+	作用域:
+		全局变量:
+			SHOW GLOBAL VARIABLES LIKE 'pattern'
+			- 全局变量-->@@
+				SELECT @@sql_mode; | SELECT @@global.sql_mode;
+				SET GLOBAL v_name='value'
+		会话变量:
+			SHOW [SESSION] VARIABLES LIKE 'pattern'
+			- 会话变量-->@
+				SELECT @@session.sql_mode; | SELECT @sql_mode;
+				SET [SESSION] v_name='value'
+	生效时间:	
+		动态的: 随时修改
+			- 全局变量:对当前会话无效，只对新建立的会话有效
+			- 会话变量:立即生效，但是只对当前会话生效，关闭变量值丢失
+		静态的: 必须重启，修改才能生效 
+			-->写到配置文件中；
+			-->通过参数传递给mysqld
+库操作
+	建数据库
+		HELP CREATE DATABASE; ==>显示命令的详细使用方法	
+		CREATE DATABASE | SCHEMA [IF NOT EXISTS] db_name [CHARACTER SET=]charset_name [COLLATE=]collation_name
+			- CREATE SCHEMA IF NOT EXISTS students CHARACTER SET 'gbk' COLLATE 'gbk_chinese_ci';
+				--> /mydata/data/students/db.opt 文件: 
+					保存库信息，charset, collation
+	修改数据库
+		HELP ALTER DATABASE | SCHEMA;
+		语法: 
+			ALTER {DATABASE | SCHEMA} [db_name] alter_specific...
+				UPDATE DATA DIRECTORY NAME==>数据库升级，数据字典的名称
+				[DEFAULT] CHARACTER_SET[=]charset_name |
+				[DEFAULT] COLLATE[=]collation_name
+	删除数据库
+		语法:
+			DROP {DATABASE | SCHEMA} [IF EXISTS] db_name;
+表操作
+	建表
+		HELP CREATE TABLE;  ==>显示建表命令的详细帮助信息
+		语法
+		-CREATE [TEMPORARY] TABLE [IF NOT EXISTS] t_name
+			(create definition,...)
+			[table_options]
+			[partition_optons]
+		>CREATE TABLE T1 (id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, name CHAR(20) NO NULL);
+		>CREATE TABLE T1 (id INT UNSIGNED NOT NULL AUTO_INCREMENT, name CHAR(20) NO NULL PRIMARY KEY (id, name));  ==>联合主键
+
+		-CREATE [TEMPORARY] TABLE [IF NOT EXISTS] t_name
+			[(create definition,...)]
+			[table_options]
+			[partition_optons]
+			select_statement   
+				==>以select数据创建表，有数据，但是不保留数据属性定义
+
+		-CREATE [TEMPORARY] TABLE [IF NOT EXISTS] t_name
+			{LIKE old_t_name | (LIKE old_t_name)}
+				==>以所选表为模板，保留原表中的所有数据定义属性
+
+		SHOW CREATE TALBE t_name;
+
+	键、主键、唯一键、索引: KEY | PRIMARY KEY | UNIQUE KEY | INDEX 
+		- 都是B+Tree
+		键也称作约束，可用作索引，属于特殊索引，键要求不能有相同的值
+		单字段:
+			PRIMARY KEY
+			UNIQUE KEY
+		单字段或者多字段:
+			, PRIMARY KEY(col, ...)
+			, UNIQUE KEY(col, ...)
+			, INDEX(col, ...)
+	索引：B+Tree, hash
+		CREATE INDEX:创建索引
+		SHOW INDEXES FROM t_name:显示指定表上的索引
+
+	修改表：
+		HELP ALTER TABLE ==>显示命令详细信息
+		-添加、删除、修改字段
+			ALTER TABLE t_name ADD
+							   DLETE
+							   MODIFY
+							   CHANGE
+		-添加、删除、修改索引
+			ALTER TABLE t_name ADD
+							   DLETE
+							   MODIFY
+		-修改表属性
+			ALTER TABLE t_name ADD
+							   DLETE
+							   MODIFY
+		-修改表名
+			ALTER TABLE t_name RENAME t_name TO | AS new_name
+
+		-修改表引擎
+			ALTER TABLE t_name ENGINE=InnoDB
+				==>创建指定表引擎的一张新表，数据copy过来，再删掉原表
+
+		-添加外键===>InnoDB才支持外键
+			ALTER TABLE t_name ADD FOREIGN KEN (col_name) REFERENCES courses(col_name)
+				==>两个字段的数据类型必须一致，否则创建不成功
+
+		-添加索引
+			CREATE INDEX index_name ON t_name(col_name) USING BTREE;
+			SHOW INDEXES FROM t_name;
+			CREATE INDEX index_name ON t_name(col,...);
+				col_name[(length)][ASC|DESC] 
+			==>length:建立所以的字符长度，左侧开始计数
+			CREATE INDEX index_name ON t_name(col_name(length) DESC) USING BTREE;
+
+		-删除索引
+			DROP INDEX index_name ON t_name;
+		-删除表: 
+			HELP DROP TABLE ==>
+			DROP [TEMPORARY] TABLE [IF EXISTS] t_name [, tname]... [RESTRICT | CASCADE]
+			===>RESTRICT: 只删除本表
+			===>CASCADE: 级联，若有外键，删除相关表
+			>DROP TABLE t_name;
+
+DML
+SELECT: 
+	简单查询、单表查询
+		SELECT col_list FROM tb WHERE conditions;==>投影
+		SELECT [DISTINCT] * FROM tb WHERE condition;  ==>选择
+		FROM子句:表、多个表、或者其他SELECT子句==>单表查询、 多表、子查询
+		FROM子句:
+			布尔关系表达式，=|<=>NULL safe equal to, >,<,<=,>=，
+			!= | <>,
+			逻辑关系: AND | &&, OR | ||, NOT | !, XOR 
+				数值不能加引号，字符串用单引号‘’
+			BETWEEN ... AND ...:
+			LIKE: %, _
+			IN | NOT IN:
+			IS NULL | IS NOT NULL:
+			REGEXP | RLIKE: 非常灵活，但是索引失效
+		ORDER BY子句:
+			ORDER BY field_name {ASC | DESC}; ==>默认ASC 
+				===>非常耗资源，在经常查找排序的字段上，加上索引
+		AS:字段别名，重命名字段或者表
+			SELECT 2+1 AS sum;
+		LIMIT子句:显示指定数量的记录, LIMIT [offset,] count
+			SELECT * FROM t-name LIMIT 2, 3;
+			offset:偏移量
+
+		聚合: AVG, SUM, MAX, MIN, COUNT
+			SELECT AVG(col) from t_name;
+		GROUP BY子句: 分组
+			SELECT age, gender FROM students GROUP BY gender;
+				==>每组第一条符合条件的记录
+			SELECT AVG(age), gender FROM students GROUP BY gender; ===>显示男女的平均年龄
+			SELECT COUNT(cid), cid FROM students GROUP BY cid;
+				===>显示每门课有多少人
+		HAVING子句: 和GROUP BY 结合，用于将分组结果再次过滤，
+					此处不可用WHERE
+			SELECT COUNT(cid) AS persons, cid FROM students GROUP BY cid HAVING persons>=2;
+
+	多表查询
+		连接：
+			交叉连接:笛卡尔乘积
+				SELECT * FROM t1, t2; ==>巨量无效记录
+			自然连接:两表中对应字段值相等
+				-SELECT * FROM t1, t2 WHERE t1.col1=t2.col2;
+				-SELECT t1.col1, t2.col2 FROM t1, t2 WHERE t1.col1=t2.col2;
+				-SELECT t.col1, m.col2 FROM t1 AS t, t2 As m WHERE t.col1=m.col2;
+			外连接:
+				左外连接: t_left LEFT JOIN t_right ON condition
+					左表的记录全显示，若在右表中存在，显示对应值，
+					否则NULL
+				右外连接: t_left RIGHT JOIN  ON condition
+					右表的全显示，如果有左表中有对应值，则显示对应值，否则显示NULL
+				自连接:
+				全外连接==>MySQL 不支持
+	子查询
+		在比较操作中使用子查询，但是子查询返回值必须是单值
+			SELECT name FROM students WHERE age > (SELECT AVG(age) FROM students);
+		IN():使用子查询，可以接受从子查询返回的多个值
+			SELECT name FROM students WHERE age IN (SELECT age FROM students);
+		FROM: 多数情况下，可以改写为复杂条件查询
+			SELECT name, age FROM (SELECT name, age FROM student AS t) WHERE t.age>=20;
+
+	联合查询: UNION
+		 (SELECT name, age FROM students) UNION (SELECT name,age FROM teachers);
+
+	视图/虚表		VIEW,
+		存储下来的SELECT语句而已，没有任何内容，基于特定基表的查询结果
+		HELP CREATE VIEW; ==>显示详细帮助信息
+		创建视图
+			>CREATE VIEW v_name AS SELECT name, age FROM student;
+			>SHOW TABLES; ==> v_name
+			>SELECT * FROM v_name; ==>和执行SELECT语句，结果一样
+					=>可以往视图中查记录，实际上是插入基表，但是，慎重！！！
+			>SHOW TABLE STATUS v_name\G  
+					==>显示除comment：VIEW外，所有记录均为NULL
+		删除视图:
+			DROP VIEW v_name;
+		物化视图:
+			- 大视图或者时常用到，提高速度
+			- 基表大批量更新、或者经常更新，视图困难
+			==>MySQL不支持视图，不建议使用视图
+
+		显示视图是如何创建的：
+			SHOW CREATE VIEW v_name;
+
+
+		视图没有索引
+		某些用户只能看到特定字段==>安全
+
+	从Command Line 直接操作
+		$mysql -e 'CREATE DATABASE edb;'
+		$mysql -e 'SHOW DATABASES;'
+
+INSERT INTO
+	HELP INSERT INTO: 显示该语句的详细帮助信息
+	先查找再插入
+	-INSERT INTO t_name(col1,col2,...) VALUES (v1,v2...)[,(
+		v2,v2,..),...]
+		-字符：单引号
+		-数值：不能放到引号里
+		-日期时间：
+		-空值: NULL 不等于‘’
+
+	-INSERT INTO t_name SET name='xx', age=90;
+		SELECT * FROM t_name ORDER BY tid DESC LIMIT 1;
+			自增长字段的值保存在LAST_INSERT_ID()函数内，因此，即使删掉已经插入的记录，记录号仍然按照该函数记录的最新记录完成自增，即使清空该表，也不影响该函数的；除非重新设定该函数的值。
+		SELECT LAST_INSERT_ID();
+			显示最近插入的记录号
+
+	-INSERT INTO t_name [(col_name,...)]
+		SELECT ...
+
+REPLACE INTO: HELP REPLACE INTO
+	插入记录，如果已有，则替换，没有，则插入
+
+UPDATE: HELP UPDATE
+	先查找
+	-UPDATE t_name SET col1={exp|DEFAUT}, ... WHERE condition;
+
+DELETE
+	先查找再删除
+	-DELETE FROM t_name WHERE condition ORDER BY xx LIMIT count;
+	-DELETE FROM t1, t2 USING table_references WHERE condition;
+
+TRUNCATE: 清空表，并重置AUTO_INCREMENT的值
+	重设 LAST_INSERT_ID()函数值:
+	TRUNCATE t_name;
+
+SQL操作语句
+	DDL、DML、DCL、完整性定义语言、视图定义语言、事务控制语言、嵌入式SQL和动态SQL
+	嵌入式SQL:与动态SQL类似，但是其语言必须在程序编译时确定下来。
+			ODBC: 更贴近底层，主要是让C语言和数据库交互，需要变量来
+				  保存SQL语句
+	动态SQL:程序设计语言使用(mysql_connect)或方法与RDBMS服务器建立连接，
+			并进行交互，通过建立了连接向SQL服务器发送查询语句，并将结果保存至变量中而后进行处理:
+				JDBC: Java Database Connection, JAVA连数据库
+组织结构：连接管理器-->解析器-->若执行过，则到缓存中取结果，否则，
+		交给优化器，优化并执行语句-->交给执行引擎-->存储引擎完成操作
+
+			==>插件式的存储引擎，即任何第三方都可以开发自己的存储引擎
+				MySQL 5.5.8  MyISAM 默认 
+					==>不支持事务，但是适合查询多，修改少的场景
+				MySQL 5.5.8后: InnoDB: 
+					==>支持事务，在线交易
+			==>Oracle, SQL-server只支持自己的存储引擎
+
+SQL操作的详细过程
+	用户请求-->连接管理器-->线程管理器-->用户模块(验证用户权限，不合法退回)
+	-->命令分发模块，缓存有则返回，没有，下一步，同时完成日志交互-->解析器
+	-->select语句，交给优化器；若修改表，确认权限，交给表定义模块；修复，则交给表维护模块；状态报告模块(存储过程状态)；复制模块(主从同步) -->访问
+	控制模块(检查相应授权)-->表管理器 -->存储引擎	 
+
+	表管理器: 负责创建、读取或修改表定义文件，维护表描述符的高速缓存，
+			 管理表锁	
+	表修改模块: 创建、删除、重命名、移除、更新或插入类的操作
+	表维护模块: 表的检查、修改、备份、恢复、优化(碎片整理)及解析
+
+	存储引擎: 负责管理数据库, 定长字段，查询速度快
+
+	行：定长，变长，块头来记录数据块中行的信息
+
+	文件中记录的组织方式:
+		对文件组织: 记录可以放在文件内的任何位置
+				  维护简单，但是查询困难
+		顺序文件组织：按某个字段的顺序(搜索码-->索引)存放
+					查询简单(二分法); 插入、更新困难
+		散列文件组织：针对特定字段，做hash
+
+	表结构定义文件、表数据文件
+
+	表空间：table space, 逻辑管理组件，实现了一个文件放多个表的数据
+
+	数据字典: data dictionary ==>MySQl 初始化生成的库mysql就是一个
+		关系的元数据：
+			关系的名字
+			字段的名字
+			字段的类型和长度
+			视图
+			约束
+
+			用户名字、权限、密码
+
+	缓冲区管理器：提供置换策略，内存不够时，负责管理swap
+
+MySQL三种改用户密码方式：
+	1. mysqladmin -u USERNAME -h HOSTNAME password 'Newpass' -p
+	2. mysql>SET PASSWORD FOR 'USERNAME'@'host'=PASSWORD('newP')
+	3. mysql>UPDATE mysql.user SET PASSWORD=PASSWORD('newp') 
+		WHERE conditions; ==>flush, 强迫重读权限
+
+DDL: Data Definition Language, 数据定义语言
+DML: Data Manipulate Language, 数据操作语言
+
+DCL: Data Control Language, 数据控制语言
+
+	-创建用户
+		CREATE USER 'USERNAME'@'HOST' IDENTIFIED BY 'PASSWD'
+		DROP USER 'USERNAME'@'HOST'
+
+		HOST:
+			IP:
+			HOSTNAME:
+			NETWORK:
+				通配符：
+					_:匹配任意单个字符， 172.__.0._==>xx.0.y
+					%:匹配任意长度的任意字符
+					jerry@'%':可以在任意主机登录
+
+	- GRANT
+		GRNAT priv1, priv2,... on DB_NAME.TB_Name to 'username'@'host' [IDENTFIED BY 'PASSWORD'];
+			==>如果用户不存在，会调用相应命令创建用户并完成操作
+
+	- REVOKE
+		REVOKE priv1, priv2, ... ON DB_NAME.TB_NAME FROM 'USERNAME'@'HOST';
+
+SHOW
+	-table status:查看表属性
+		-SHOW TABLE STATUS [[FROM | IN] db_name] [LIKE 'patter' | WHERE expr];
+			SHOW TABLE STATUS LIKE 'user'
+		>SHOW CHARACTER SET;
+		>SHOW COLLATION
+		
+		-Variables == mysqld --help --verbose
+
+pid更新问题
+	-曾经启动过的mysqld没有停止服务
+		datadir =/mydata/data ==>hostname.err 错误日志，若没有，需要
+							  ==>重新设定datadir，/etc/my.cnf
+		杀死进程 ==>killall mysqld
+	-数据初始化失败
+
+	-数据目录设置错误
+
+	-数据目录权限问题
+
+DBA 	==>Database Administrator
+	开发DBA:
+		数据库设计，SQL语句，存储过程、存储函数、触发器
+	管理DBA:安装、升级、备份、恢复、用户管理、权限管理、监控、性能分析、基准测试
+
+并发控制
+	锁:	HELP LOCK
+		锁的类型 
+			-读锁: 共享锁
+			-写锁: 独占锁/排他锁
+				LOCK TABLES t_name [[AS] alias] lock_type [, t_name [[AS] alias] lock_type]...
+					-lock_type: READ [LOCAL] | [LOW_PRIORITY] WRITE
+				UNLOCK TABLES;
+
+		锁粒度： MySQL服务器仅支持表级锁，行锁需要存储引擎完成
+			表锁：
+			页锁：
+			行锁：
+
+	时间戳
+
+	多版本并发控制和快照隔离: MVCC
+
+	锁饥饿:
+
+	死锁:
+
+事务
+	ACID: 
+		Atom: 原子性,事务引起的数据库操作，要么都完成，要么都不执行
+		Consitency: 一致性, 事务前后，数据库的总体不能变
+			例如：a(5000) -->2000 --> B ==>a(3000),b(2000)
+		隔离性: Isolation, 事务彼此间尽可能隔离，事务并发必须保证不能相
+				互影响
+				--事务调度: 靠服务器自身的事务调度
+				--MVCC: 基于快照，基于时间戳
+		Durability: 持久性，一旦事务完成即不可改变，系统保证任何故障都不能
+					改变数据
+				1. 事务提交之前，写入磁盘 ---速度慢，因为写入的随机I/O
+				2. 事务日志	-->因为是顺序I/O操作，速度很快	
+		
+		MyISAM: 不支持事务
+		InnoDB:支持事务
+
+	定义: 多个操作，涉及大量I/O操作，被当做一个操作单元，一起执行
+
+	事务状态
+		活动的: active
+		部分提交的:最后一条语句执行后，正在写
+		失败的:正常提交但是没有完成
+		终止的:没有完成即终止
+		提交的:完成并提交
+
+	事务日志
+		重做日志:
+			redo log
+			-已经提交的事务，尚未同步到磁盘，宕机了==>重启时，同步到磁盘
+			-日志文件能太大，否则，同步过程时间很长，重启检查时，费时
+			-日志文件不能只有一个，一般两个轮流使用
+			-防止磁盘坏掉丢失数据，RAID，
+			-日志文件和数据库不能在相同的物理介质上，防止同时损坏
+
+			MySQL:
+			在内存中完成操作，等事务提交，写入日志，按照日志同步到数据文件中
+				==>写入日志速度很快，因为只是记录操作
+		撤销日志:
+			undo log
+			如果事务未提交，宕机，不需要同步到磁盘
+
+		串行事务: 可防止数据访问时的不一致
+
+	隔离性
+		隔离级别:-->两个事务同时请求相同的数据，
+				-->MySQL默认REPEATABLE READ
+				==>SHOW GLOBAL VARIABLES LIKE '%isol%';
+				==>SET tx_isolation='READ-UNCOMMITTED';
+				==>SELECT @@tx_isolation;
+
+			READ UNCOMMITTED: 读未提交，读未提交的数据 
+							  只有提交后，操作才起作用
+			READ COMMITTED: 读提交，读已经提交的数据
+			REPEATABLE READ: 可重读
+			SERIALIZATION: 可串行
+
+	事务并发
+		1. 提高吞吐量和资源利用率
+		2. 减少等待时间
+
+	事务调度: 事务交叉执行，减少相互影响
+		1. 可恢复调度: 
+		2. 无级联调度: 
+
+	事务的实施:
+		START TRANSACTION;  <==启动
+			SQL1;
+			SQL2;...
+		COMMIT; 			<==提交
+		ROLLBACK;			<==回滚
+
+		SELECT @@autocommit;  ==>1
+			==>没有明确使用START TRANSACTION, 则自动直接commit；
+			==>若此变量设为0，则必须手动
+			**==>建议：关闭自动提交，即设0，明确使用事务；
+
+	保存点: SAVEPOINT
+		80 个事务，76 个错了
+		每10个保存一次，出错可回到指定保存点
+		==>HELP SAVEPOINT
+		==>SAVEPOINT sid;
+		==>ROLLBACK TO save_point_label;
+
+用户管理
+	用户名：
+	密码：
+	用户名@主机
+	-->账号的唯一目的：只是用来做用户认证，没有其他作用，即不涉及权限
+	权限：
+		权限记录在表中，user, db, host, tables_priv, columns_priv, 和 procs_priv 表中。
+		mysqld启动时，要读取这六张表，并加载到内存中，以后的权限认证，都要查询该表。
+		-user: contains user accounts, global privileges, and other non-privilege columns.
+		用户账号，全局权限
+		-db: contains database-level privileges
+			库级别权限
+		-host: Obsolete, 废弃
+		-tables_priv: contains table-level privilege
+			表级别权限
+		-columns_priv:contains column-level privilege
+			列级别权限
+		-proc_priv: contains stored procedure and function privileges. 存储过程和存储函数相关权限
+		-proxies_priv:contains proxy-user privelegs,
+			代理用户权限
+
+	账号：用户名@主机， 
+		用户名->16个字符内 
+		主机:
+			主机名:www.magedu.com, mysql,...
+			IP: 172.16.2.28
+			网络地址: 172.16.0.0/255.255.0.0
+
+			通配符：
+				%， _
+				%.magedu.com
+				172.12.%.3_
+		--skip-name-resolve
+
+	权限级别
+		全局级别: SUPER, REPLICATION_CLIENT/SLAVE, etc
+		库级别:
+		表级别:
+		列级别:
+		存储过程和存储函数:
+
+		=>USE mysql;
+		=>SELECT * FROM db\G
+
+	创建用户：
+		HELP CREATE USER;
+		- CREATE USER username@host [IDENTIFIED BY 'passwd'];
+		 FLUSH PRIVILEGES；  <==强迫重读
+		
+		- GRANT==>HELP GRANT;
+
+
+		- INSERT INTO xxx INTO mysql.user
+		>FLUSH PRIVILEGES;
+
+		SHOW GRANTS FOR user@host;
+
+找回root密码：
+	-1. 编辑文件
+		编辑：vim /etc/init.d/mysqld
+			$bindir/mysqld_safe <-START --skip-grant-tables --skip-networking END->
+		启动服务
+			$service mysqld start
+			$mysql  
+			>use mysql;
+			>SET PASSWORD FOR 'root'@'localhost' IDENTIFIED BY '123'
+				==>Error
+			>UPDATE user SET PASSWORD=PASSWORD('1234') WHERE User='root';
+			>\q
+		改回mysqld：
+			删除添加内容<-START xxxxxxxx END->
+	2. 安全模式跳过授权表和网络，本地登录，通过修改授权表重设密码，重启
+		mysqld，可用新密码登录
+		$ service mysqld --skip-grant-tables --skip-networking start
+		>use mysql;
+		>SET PASSWORD FOR 'root'@'localhost' IDENTIFIED BY '123'
+			==>Error
+		>UPDATE user SET PASSWORD=PASSWORD('1234') WHERE User='root';
+		>\q
+触发器
+	INSERT, DELETE, UPDATE等操作，出发其他操作
+
+
+日志管理
+	默认状态下，所有日志都没有打开
+	SHOW GLOBAL VARIABLES LIKE "%log%"
+
+	(一般)查询日志: 所有的操作
+				general_log
+				general_log_file
+				log
+				可以放到一个表中，需要修改变量：log_output [NONE | TABLE | FILE]
+					NONE->不记录 
+					TABLE->表 要自己建表
+					FILE->文件  
+					TABLE, FILE->两份
+
+	错误日志: 错误和警告两种
+		log_error
+		log_warnings
+
+		-服务器启动和关闭过程中的信息
+		-服务器运行过程中产生的错误信息
+		-事件调度器运行一个时间产生的信息
+		-在从服务器上启动从服务器进程时产生的信息
+
+	慢查询日志:
+		-long_query_time:设定值，指语句执行时间，而非所占用的CPU时间，因此负载重的服务器更容易产生慢查询
+		-log_slow_queries={YES | NO}
+		-slow_query_log:
+		-slow_query_log_file
+
+		>SET GLOBAL log_slow_query=1;
+
+	二进制日志：记录任何可能引起数据库变化的操作，非常重要，用于复制和即时点恢复(恢复到
+				指定时间点)
+		mysqlbinlog
+		格式：
+			基于语句：记录操作语句，statement-->非确定性操作，如出生日期=date()
+			基于行：row，记录每行数据
+			混合方式：mixed，混合模式
+
+			滚动：文件达到一定大小，或者服务器重启
+
+			**日志文件一定不能和服务器放在同一个磁盘上，否则，磁盘挂了，二进制文件也丢失，那就找不回来了，另外，会产生大量I/O，降低性能
+			只要所有的二进制日志还在就可以找回来
+			备份后，相关日志可以删除，释放空间
+
+		二进制日志事件:
+			文件头->每个事件产生时间
+			position， starttime
+		二进制日志文件:
+			索引文件：
+			二进制日志文件：
+			mysql-bin.000001/2/3...
+			 >SHOW MASTER STATUS; ==>file, position, etc,当前用的文件
+			 >INSERT INTO -----
+			 >SHOW BINLOG EVENTS IN 'mysql-bin.000005' [FROM 107];
+
+			 mysqlbinlog:
+			 	--start-datetime
+			 	--stop-datetime
+
+			 	--start-position
+			 	--stop-position
+
+			 	$mysqlbinlog mybsil-bin.000001  <=二进制文件，不能cat
+			 	$mysqlbinlog --start-position=177 --stop-position=199 mybsil-bin.000001
+
+			 	>FLUSH LOGS;	<==手动滚动二进制日志，同时滚动从服务器二进制日志，其他日志不动
+
+			 	日志文件删除：
+			 		-绝对不能手动删除，rm，服务器重启不了
+			 		-使用MySQL的命令PURGE
+			 			>HELP PURGE
+			 			>PURGE { BINARY | MASTER} LOGS {TO 'log_name' | BEFORE datetime_expr}
+			 			>SHOW BINARY LOGS;	<=显示当前所有的二进制日志
+			 			>SHOW GLOBAL VARIABLES LIKE "%log%";
+			
+	中继日志：从主服务器的二进制日志文件复制来的事件，保存为文件，是一个副本
+	事务日志：
+		事务提交之前，一般不执行写数据记录，而只是记录到事务日志，提交之后才同步到磁盘数据库
+		记录内容
+			-记录ID号，
+			-操作哪个数据的哪个表
+			-记录新数据和老数据  ==>不能rollback整表，整库
+		innodb_flush_log_at_trx_commit:
+			0: 每秒同步，并执行磁盘flush操作  <==告知内核，不要缓存，直接写磁盘
+			1: 每事务同步，并执行磁盘flush操作
+			2: 每事务同步，但不执行磁盘flush操作，操作系统自己决定什么时候flush
+				==>性能最好，但是数据不安全
+ 
+
+日志相关的服务器参数详解：
+
+	expire_logs_days={0..99}
+	设定二进制日志的过期天数，超出此天数的二进制日志文件将被自动删除。默认为0，表示不启用过期自动删除功能。如果启用此功能，自动删除工作通常发生在MySQL启动时或FLUSH日志时。作用范围为全局，可用于配置文件，属动态变量。
+
+	general_log={ON|OFF}
+	设定是否启用查询日志，默认值为取决于在启动mysqld时是否使用了--general_log选项。如若启用此项，其输出位置则由--log_output选项进行定义，如果log_output的值设定为NONE，即使用启用查询日志，其也不会记录任何日志信息。作用范围为全局，可用于配置文件，属动态变量。
+	 
+	general_log_file=FILE_NAME
+	查询日志的日志文件名称，默认为“hostname.log"。作用范围为全局，可用于配置文件，属动态变量。
+
+	binlog-format={ROW|STATEMENT|MIXED}
+	指定二进制日志的类型，默认为STATEMENT。如果设定了二进制日志的格式，却没有启用二进制日志，则MySQL启动时会产生警告日志信息并记录于错误日志中。作用范围为全局或会话，可用于配置文件，且属于动态变量。
+
+	log={YES|NO}
+	是否启用记录所有语句的日志信息于一般查询日志(general query log)中，默认通常为OFF。MySQL 5.6已经弃用此选项。
+	 
+	log-bin={YES|NO}
+	是否启用二进制日志，如果为mysqld设定了--log-bin选项，则其值为ON，否则则为OFF。其仅用于显示是否启用了二进制日志，并不反应log-bin的设定值。作用范围为全局级别，属非动态变量。
+	 
+	log_bin_trust_function_creators={TRUE|FALSE}
+	此参数仅在启用二进制日志时有效，用于控制创建存储函数时如果会导致不安全的事件记录二进制日志条件下是否禁止创建存储函数。默认值为0，表示除非用户除了CREATE ROUTING或ALTER ROUTINE权限外还有SUPER权限，否则将禁止创建或修改存储函数，同时，还要求在创建函数时必需为之使用DETERMINISTIC属性，再不然就是附带READS SQL DATA或NO SQL属性。设置其值为1时则不启用这些限制。作用范围为全局级别，可用于配置文件，属动态变量。
+	 
+	log_error=/PATH/TO/ERROR_LOG_FILENAME
+	定义错误日志文件。作用范围为全局或会话级别，可用于配置文件，属非动态变量。
+	 
+	log_output={TABLE|FILE|NONE}
+	定义一般查询日志和慢查询日志的保存方式，可以是TABLE、FILE、NONE，也可以是TABLE及FILE的组合(用逗号隔开)，默认为TABLE。如果组合中出现了NONE，那么其它设定都将失效，同时，无论是否启用日志功能，也不会记录任何相关的日志信息。作用范围为全局级别，可用于配置文件，属动态变量。
+	 
+	log_query_not_using_indexes={ON|OFF}
+	设定是否将没有使用索引的查询操作记录到慢查询日志。作用范围为全局级别，可用于配置文件，属动态变量。
+	 
+	log_slave_updates
+	用于设定复制场景中的从服务器是否将从主服务器收到的更新操作记录进本机的二进制日志中。本参数设定的生效需要在从服务器上启用二进制日志功能。
+	 
+	log_slow_queries={YES|NO}
+	是否记录慢查询日志。慢查询是指查询的执行时间超出long_query_time参数所设定时长的事件。MySQL 5.6将此参数修改为了slow_query_log。作用范围为全局级别，可用于配置文件，属动态变量。
+	 
+	log_warnings=#
+	设定是否将警告信息记录进错误日志。默认设定为1，表示启用；可以将其设置为0以禁用；而其值为大于1的数值时表示将新发起连接时产生的“失败的连接”和“拒绝访问”类的错误信息也记录进错误日志。
+
+	long_query_time=#
+	设定区别慢查询与一般查询的语句执行时间长度。这里的语句执行时长为实际的执行时间，而非在CPU上的执行时长，因此，负载较重的服务器上更容易产生慢查询。其最小值为0，默认值为10，单位是秒钟。它也支持毫秒级的解析度。作用范围为全局或会话级别，可用于配置文件，属动态变量。
+
+	max_binlog_cache_size{4096 .. 18446744073709547520}
+	二进定日志缓存空间大小，5.5.9及以后的版本仅应用于事务缓存，其上限由max_binlog_stmt_cache_size决定。作用范围为全局级别，可用于配置文件，属动态变量。
+
+	max_binlog_size={4096 .. 1073741824}
+	设定二进制日志文件上限，单位为字节，最小值为4K，最大值为1G，默认为1G。某事务所产生的日志信息只能写入一个二进制日志文件，因此，实际上的二进制日志文件可能大于这个指定的上限。作用范围为全局级别，可用于配置文件，属动态变量。
+
+	max_relay_log_size={4096..1073741824}
+	设定从服务器上中继日志的体积上限，到达此限度时其会自动进行中继日志滚动。此参数值为0时，mysqld将使用max_binlog_size参数同时为二进制日志和中继日志设定日志文件体积上限。作用范围为全局级别，可用于配置文件，属动态变量。
+
+	innodb_log_buffer_size={262144 .. 4294967295}
+	设定InnoDB用于辅助完成日志文件写操作的日志缓冲区大小，单位是字节，默认为8MB。较大的事务可以借助于更大的日志缓冲区来避免在事务完成之前将日志缓冲区的数据写入日志文件，以减少I/O操作进而提升系统性能。因此，在有着较大事务的应用场景中，建议为此变量设定一个更大的值。作用范围为全局级别，可用于选项文件，属非动态变量。
+	 
+	innodb_log_file_size={108576 .. 4294967295}
+	设定日志组中每个日志文件的大小，单位是字节，默认值是5MB。较为明智的取值范围是从1MB到缓存池体积的1/n，其中n表示日志组中日志文件的个数。日志文件越大，在缓存池中需要执行的检查点刷写操作就越少，这意味着所需的I/O操作也就越少，然而这也会导致较慢的故障恢复速度。作用范围为全局级别，可用于选项文件，属非动态变量。
+	 
+	innodb_log_files_in_group={2 .. 100}
+	设定日志组中日志文件的个数。InnoDB以循环的方式使用这些日志文件。默认值为2。作用范围为全局级别，可用于选项文件，属非动态变量。
+	 
+	innodb_log_group_home_dir=/PATH/TO/DIR
+	设定InnoDB重做日志文件的存储目录。在缺省使用InnoDB日志相关的所有变量时，其默认会在数据目录中创建两个大小为5MB的名为ib_logfile0和ib_logfile1的日志文件。作用范围为全局级别，可用于选项文件，属非动态变量。
+
+	relay_log=file_name
+	设定中继日志的文件名称，默认为host_name-relay-bin。也可以使用绝对路径，以指定非数据目录来存储中继日志。作用范围为全局级别，可用于选项文件，属非动态变量。
+
+	relay_log_index=file_name
+	设定中继日志的索引文件名，默认为为数据目录中的host_name-relay-bin.index。作用范围为全局级别，可用于选项文件，属非动态变量。
+
+	relay-log-info-file=file_name
+	设定中继服务用于记录中继信息的文件，默认为数据目录中的relay-log.info。作用范围为全局级别，可用于选项文件，属非动态变量。
+
+	relay_log_purge={ON|OFF}
+	设定对不再需要的中继日志是否自动进行清理。默认值为ON。作用范围为全局级别，可用于选项文件，属动态变量。
+
+	relay_log_space_limit=#
+	设定用于存储所有中继日志文件的可用空间大小。默认为0，表示不限定。最大值取决于系统平台位数。作用范围为全局级别，可用于选项文件，属非动态变量。
+
+	slow_query_log={ON|OFF}
+	设定是否启用慢查询日志。0或OFF表示禁用，1或ON表示启用。日志信息的输出位置取决于log_output变量的定义，如果其值为NONE，则即便slow_query_log为ON，也不会记录任何慢查询信息。作用范围为全局级别，可用于选项文件，属动态变量。
+
+	slow_query_log_file=/PATH/TO/SOMEFILE
+	设定慢查询日志文件的名称。默认为hostname-slow.log，但可以通过--slow_query_log_file选项修改。作用范围为全局级别，可用于选项文件，属动态变量。
+
+	sql_log_bin={ON|OFF}
+	用于控制二进制日志信息是否记录进日志文件。默认为ON，表示启用记录功能。用户可以在会话级别修改此变量的值，但其必须具有SUPER权限。作用范围为全局和会话级别，属动态变量。
+
+	sql_log_off={ON|OFF}
+	用于控制是否禁止将一般查询日志类信息记录进查询日志文件。默认为OFF，表示不禁止记录功能。用户可以在会话级别修改此变量的值，但其必须具有SUPER权限。作用范围为全局和会话级别，属动态变量。
+
+	sync_binlog=#
+	设定多久同步一次二进制日志至磁盘文件中，0表示不同步，任何正数值都表示对二进制每多少次写操作之后同步一次。当autocommit的值为1时，每条语句的执行都会引起二进制日志同步，否则，每个事务的提交会引起二进制日志同步。
+
+	syn_binlog=0:
+
+	innodb_support_xa={TRUE | FALSE}: 是否支持分布式事务，利用‘准备’ 然后‘提交’两段式的方式将ACID属性扩展到存储引擎外部，甚至数据库外部。但，‘准备’阶段会导致额外的写操作，XA需要事务协调员，通知所有参与者准备提交事务(阶段1)，收到所有参与者就绪的信息
+	后，指示参与者进行真正的‘提交’操作。
+
+IOPS：I/O per second
+台式机械盘：100	SCSI: 200	SSD:500，1000，2000，5000 depends 
+FIO:Fusion-IO, 硬盘直接接到南桥芯片上
+
+
+存储引擎
+	MyISAM:
+		不支持事务，
+		不支持外键
+		表锁，写操作多时性能低
+		支持B-Tree索引，FULLTEXT索引，空间索引
+		支持表压缩
+		.frm
+		.MYD
+		.MYI
+	InnoDB:
+		支持事务
+		行级别的锁
+		支持B-Tree索引，聚簇索引，自适应hash索引
+		支持表空间，raw磁盘设备(裸设备，没有文件系统，自己可以管理文件)
+		.frm
+		.ibd
+		innodb_file_per_table: ON  ==>每表一个表空间
+	MRG_MYISAM:
+		将两个或者两个以上的表，联合使用，表必须有相同的结构
+	CSV:
+		以csv格式存储数据
+		性能差
+	ARCHIVE：
+		归档后不再修改
+	MEMORY:
+		内存
+	BLACKHOLE:
+
+	可以引入第三方引擎，自己编译，mysql会支持插件式
+
+	不建议混合使用存储引擎
+
+
+MySQL的备份和还原:
+	RAID1,RAID10:保证硬件损坏而不会终止业务
+		DROP TABLE mydb.tb1
+	备份和RAID是不同的概念。必须备份
+
+	备份类型：
+		备份时服务器是否在线
+			热备份:读写操作不受影响,难度大
+				MyISAM:几乎是不可能的
+				InnoDB:内在管理机制不同于MyISAM，可以做热备，物理的逻辑的均可，但是
+					服务器性能受影响
+					xtrabackup, mysqldump 可实现物理热备份
+
+			温备份:可读不可写, 锁表，不让写
+					MyISAM: 备份
+			冷备份:读写均不可，离线备份
+					主从架构-->停下从服务器，备份，完成后再开启
+		备份方法
+			物理备份：直接复制数据文件，速度快，
+			逻辑备份：将数据导出至文本文件中，通过MySQL导出数据，另存为文件，
+					-速度慢，相当相当消耗资源
+					-比原来的数据提交更大
+					-丢失浮点数精度;
+					-方便使用文本工具直接对内容处理，可移植性强
+					--压缩后节省体积
+
+		备份内容
+			完全备份:备份全部数据，整个服务器或者某个库的所有数据
+			增量备份:仅备份上次完全备份或者增量备份以后变化的数据
+			差异备份:仅备份上次完全备份以来变化的数据
+
+			备份策略：完全+增量/差异
+				-还原时间长度
+
+				一般：一周一次完全，一天一次增量或者差异
+					一月一次完全，一天一次增量或者差异
+					一天一次完全，一小时一次增量或者差异
+
+		备份工具:
+			MySQL提供的工具：
+				小型数据库，mysqldump经常用到
+				由于执行逻辑备份，速度太慢，50G 至少要半个小时
+				mysqldump: 逻辑备份，MyISAM(温备份), InnoDB(热备份)
+					mysqldump(完全备份)+二进制文件 <==完全+增量
+					mysqldump db_name[tb1][tb2]...
+					不保存库的结构，还原时需要手动创建数据库，保存了表的结构
+					热备份，如果同时有用户写入数据，有可能导致时间点上的不一致
+					备份和恢复的命令:
+					$mysqldump -uroot -p >/root/db_name.sql
+					mysql>CREATE DATABASE db_name;
+					$mysql db_name< /root/db_name.sql
+					****
+					千万不能这么干！！！！！！！
+					先锁表
+					mysql>FLUSH TABLES WITH READ LOCK;  <==刷新并上读锁
+					mysql>FLUSH LOGS;		<==强行滚动日志
+					mysql>SHOW BINAY LOGS;	<==记录下当前logs
+					$mysqldump -uroot -p >/root/db_name.sql
+					mysql>UNLOCK TABLES;		<==备份完毕，立即解锁
+					mysql>CREATE DATABASE db_name;
+					$mysql db_name< /root/db_name.sql
+
+					--master-dater={0|1|2}
+						0:不记录二进制文件及其路位置
+						1:以CHANGE MASTER TO 的方式记录位置，可用于恢复后直接启动从服务器
+						2:以CHANGE MASTER TO 的方式记录位置，但默认为被注释
+					--lock-all-tables:锁定所有表
+
+					--flush-logs:执行日志flush
+
+					$mysqldump -uroot -p --lock-all-tables --flush-logs --all-databases --master-data=2 > /root/all.sql
+
+					如果所有的表均为InnoDB，则可启动热备份,不需要其他操作，如锁表
+					--single-transaction 
+
+
+				备份多个库
+					--all-databases:备份所有库
+					--databases DB_name, DB_name,...  <==备份指定库
+
+					--events:事件
+					--routines:存储过程和存储函数
+					--triggers:触发器 
+
+				mysqlhotcopy:物理备份，锁表，实际上是一个温备份工具，事实上做的是冷备份
+
+				每周完全+每日增量
+					完全备份:mysqldump
+					增量备份:备份二进制日志文件(FLUSH LOGS)
+
+					例子：手动备份所有库，并还原
+					完全备份
+						$mysqldump -uroot -p --master-data=2 --flush-logs --all-databases --lock-all-tables > /root/alldb.sql
+					增量备份
+						方法-
+						mysql>FLUSH LOGS;	<==滚动日志
+						$cd /mydata/data/
+						$cp mysql-bin.00011 /root/	<==复制当天的二进制日志作备份
+						方法二
+						mysql>FLUSH LOGS:
+						$mysqlbinlog mysql-bin.00011 >/root/mon-incremental.sql
+					删库 ----第二天
+						$cd /mydata/data
+						$cp mysql-bin.00012 /root/
+						$rm -rf ./*
+						$service mysqld stop  <==Error PID file not found
+						$killall mysqld
+					还原
+						$cd /usr/local/mysql/
+						$scripts/mysql_install_db --user=mysql --datadir=/mydata/data/		<==脚本完成mysql库初始化
+						$service mysqld start
+						$mysql -uroot -p< alldb.sql  <==恢复所有的库，完全备份
+						$mysql -uroot -p < mon-incremental.sql  <恢复增量的
+						$mysqlbinlog mysql-bin.000012 >temp.sql
+						$mysql -uroot -p <temp.sql   <=恢复二进制日志里当天的
+						===或者通过管道直接送给msyql
+						$mysqlbinlog mysql-bin.000012 | mysql -uroot -p
+					收工
+					注意：逻辑备份还原之前，关闭二进制日志，原因：已有数据备份，恢复过程中产生的二进制文件等同于备份，没必要浪费大量I/O和磁盘空间
+					sql_log_bin: OFF
+					mysql>SET sql_log_bin=0;
+					mysql>\. /root/db_name.sql  <==或者使用mysql>source db_name.sql
+					mysql> SET sql_log_bin=1;
+					----------------------------
+					确保内存中的信息完全同步到了日志或者磁盘
+					>SHOW ENGINE INNODB STATUS;
+					==>等待没有I/O之后，写buffer中没有东西了，才能安全的实施
+					完全备份，即mysqldump
+					真正的收工了
+
+
+				MyISAM(温备份)
+					只能温备份
+					--lock-all-tables
+					--lock-tables
+
+				写一个mysql备份脚本
+
+			SELECT INTO 语句完成逻辑备份：
+				mysql>SELECT * INTO OUTFILE '/tmp/t1.txt' from t1;
+						<== 保存数据到文件，txt文本格式，空格分割
+				mysql>LOAD DATA INFILE '/tmp/tq.txt' INTO TABLE t1;
+						<== 从文件导入数据库
+				=====>注意：
+						  操作不写入日志，因为这个操作并不是DML语句操作 
+
+				==>注意:
+					速度快，节省备份空间
+					但是，得自己控制备份时间点，保证数据的一致性
+					通常用来备份某张表，不建议做完全备份
+
+			几乎热备: LVM
+				snapshot
+				前提：
+					数据文件必须在逻辑卷上
+					此逻辑卷所在卷组必须有足够的空间使用快照卷
+					事务日志和数据文件必须在同一个卷上
+
+				完全备份步骤:
+					1. mysql对话，施加读锁，锁定所有表，并滚动日志
+					mysql>FLUSH TABLES WITH READ LOCK;
+					mysql>FLUSH LOGS;
+					mysql>SHOW MASTER STATUS;   <查看二进制记录点
+
+					2.通过另一个终端，保存二进制日志文件及相关位置
+					$mysql uroot -p -e "SHOW MASTER STATUS\G" >/backup/master-info.`date` 	<保存二进制日志记录点
+
+					3. 创建快照卷
+					$lvcreate -L 50M -s -p r -n mydata-snap /dev/myvg/mydata 		<==创建逻辑卷
+
+					4. 释放锁
+					mysql>UNLOCK TABLES;
+
+					5. 挂载快照卷，复制备份到备份目录
+					$mount /dev/myvg/mydata-snap /mnt -o ro
+					$ cp -a ./*  /backup/full-backup-`date +%F` 
+						<==备份除了二进制日志之外的所有文件 
+						<==full-backup-2013-05-03
+
+					6. 删除快照卷
+					$unmount /mnt
+					$lvremove --forece /dev/myvg/mydata-snap
+
+					7. 备份二进制日志
+					$mysqlbinlog --start-datetime='2013-05-03 20:18:34' mysql-bin.000003 mysql-bin.000004 > /backup/incremental-`date +%F-%H-%M-%S`.sql
+
+				模拟损坏后还原步骤
+					1. 模拟数据库损坏：
+					$cd /mydata/data/
+					$rm -rf ./*
+					$service mysqld start   <==Error 启动不了了
+
+					2. 复制备份好的库文件到data目录下
+					$cp -a /backup/full-backup-2013-05-03/*  /mydata/data
+						<===修复，复制备份到data目录下，不需要其他操作
+					$ls -ls  		<==确保文件的属主是 mysql
+
+					3. 启动mysqld
+					$service mysqld start
+
+					4. 客户端连接
+					$mysql -uroot -p
+
+					5. 关闭二进制日志记录
+					mysql>set sql_log_bin=0   <==关掉当前二进制日志
+
+					6. 还原二进制日志备份的部分
+					mysql>SOURCE /backup/incremental-2013-05-03-20-32-57.sql;
+						==>运行二进制日志的备份的sql脚本，完成增量的更行
+
+					7. 打开二进制日志，查看日志状态，确保一切ok
+					>SET sql_log_bin=1;
+					>SHOW MASTER STATUS;
+
+
+
+
+
+
+			文件系统工具
+				cp: 冷备份
+				lv:逻辑卷的快照功能，结合cp，可实现几乎热备份
+					mysql>FLUSH TABLES
+					mysql>LOCK TABLES
+					$创建快照
+					mysql>UNLOCK TABLES
+
+					InnoDB:要确保缓存中的数据已经完全写入磁盘，才能做快照
+
+			商业工具:
+				ibbackup: 收费，一个服务器5000$
+					-InnoDB online physical backup
+						full, incremental
+					-MyISAM
+						warm backup 
+						only full backup
+
+				xtrabackup: Percona 免费开源，性能优于ibbackup
+					xtradb: innodb的增强版
+
+					xtrabackup + 二进制日志：
+						可完成InnoDB全备份和增量备份
+						$innobackupex --user=root /backup
+
+
+					xtrabackup:
+						对MyISAM 只能做完全备份
+					
+
+
+	还原:
+		一定要还原测试
+
+		备份什么:
+			配置文件
+			二进制日志
+			事务日志
+			数据
+		热备份:
+
+
+

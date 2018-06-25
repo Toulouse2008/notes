@@ -1,0 +1,95 @@
+Data Manipulation
+    SELECT:
+        DISTINCT keyword: 去除重复行, SELECT DISTINCT
+        statement--> SELECT VERSION(), CURRENT_DATE();
+        FROM clause:
+        WHERE clause:
+            test condition:     TRUE, FALSE, UNKNOWN
+                比较: =, <, >, <> | !=, <=, >=
+                范围: BETWEEN  AND   --> BETWEEN '01-OCT-2014' AND '12-OCT-2016'
+                成员: IN      --> IN ('a', 'b', 'c')
+                正则: LIKE    --> LIKE 'Smit%'    通配符: % _
+                     转义通配符: ESCAPE  --> LIKE 'A$%BC%' ESCAPE '$'
+                空值: IS | IS NOT NULL, 绝对不能用 = 测试 NULL
+                复合条件: AND  OR  NOT
+
+                注意: NULL OR TURE ==> true, 不是 NULL
+                     IS UNKNOWN
+        ORDER BY clause: 排序
+        GROUP BY clause: 分组
+            HAVING clause: 分组选择条件  GROUP BY gender HAVING COUNT(*) > 30
+        UNION:
+        JION
+
+        Subquery: 子查询
+            SELECT city FROM offices WHERE target > (SELECT SUM(price) FROM sales
+            WHERE rep=office)
+            子查询位置: WHERE 子句, test 条件(比较, 成员, )
+            Existence 测试: EXISTS
+            Qualified 测试: ANY, ALL
+            嵌套子查询
+            Having clause: 
+
+        列函数:
+            SUM(), AVG()
+            MIN(), MAX(): 数字做代数比较, 日期按时间顺序比较, Duration 比较间隔长度
+                          字符串比较: ASCII 码
+            COUNT(column_name): 统计指定列的数量
+            COUNT(*): 统计查询结果的行数     两者貌似没有差别???
+    INSERT
+    DELETE
+    UPDATE
+
+Data Definition
+    CREATE TABLE
+    CREATE DATABASE
+    DROP TABLE
+    DROP DATABASE
+    ALTER TABLE
+    CREATE VIEW
+    DROP VIEW
+    CREATE INDEX
+    DROP INDEX
+    CREATE SYNONYM
+    DROP SYNONYM
+    COMMENT
+    LABEL
+
+ACCESS CONTROL
+    GRANT
+    REVOKE
+
+Transaction Control
+    GRANT
+    ROLLBACK
+
+Programming
+    DECLARE
+    EXPLAIN
+    OPEN
+    FETCH
+    CLOSE
+    PREPARE
+    EXECUTE
+    DESCRIBE
+
+函数  FUNCTION
+    BIT_LENGTH(string)
+    CAST(value AS data_type)
+    CHAR_LENGTH(string)
+    CONVERT(string USING convert)
+    CURRENT_DATE
+    CURRENT_TIME(precision)
+    CURRENT_TIMESTAMP(precision)
+    EXTRACT(part FROM source)
+    LOWER(string)
+    OCTET_LENGTH(string): number of 8-bit bytes in a string
+    POSITION(targe IN source): position where the target string appears in source
+    SUBSTRING(source FROM n FOR len)
+    TRANSLATE(string USING trans)
+    TRIM(BOTH char FROM string)
+    TRIM(LEADING char FROM string)
+    TRIM(TRAILING char FROM string)
+    UPPER(stirng)
+
+    MONTH(date)     YEAR(date)

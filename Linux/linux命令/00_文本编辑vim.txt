@@ -1,0 +1,254 @@
+vim 编辑器
+    vi: Visual Interface    文本编辑器
+    vim: vi improved
+        $sudo yum -y install vim
+    文本: ASCII, Unicode
+
+    文本编辑器
+        行编辑器: sed
+        全屏编辑器: nano  vi   vim
+    使用
+        模式化的编辑器
+        基本模式
+            编辑模式: 命令模式
+            输入模式: 插入模式
+            末行模式: vim 内置命令行接口
+        打开文件
+            $vim [option] [files ...]
+                +number: 文件打开后，光标处于该行行首
+                +/pattern: 文件打开后，光标处于第一个匹配行的行首
+                +: 光标定位到文件末行行首
+        模式之间的切换
+            编辑模式-->输入模式
+                i: insert, 插在光标之前
+                a: append, 插在光标之后
+                o: 光标之下，开一新行，并进入插入模式
+                O: 光标之上，开一新行，并进入插入模式
+                I: 跳转至光标所在行的行首，并进入插入模式
+                A: 跳转至光标所在行的行尾，并进入插入模式
+                c:  C:  s:  S:
+
+            输入模式 --> 编辑模式
+                ESC
+            编辑模式 --> 末行模式
+                :
+            末行模式 --> 编辑模式
+                ESC
+            末行模式 --x--> 输入模式
+        关闭文件
+            :q  退出
+            :wq
+            :q! 放弃所做的修改并退出
+            :wq 保存并退出
+            :x  保存并退出
+            :w /path/to/file    当前文本保存到file中
+            ZZ  编辑模式下，保存并退出
+
+    快速光标跳转
+        字符
+            h, j, k, l ==>Right, Down, Up, Left
+            number + h, j, k, l  ==> 一次跳 number 个字符
+        单词
+            w: 向右跳一个单词，词首  number + w: 向右跳number个单词，词首
+            b: 当或者前一个单词的词首  number + b
+            e: 当前或下一个单词的词尾  number + e
+        行
+            ^: 跳到行的第一非空字符
+            0: 跳到行首
+            $: 绝对行尾
+        行间
+            number + G: 跳到指定行
+            G: 最后一行行首
+            1G | gg: 第一行行首
+        句间
+            ): 下一个句首
+            (: 上一个句首
+        段落
+            }: 下一个段首
+            {: 收一个段首
+
+    vim 编辑命令
+        字符
+            x: 删除光标处字符
+            #x: 从光标开始删除 # 个字符(向右删)
+            xp: 交互光标所在处及其后一个字符的位置
+        替换命令
+            replace
+            r:
+            #r:
+
+            s: 替换光标处字符
+            #s:
+        删除
+            d: 需要结合光标跳转命令，确定删除范围
+                d$: 光标到行尾
+                d^: 光标到行首
+                d0: 光标到行首
+
+                dw | d#w
+                de | d#e
+                db | d#b
+
+                dd: 清除光标所在行     #dd: 清除光标所在行及一下 # 行
+                D: 只删除内容，保留空行
+
+        粘贴命令
+            put/paste
+            p: 缓冲区若是整行内容，则粘贴到光标所在行的下行，否则，粘贴到光标之后
+            P: 缓冲区若是整行内容，则粘贴到光标所在行的上行，否则，粘贴到光标之前
+
+        复制命令
+            yank
+            y: 复制，类似于 d
+                y$  y0  y^  yw  ye  yb
+            yy: 复制整行
+            #yy: 从光标所在行起，向下复制 # 行
+
+        改变命令
+            change
+            c: 修改, 类似 y 命令  但是，改完后，进入输入模式
+                c^  c0  c$  cb  ce  cw  c#|b|w|e
+            cc: 删除并输入新内容
+            #cc:
+
+        其他编辑
+            可视化模式
+                v: 按字符选定
+                V: 按行选定
+                    note: 结合编辑名 d, c, y
+            撤销操作
+                undo 撤销此前的操作
+                u:
+                #u: 撤销此前的 # 次操作
+            撤销此前的撤销
+                Ctrl + r
+            重复上一次操作
+                .
+
+        翻屏操作
+            Ctrl+f: 后翻一屏
+            Ctrl+b: 向前翻一屏
+            Ctrl+d: 后翻半屏
+            Ctrl+u: 前翻半屏
+
+        练习操作，请使用 vimtutor
+
+    vim 中的末行模式
+        内建的命令行接口
+
+        1. 地址定界
+            :start_pos,end_pos
+                #: 具体第 # 行, 如 2 表示第二行
+                m,n: 从第 m 行开始，到第 n 行
+                m,+n: 从第 m 行开始包括(该行)，向下再数 n 行
+                m,-n: 从第 m 行开始包括(该行), 向上再数 n 行
+                .: 当前行
+                $: 最后一行
+                    .,$-1 ==> 当前行到倒数第二行
+                %: 全文, 相当于 1,$
+
+                /pattern1/,/pattern2/
+                    从第一次被 pattern1 匹配到的行开始，到第一次被 pattern2 匹配到的行结束
+                m,/pattern/
+                    从 m 行开始，到第一次被 pattern 匹配到的行结束
+                /pattern/,m
+                    从第一次被 pattern 匹配到的行开始，到 m 行结束
+                /pattern/,$
+
+            使用方式
+                后跟一个编辑命令
+                    d   y
+                    w /path/to/file     将选定范围保存到 file 中
+                    r /path/from/file   在指定位置插入 file 的内容
+        2. 查找
+            /pattern: 从光标开始向尾部搜索
+            ?pattern: 从光标开始向头部搜索
+                n:  与命令同方西的下一个
+                N:  与命令反方向的下一个
+        3. 查找并替换
+            s: 在末行模式下完成查找替换操作
+                s/要查找的内容/替换为的内容/修饰符
+                    查找内容: 可以使用模式
+                    替换内容: 不能使用模式，但可以使用 \1,\2...等向后引用符号，还可以使用
+                             & 引用前面查找时查找到的整个内容
+                    修饰符
+                        i: 忽略大小写
+                        g: 全局替换，默认只替换每行的第一次匹配
+                :.,$s/r\(..\)t/R\1T/g   ==>当前行到结尾，所有root 替换为RooT
+                :%s/l...x/&er/g
+                :1,10s/how/HOW/g
+                :%s/\/etc\/fstab/\/var\/log/g
+
+            可设定分隔符
+                :%s@/var/log@/etc/fstab@g
+
+    练习
+        1. 复制 /etc/grub2.cfg 到 /tmp 目录，删除该文件中行首的空白字符
+            $cp /etc/grub2.cfg ./
+            $vim grub2.cfg
+            :%s/^[[:space:]]* //     | :%s/^[[:space:]]\+//g
+        2. 复制 /etc/rc.d/init.d/functions 到/tmp 目录，将该文件空白行行首加 #
+            :%s/^[[:space:]]/#/    | :%s/^[[:space:]]/#&/
+
+    vim 的多文件模式
+        打开
+            vim /path/to/{file, list,...}
+        切换
+            :prev
+            :next
+            :first
+            :last
+        保存和退出
+            :wall
+            :qall
+            :wqall
+    窗口分割模式
+        打开
+            vim -o  file1, fil2, ... :水平分割
+            vim -O file1, fil2, ...  :垂直分割
+        窗口切换
+            Ctrl+w 上下箭头: 上下切换活动窗口
+            Ctrl+w 左右箭头: 左右切换活动窗口
+    单文件窗口分割
+        分割
+            Ctrl+w, s: 水平分割 split
+            Ctrl+w, v: 垂直分割 vertical
+        切换
+            上下左右箭头实现窗口切换
+    定制vim的工作特性
+        配置文件    永久有效
+            全局: /etc/vimrc
+            个人: ~/.vimrc    如果没有，需要自己动手创建
+        末行定制: 当前vim有效
+        特性
+            1. 行号
+                显示: set nu |set number
+                取消: set nonu | set nonumber
+            2. 括号匹配
+                匹配: set sm | set showmatch
+                取消: set nosm | set noshowmatch
+            3. 自动缩进
+                启用: set ai | set autoindent
+                禁用: set noai | set noautoindent
+            4. 高亮搜索结果
+                启用: set highlightsearch | set hlsearch
+                禁用: set nohighlightsearch | set nohlsearch
+            5. 语法高亮
+                启用: syntax on
+                禁用: syntax off
+            6. 忽略字符大小写
+                启用: set ic
+                禁用: set noic    默认
+
+            获取帮助
+                :help
+                :help subject
+            问题
+                如何设置 tab 缩进 4 个字符？
+
+            练习
+                1. 复制 /etc/rc.d/init.d/functions 到 /tmp, 替换文件中的
+                    /etc/sysconfig/init 为 /var/log
+
+                2. 删除 /tmp/functions 中所有以 # 开头，且 # 后至少有一个空白字符的行首
+                    的行首 #

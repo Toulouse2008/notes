@@ -1,0 +1,30 @@
+练习：写一个脚本
+	1、显示如下菜单：
+		cpu) show cpu info;
+		mem) show memory info;
+		quit) quit
+		Enter your option: 
+	2、如果用户选择cpu，则显示文件/proc/cpuinfo的信息；
+	3、如果用户选择mem，则显示文件/proc/meminfo的信息；
+	4、如果用户选择quit，则退出，且退出码为5;
+	5、如果用户键入其它字符，则显示未知选项，请重新执行脚本；退出码为6;
+#！/bin/bash
+returnValue=0
+  cat <<EOF
+ cpu) show cpu info;
+ mem) show memory info;
+ quit) quit
+ EOF
+ read -p "Enter you option:" userOption
+userOption=`echo $userOption |tr 'A-Z' 'a-z'`
+   if [[ "$userOption" == "cpu " ]];then
+     cat /proc/cpuinfo;
+   elif [[ "$userOption" == "mem " ]];then
+     cat /proc/meminfo;
+   elif [[ "$userOption" == "quit " ]];then
+     returnValue 5;
+   else
+    echo "NO Found ,Please rally "
+     returnValue 6
+  fi
+exit $returnValue

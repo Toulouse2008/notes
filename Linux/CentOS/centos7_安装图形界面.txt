@@ -1,0 +1,64 @@
+CentOS 7 默认安装没有图形界面
+
+自己安装图形界面
+    $yum group install "GNOME Desktop" "Graphical Administration Tools"
+
+图形界面不好用，太耗资源，可以删除
+    $yum group remove "GNOME Desktop" "Graphical Administration Tools"
+    
+更新系统的默认运行级别
+如果你想在系统下次启动的时候自动进入图形界面，那么我们需要更改系统的运行级别，输入下面的命令来启
+用图形界面。
+    $ln -sf /lib/systemd/system/runlevel5.target /etc/systemd/system/default.target
+修改系统的运行级别
+顺便总结下CentOS7下运行级别的修改，systemd使用比sysvinit的运行级别更为自由的target概念作为替代。
+比如，第三运行级别multi-user.target，第五运行级别graphical.target。 两种表示方式：
+    $runlevel3.target -> multi-user.target
+    $runlevel5.target -> graphical.target
+
+    注：前者使用符号链接指向了后面的 target 切换运行级别：
+
+1 systemctl isolate multi-user.target
+2 systemctl isolate runlevel3.target
+3 systemctl isolate graphical.target
+4 systemctl isolate runlevel5.target
+
+修改开机默认运行级别 systemd使用链接来指向默认的运行级别，由/etc/systemd/system/default.target文件决定。 设置开机运行级别3
+
+1 rm /etc/systemd/system/default.target
+2 ln -sf /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
+3 ln -sf /lib/systemd/system/runlevel3.target /etc/systemd/system/default.target
+4 sytemctl set-default multi-user.target
+设置开机运行级别5
+1 ln -sf /lib/systemd/system/graphical.target /etc/systemd/system/default.target
+2 ln -sf /lib/systemd/system/runlevel5.target /etc/systemd/system/default.target
+3 systemctl set-default graphical.target
+查看当前运行级别
+1 runlevel
+
+Linux 运行级别
+0　关机
+1　单用户
+2　不带网络的多用户
+3　带网络的多用户
+4　保留，用户可以自给定义
+5　图形界面的多用户
+6　重起系统
+
+centos6是通过修改/etc/inittab来修改默认运行级别的：
+[root@localhost ~]# vim /etc/inittab
+
+CentOS 7 systemd 控制运行级别的设置
+2、设置运行级别
+命令格式：
+systemctl [command] [unit.target]
+    参数详解：
+    command:
+    get-default :取得当前的target
+    set-default :设置指定的target为默认的运行级别
+    isolate :切换到指定的运行级别
+
+    systemctl get-default	获得当前的运行级别
+    systemctl set-default multi-user.target	设置默认的运行级别为mulit-user
+    systemctl isolate multi-user.target	在不重启的情况下，切换到运行级别mulit-user下
+    systemctl isolate graphical.target	在不重启的情况下，切换到图形界面下

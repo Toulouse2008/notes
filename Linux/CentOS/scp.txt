@@ -1,0 +1,5 @@
+从本地主机到虚拟机
+$scp -P 7000 /path/to/file  username@localhost:/path/to/dest
+
+从虚拟机到本地
+$

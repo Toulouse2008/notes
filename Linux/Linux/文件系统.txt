@@ -1,0 +1,38 @@
+FHS：文件层次标准
+
+/
+    操作系统自身运行使用的
+        /bin: 存放可执行的二进制程序，管理员和普通用户都可以使用
+        /sbin：管理员才能执行的命令
+    运行正常功能的程序存放位置
+        /usr/bin
+        /usr/sbin
+    用来存放第三方软件的程序
+        /usr/local/bin
+        /usr/local/sbin
+/boot：存放系统引导文件：
+    内核、ramfs文件、bootloader（grub）
+/dev：
+    设备文件存放目录
+/etc：
+    配置文件的集中存放目录
+    /etc/sysconfig:系统级别的应用
+    /etc/init.d：系统服务脚本
+/home ：普通用户，默认在/home下有一个与其名称同名目录，作为用户的家目录
+/root：管理员的家目录
+/lib，/lib64：库文件
+/media：专用挂载位置，通常用来挂载便携式设备
+/mnt：专用挂载位置，挂载额外的存储设备
+/misc：杂项，备用目录
+/opt：可选目录，但通常用来安装第三方软件
+/proc：所显示的文件都不是文件，伪文件系统，运行中的内核参数的映射
+/sys：伪文件系统，系统级别的用于配置硬件设备相关的参数
+/srv：为服务提供数据存放位置的
+/tmp：临时文件系统：默认存放30天
+/usr：shared 所有遵循协议的系统都可以使用，readonly 只读
+   /usr/include:头文件存放位置
+/var：经常发生变化的文件
+    /var/log
+    /var/lock
+    /var/run
+    /var/cache

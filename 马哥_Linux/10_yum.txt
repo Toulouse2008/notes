@@ -1,0 +1,121 @@
+Linux 程序包管理(2)
+    CentOS: yum, dnf
+    YUM: yellow dog 研发的， yellowdog update modifer
+    yum repository: yum repo
+        存储了众多 rpm 包， 以及包的相关元数据文件(放置于特定目录下: repodata)
+        文件服务器
+            ftp://   http://    nfs://  file:///
+        yum 客户端
+            配置文件
+                /etc/yum.conf  ==> 为所有仓库提供公共配置
+                /etc/yum.repos.d/*.repo     ==> 为仓库的指向提供配置
+            仓库的定义
+                [repositoryID]
+                    name=NameForThisRepsitory
+                    baseurl=url://path/to/repository/
+                    enabled={1|0}
+                    gpgcheck={1|0}
+                    gpgkey=URL
+                    enablegroups={1|0}
+                    failovermethod={roundrobin|priority}
+
+
+
+
+
+
+02
+程序包的编译安装
+    testapp-VERSION-release.src.rpm --> 安装后，使用rpmbuild命令制作成二进制格式的rpm
+    包， 而后再安装
+
+    源代码 --> 预处理 --> 编译(gcc) --> 汇编 --> 连接 --> 执行
+
+    源代码组织个事
+        多个文件: 文件中的代码之间，很可能存在跨文件的依赖关系
+
+        项目管理工具
+            make:  C   C++ --> 配置文件: configure --> Makefile.in --> makefile
+            maven: java
+
+            c 编译安装的三个步骤
+                ./configure
+                    - 获取用户输入的选项参数，指定启用特性、安装路径等信息，参考 Makefile.in
+                      生成 makefile 文件
+                    - 检查程序所依赖的外部环境， 出问题，则报错
+                make
+                    - 根据 makefile 文件， 构建应用程序
+                make install
+                    - install 程序
+            开发工具
+                autoconf: 生成 configure 脚本
+                automake: 生成 Makefile.in
+            建议
+                安装前查看 INSTALL  README
+
+        开源程序源代码获取
+            官方站点
+                apache.org (ASF)
+                mariadb.org
+                ...
+            代码托管
+                SourceForge
+                Github.com
+                code.google.com
+
+        c/c++: gcc (GNU C Compiler)
+        编译 C 源代码
+            前提: 提供开发工具和开发环境
+                开发工具: make, gcc 等
+                开发环境: 开发库，头文件
+                    glibc: 标准库，兼容 POSIX， GNU lib c
+
+                通过"包组"提供开发组件
+                    CentOS 6:
+                    CentOS 7:
+            第一步: configue 脚本
+                选项: 指定安装位置，指定启用的特性
+
+                --help: 获取支持使用的选项
+                    选项分类:
+                        安装路径设定
+                            --prefix=/path/to/DIR: 指定安装路径
+                            --sysconfdir=/path/to/dir: 配置文件安装路径
+
+                        System types
+
+                        optional features
+                            --disable-FEATURE
+                            --enable-FEATURE=[args]
+                        environmental variables
+                            CC
+                            CPP
+
+                        optional packages: 可选包
+                            --with-PACKAGE
+                            --without-PACKAGE
+            第二步: make
+            第三步  install
+
+        安装后的配置
+            - 导出二进制程序目录到 $PATH 环境变量
+                编辑文件  /etc/profile.d/NAME.sh
+                    export PATH=/PATH/TO/BIN:$PATH
+            - 导出库文件路径
+                编辑 /etc/ld.so.conf.d/NAME.conf
+                    添加新的库文件所在的目录到此文件中
+                让系统冲洗生成缓存
+                    ldconfig [-v]
+            - 导出头文件
+                基于连接的方式实现
+                    ln -sv
+            - 导出帮助手册
+                /etc/man.config
+                    添加一个 MANPATH， 加入新装程序的 man 目录
+
+    练习
+        1. yum 的配置和使用， 包括yum repository 的创建
+        2. 编译安装 apache 2.2， 启动此程序
+
+    博客作用
+        程序包管理: rpm  yum     编译

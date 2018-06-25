@@ -1,0 +1,123 @@
+MongoDB
+
+JSON: JavaScript Object Notation
+BSON: Binary Serialized Document Format
+
+安装配置Mongodb -->Mac
+	下载安装
+		-下载 http://mongodb.org/downloads
+		-解压
+		-新建文件夹 
+			$mkdir /usr/local/mongodb
+		-复制所有文件到新建文件夹
+			$cp -R /path/to/mongodb_files /usr/local/mongodb/
+		-新建文件夹存放data 
+			$mkdir -p /data/db
+		-添加路径到 ~/.bashrc
+			export PATH="/usr/local/mongodb/bin:$PATH"
+		-重载 $source .bashrc
+		-启动 $mongod
+				==> waiting for connections on port 27017
+		-连接mongodb
+			$mongo --host 127.0.0.1:27017
+
+	homebrew
+		-homebrew: /usr/local/Cellar/mongodb/3.4.4
+	配置
+		环境变量设置
+			export PATH=/usr/local/Cellar/mongodb/2.4.9/bin:${PATH}
+			source ~/.bash_profile
+		修改配置文件
+			修改mongodb配置文件, /usr/local/etc/mongod.conf
+			# Store data in /usr/local/var/mongodb instead of the default /data/db
+			dbpath = /data/db
+			# Append logs to /usr/local/var/log/mongodb/mongo.log
+			logpath = /usr/local/var/log/mongodb/mongo.log
+			logappend = true
+
+			# Only accept local connections
+			bind_ip = 127.0.0.1
+
+0. 从shell获取所有mongodb的帮助信息
+	$mongod --help  <==显示mongodb的详细帮助信息
+
+1. 启动服务器
+	$start: brew services mongodb start
+
+2. 从shell进入mongo 客户端
+	$mongo
+
+3. 显示所有数据库
+	>show dbs		<==显示所有数据库
+
+4. 创建数据库或者更换当前数据库
+	>use foobar		<==创建数据库或者更换当前数据库
+
+5. 显示当前数据库中的所有集合
+	>show collections 
+	persons
+
+6. 显示一个集合中所有的文档
+	>db.persons.find()
+	>db.persons.findOne()	<==显示一个集合当中的第一条记录
+
+7. 删除一个集合
+	>db.persons.drop()
+
+8. 删除一个存在的数据库
+	>db.dropDtatbase()
+
+9. shell中数据库级别的help信息
+	>db.help()
+
+10. shell中集合级别的help信息
+	>db.persons.help()
+
+11. 数据库和集合的命名
+	-不能用空字符串('  ')
+	-不能含有空格(' ')， ,(comma), $, /, \, \O(空字符)
+	-全部小写
+	-最多64个字符
+	-库名不能喝现有系统已有的或者保留的库相同，如admin, local, config
+
+
+12. 插入记录到指定集合或者一个新集合
+	>db.persons.insert({'name':'userer'})
+	>db.persons.insert({'_id':001, 'name':'userer'})
+		<====指定插入记录的id号
+	>db.persons.insert([{'a':'b'},{'c':'d'},{'e':'f'}])
+		<====记录之间用','分开，所有记录必须放到[]中，否则直插入第一个
+
+	save和insert:
+		id号相同的记录，insert会报错，save则执行更新操作
+
+13. 删除指定集合中的记录
+	所有记录
+	>db.document_name.remove()
+	指定记录
+	>db.persons.remove({_id:001})
+
+14. 更新集合中的文档记录  
+	格式：db.集合名称.update({查询条件},{更新内容})
+	执行方式：没有则不执行任何操作，有，则替换除了id外的所有内容为新内容
+		暴力更行，很暴力很暴力
+	>db.persons.update({'re':'rf'},{"re":"hj", 'a':'b'})
+
+	修改器：
+	$set
+	格式：db.集合名称.update({查询条件},{$set:{更新内容})
+	执行方式：找到，执行更新，找不到，则执行插入
+
+	$inc: 数值型，increment
+	>db.persons.update({'name':'cind'}, {$inc:{"age:1"}})
+
+	$unset: 删除特定键值对
+	>
+
+
+
+
+
+
+
+

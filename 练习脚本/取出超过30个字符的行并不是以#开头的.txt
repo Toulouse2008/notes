@@ -1,0 +1,9 @@
+#!/bin/bash
+while read line;do
+ char=`echo $line |wc -c`
+ i=`echo $line |grep -v "^#"`
+ if [[ $char -gt 30 && $i ]];then
+  echo -n "$char"
+  echo $line
+ fi
+done < /etc/rc.d/rc.sysinit

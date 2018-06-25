@@ -1,0 +1,10 @@
+$git push -u origin master
+    ==> Error: The requested URL returned error: 403
+    解决方案:
+        1. vi .git/config
+        2. modify url
+            from: https://github.com/Toulouse2008/Flaskr.git
+            to:	  https://Toulouse@github.com/Toulouse2008/Flaskr.git
+        3. $git push -u origin master
+            input your github password:xxxx
+        4. Done
