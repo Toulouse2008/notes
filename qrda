@@ -1,0 +1,161 @@
+QRDA 
+    A document format that provides a standard structure with which to report quality measure data to
+    Organizations that will analyze and interpret the data.
+
+    Three kind of QRDA files:
+	I.  Single Patient Report: Individual patient-level report that contains data defined in the measure
+	II. Patient List Report: Multi-patient report across a defined population that may or may not identify
+		individual patient data within the summary ===>Proposed but never balloted out
+	III. Calculated Report: Aggregate quality report with a result for a given population, period of time
+		Each report contains calculated summary of data for one or more measures for a specified
+		population of patients within a particular health system over a specified period of time.
+		A QRDA III document is an aggregate quality report that contains calculated summary data for one
+		more measures for a specified population of patients within a particular health system over a specified
+		period of time. 
+		===>Just the result; no patient data included. Contains data for one or more measures
+			==>XML document (CDA-based)
+ 		====>Communicate data residing in health information systems that are stripped of all 
+		patient identifiers, protecting patients and healthcare providers from the risks of inadvertent leakage of 
+		private information.
+I and III are Drafted Standards for Trial Use (DSTU). II was proposed, but never formally balloted as DSTU
+QRDA I ===> Individual patient data submission, one or more measure
+	==>Eligible Clinician/Eligible Professional
+QRDA III ===> Provider’s aggregate data submission, a set of patients for one or more eCQMs, PI measures /improvement activities
+	==>Eligible Hospital / Critical Access Hospital
+
+PSVA: Pre-Submission Validation Application
+SEVT: Submission Engine Validation Tools
+
+    Three level of templates
+	I.   Document-level template
+	II.  Section-level template
+	III. Entry-level template
+
+What is the difference between QRDA Category I and Category III reports?
+
+A: QRDA Category I reports contain quality data for an individual patient. QRDA Category III reports contain aggregated summary quality data for a specified population within a health system. Category III report data is aggregated from individual Category I reports. ===> For hospital reporting, only QRDA I is accepted. Eligible professional and eligible clinicians only submit using QRDA III.
+
+ 
+
+Two types of conformance statements with different formats for CONF number
+CMS CONF numbers 
+Health Level Seven (HL 7) Clinical Document Architecture QRDA Category I Errors
+
+
+    QRDA framework
+	Measure Section: information about the measure or measures being reported
+	Reporting Parameter Section: information about the reporting time interval, and may contain other
+		information that provides context for the patient data being reported
+	Patient Data Section: all the patient elements expected in the measures stated in the measure 
+		measure section.
+
+	QDM to QRDA Mapping Table
+
+At the very least, the QRDA should include:
+    All data elements that confirm IPP inclusion for each referenced eMeasure (since by definition, the 			patient has met IPP criteria for each referenced eMeasure)
+Smoking gun data that offers confirmatory proof, where a patient has met a criterion
+All relevant data elements present in the EHR For disjunctive criteria (e.g., where a criterion can be satisfied by either of two data elements), include all the relevant data elements that are present in the EHR
+Stratification variables, supplemental data elements, risk adjustment variables, and any other data element specified in the referenced eMeasure(s)
+QDM breaks a concept down into a "Quality Data Type", "Quality Data Attributes", and a "Value Set". A "Quality Data Element" is a Quality Data Type, along with its Quality Data Attributes and associated value set. Quality Data Types (e.g., Medication Administered, Diagnosis Active) represent a clinical category (e.g., Medication, Diagnosis) coupled with a "state" (e.g., Administered, Active). Quality Data Attributes represent various components of the Quality Data Type, such as timing, or category-specific characteristics
+
+Quality Data Types are converted into RIM-derived XML patterns that, when coupled with value sets, become Quality Data Elements that can be used as data criteria within a QDM-based eMeasure. Each Quality Data Type pattern is assigned a unique ID, which is present in the eMeasure, and which is mapped to a corresponding CDA template. A Quality Data Element further constrains a Quality Data Type pattern via vocabulary binding to a value set. The linked CDA template can be further constrained through a corresponding value set binding. This allows one to automatically construct a QDM-based QRDA, given a QDM-based eMeasure.
+
+The further constraint on a CDA template through value set binding results in a new CDA template. To retain flexibility in defining new QDM-based eMeasures without the need to update this guide, we introduce the notion of “dynamic CDA template creation”. The actual CDA template ID in a QRDA instance contains the templateId from the library (in templateId/@root), dynamically concatenated with the value set id from the eMeasure (in templateId/@extension).
+
+RecordTarget
+The recordTarget records the patient whose health information is described by the clinical document; it must contain at least one patientRole element
+	patientRole ->id, adds, telecom
+	patient->name(US pattern)->administrativeGenderCode->birthTime->maritalStatus
+	may contains: 
+		->religiousAffiliationCode, raceCode, stdc:raceCode, ethnicGroupCode
+		->guardian->Personal Relationship Role Type->addr->telecom->guardianPerson->name
+		->birthplace->addr->state->postal code->country
+		->languageCommunication->languageCode->modeCode
+			->proficiencyLevelCode->preferenceInd
+	ProviderOrganization
+		->providerOrganization->id, name,telecom, addr,
+	RecordTarget value sets
+		HP: primary home, WP: work place, MC: mobile contact, HV: vacation home
+	Administrative Gender (HL7) value set:
+		F: female, M: male, UN: undifferentiated
+	Marital Status Value Set
+		A: annulled, D: divorced, I: interlocutory, L: legally separated, M: married, P: polygamous
+		S: never married, T: domestic partner, W: widowed
+
+Author:
+	The author element represents the creator of the clinical document, a device, or a person
+	->author->time->assignedAuthor->id, code,addr,telecom, assignedPerson | assignedAutoringDevice
+	->US RealmPerson Name | manufactureModelName ->softwareName
+DataEnterer
+The dataEnterer element represents the person who transferred the content, written or dictated by someone else, into the clinical document. The guiding rule of thumb is that an author provides the content found within the header or body of the document, subject to their own interpretation, and the dataEnterer adds that information to the electronic system. In other words, a dataEnterer transfers information from one source to another (e.g., transcription from paper form to electronic system).
+-> dataEnterer->assignedEntity->id, code, addr, telecom ->assignedPerson->name, id
+Custodian 
+The custodian element represents the organization that is in charge of maintaining the document. The custodian is the steward that is entrusted with the care of the document. Every CDA document has exactly one custodian. The custodian participation satisfies the CDA definition of Stewardship.
+LegalAuthenticator 
+The legalAuthenticator identifies the single person legally responsible for the document and must be present if the document has been legally authenticated.
+Authenticator 
+The authenticator identifies a participant or participants who attested to the accuracy of the information in the document.
+Participant: 
+The participant element identifies other supporting participants, including parents, relatives, caregivers, insurance policyholders, guarantors, and other participants related in some way to the patient.
+
+
+CDA Document Structure
+    Header: Metadata about the document
+	-who created the document
+	-who is the document about
+	-when was the document create
+	-where was the document created
+	-etc
+    Body: Human-Readable representation of the document either xml or nonXML format
+	If xml, it will contain XML encoded sections of text with rendering instances referred to
+	as the narrative Block.
+    Entity: fully structured and machine-processable representation of an item on the CDA
+    Types: vital sign, laboratory and allergy observations, substance administration, clinical
+	Procedure, etc.
+	If presented, the same data must also be in a narrative block
+
+Verbs 
+shall: an absolute requirement for the particular element. Where a SHALL constraint is applied to an XML element, that element must be present in an instance, but may have an exceptional value (i.e., may have a nullFlavor), unless explicitly precluded. Where a SHALL constraint is applied to an XML attribute, that attribute must be present, and must contain a conformant value.
+shall not: an absolute prohibition against inclusion
+should/should not: best practice or recommendation. There may be valid reasons to ignore an item, but the full implications must be understood and carefully weighed before choosing a different course
+may/need not: truly optional; can be included or omitted as the author decides with no implications
+Cardinality
+0..1 zero or one
+1..1 exactly one
+1..* at least one
+0..* zero or more
+1..n at least one and not more than n
+
+Null Flavor
+	NI No information. This is the most general and default null flavor. 
+	NA Not applicable. Known to have no proper value (e.g., last menstrual period for a male).
+	UNK Unknown. A proper value is applicable, but is not known.
+	ASKU Asked but not known. Information was sought, but not found (the patient was asked but did 
+		not know).
+	NAV Temporarily unavailable. The information is not available, but is expected to be available later.
+	NASK Not asked. The patient was not asked.
+	MSK	There is information on this item available but it has not been provided by the sender due to 
+		security, privacy, or other reasons. There may be an alternate mechanism for gaining access to 
+		this information.
+	OTH	The actual value is not and will not be assigned a standard coded value. An example is the 
+		name or identifier of a clinical trial.
+
+
+
+Implementation Guide(IG)
+	A guide
+	SampleName.xml
+	cda.xsl —===>Stylesheet for display of CDA instances
+
+CCD: Continuity of Care Document
+DSTU: Draft Standard for Trial Use
+RIM: Reference Information Model
+
+
+
+I file requirement
+One file, per patient per quarter
+Should include all the episodes of care and the measures associated with the patient file in that reporting period
+Max individual file size of 5 MB
+Files uploaded in ZIP file (.zip)
+Max submission of 15000 files per zip file. Hospital can submit additional zip files if more than 150000 file per quarter
