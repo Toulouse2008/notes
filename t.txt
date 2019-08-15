@@ -1,0 +1,139 @@
+
+
+
+
+
+
+
+
+
+
+Measure
+-Measure Overview and other information about the eMeasure that is located in a header
+-Population Criteria: Provides programming language to code the eMeasure in the EHR
+-Data Criteria: Identifies the codes that reflect the specific data elements, e.g., ICD-9/10
+
+4-5 Components
+IPP: the group of patients the performance measure is designed to address
+Denominator: a subset of or the same as IPP
+Numerator: subset of denominator for whom a process or outcome of care occurs
+Exclusions:
+ exclude patients from the denominator of a performance measure when a therapy or service
+Would not be appropriate in instances for which the patient otherwise meets the denominator criteria
+Exceptions
+Allowable reasons for nonperformance of a quality measure for patients that meet the Denominator criteria
+And do not meet the Numerator criteria. Denominator Exceptions are the valid reasons for patients who are
+Included in the denominator population but not for whom a process of care does not occur.
+===> Three reasons: Medical Reason, Patients’ reason, System reason
+
+Measure Types
+Proportion measures: Measures that define quality based on the number of cases that meet a criterion for quality (the numerator) divided by the number of eligible cases within a given time frame (the denominator).
+Continuous variable measures: Measures that define quality based on variables amongst the patients in the defined population (e.g. based on average wait time for patients seen in the emergency department and subsequently admitted to the hospital).
+Ratio Measures:  Measures that define quality based on the ratio of two events (e.g., number of patients with central line infection divided by number of patients in the intensive care unit).
+
+
+
+
+
+Encounter
+An encounter serves as a focal point linking clinical, administrative and financial information. Encounters occur in many different settings -- ambulatory care, inpatient care, emergency-care, home health care, field and virtual (telemedicine). The definition for clinical encounter is from ASTM E1384-02a -- Standard Guide for Content and Structure of the Electronic Health Record: "(1) an instance of direct provider/practitioner to patient interaction, regardless of the setting, between a patient and a practitioner vested with primary responsibility for diagnosing, evaluating or treating the patients condition, or both, or providing social worker services. (2) A contact between a patient and a practitioner who has primary responsibility for assessing and treating the patient at a given contact, exercising independent judgment." The ASTM definition excludes ancillary service visit, which is defined as "the appearance of an outpatient in a unit of a hospital or outpatient facility to receive service(s), test(s), or procedures." The clinical encounter definition also excludes practitioner actions in the absence of a patient such as practitioner-to-practitioner interaction and practitioner-to-records interaction. This includes the sub-domains of admission information, transfer (patient movement) information, discharge information, provider information, accident information, and death and autopsy information. The CHI clinical encounters standards are from Health Level Seven, Version 2.4 and higher. Usability gaps noted included explicit support for home health, field, and virtual encounters; support for clinical services that do not meet definition of clinical encounter; National Provider System identifiers for practitioners and healthcare organizations; standard location identifiers; and standard hospital service names.
+
+
+
+WHAT IS AN ENCOUNTER?
+
+Patient volume calculations depend upon the definition of “encounter.” CMS defines an
+
+encounter as:
+
+· Inpatient discharges (excluding newborns)
+
+· Emergency department encounters (one per day for multiple related visits).
+
+** include paid and non-paid encounters.
+
+
+
+
+Evolution of CCDA
+	===>Consolidated Clinical Document Architecture
+CCD: Continuity of Care Document
+
+CCDA: Consolidated Clinical Document Architecture
+CDA: Clinical Document Architecture |
+							    | ====>CCD ====>CCDA
+CCR: Continuity of Care Record.        |
+
+FHIR: Fast Healthcare Interoperability Resources
+
+CCDA package
+-implementation guide documentation
+-sample CDA release 2 documents
+-rendering stylesheet
+-schematron schema
+-xslt stylesheet for validation, alternative to schematrom validation
+-supporting vocabulary data
+CDA Implementation
+   Elements
+	—author, authenticator, dataEnterer, informant, informationRecipient,
+	—legalAuthenticator, participant(payers, other supporting parties),
+	—recordTarget, performers
+   Elements allowed but not described in detail
+	—Confidentiality, Orders, Authorizations
+   Define required and optional sections
+	—sepcify LOIN codes for the section
+  
+  
+
+
+
+CCDE
+For patients in the denominator, report the FIRST value for vital signs captured    within the 24 hours prior to the inpatient admission. If no values were captured in the 24 hours prior to the admission (for example, for patients directly admitted to the hospitals) report the first value captured within 2 hours after the start of the inpatient admission. For laboratory test results, report the first captured value  in the 24 hours prior to admission. If there are no values in the 24 hours prior to admission, report the first values within 24 hours after the start of the inpatient admission. First values for the following data elements may be captured in the      emergency department or other outpatient area within the hospital before a patient  is subsequently admitted to the same hospital. First values for these data elements may also be captured on an inpatient unit for directly admitted patients who do not receive care in the emergency department or other hospital outpatient location      before admission. 
+The core clinical data elements are as follows:
+Heart rate
+Systolic blood pressure
+Respiratory rate
+Temperature
+Oxygen saturation
+Weight
+Hematocrit
+White blood cell count
+Potassium
+Sodium
+Bicarbonate
+Creatinine
+Glucose
+
+NOTE: Do not report ALL values on a patient during their entire admission. Only report the FIRST recorded value for EACH core clinical data element collected in the appropriate timeframe, if available.
+
+
+
+
+
+
+JDeveloper
+1) .jws which is used for storing the projects added in the workspace(check your workspace on disk). Under the Model and ViewController projects two files gets created as “Model.jpr” and “ViewController.jpr”.
+
+2) .jpr file is used to store the project related information like java files created in the project etc. Once you start creating the Entity or View object under the Model, one more file gets created under the Model/src/Model.jpx.
+
+3) Model.jpx file contains all the application modules defined in your Model project. And other configuration details such as database connection used in model layer. Some times during development, if you get “JBO 30003” or database error, then check the “_NamedConnection” parameter in the same file, if it is pointing to the correct database connection name. Entity object is the Java object representation of the database table row from which it is created. Once your create an Entity object(say EmpEO), two files which gets created.
+
+
+
+XML
+
+xmlns: XML Namespace
+	xmlns:namespace_prefix=“namespace_URI”
+	xmlns=“default_URI”  <===Default namespace, prefix can be omitted
+	xmlns:xsi: the namespace with prefix “xsi”
+
+xsi: XML schema instance 
+	xmlns:xsi: xml will follow the rules defined in the schema under xsi.
+
+xsi:schemaLocation: the location of the schema resources  
+
+JAXB: Java Architecture for XML Binding
+XSLT: Extensible StyleSheet Language Transformations
+
+Parser
+	Dom Parser, SAX Parser, JDOM Parser, StAX Parser, XPath Parser, DOM4J Parser
